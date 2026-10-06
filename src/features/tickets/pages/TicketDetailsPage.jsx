@@ -7,8 +7,7 @@ import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { formatDate, getStatusLabel, getCategoryLabel } from '../../../lib/utils';
 import useAuthStore from '../../auth/hooks/useAuthStore';
-import { TestCasesPanel } from '../../tests/components/TestCasesPanel';
-import { HomologationPanel } from '../../homologation/components/HomologationPanel';
+
 
 export default function TicketDetailsPage() {
   const { id } = useParams();
@@ -37,7 +36,11 @@ export default function TicketDetailsPage() {
     if (!window.confirm(`Deseja alterar o status para ${getStatusLabel(newStatus)}?`)) return;
     setIsSubmitting(true);
     try {
-      await changeTicketStatus(id, newStatus);
+      if (newStatus === 'InAnalysis') await import('../api/ticketService').then(m => m.startAnalysis(id));
+      else if (newStatus === 'InProgress') await import('../api/ticketService').then(m => m.startProgress(id));
+      else if (newStatus === 'WaitingUser') await import('../api/ticketService').then(m => m.waitForUser(id));
+      else if (newStatus === 'Resolved') await import('../api/ticketService').then(m => m.resolveTicket(id));
+      
       await fetchDetails();
     } catch (error) {
       console.error(error);
@@ -91,25 +94,25 @@ export default function TicketDetailsPage() {
         {/* Workflow Actions (Basic state machine preview) */}
         {user?.role !== 'User' && (
           <div className="flex gap-2">
-            {ticket.status === 'NEW' && (
-              <Button onClick={() => handleStatusChange('ANALYZING')} isLoading={isSubmitting} size="sm">
+            {ticket.status === 'Open' && (
+              <Button onClick={() => handleStatusChange('InAnalysis')} isLoading={isSubmitting} size="sm">
                 Iniciar Análise
               </Button>
             )}
-            {ticket.status === 'ANALYZING' && (
-              <Button onClick={() => handleStatusChange('IN_DEVELOPMENT')} isLoading={isSubmitting} size="sm" className="gap-2">
-                <PlayCircle size={16} /> Enviar para Dev
+            {(ticket.status === 'InAnalysis' || ticket.status === 'WaitingUser') && (
+              <Button onClick={() => handleStatusChange('InProgress')} isLoading={isSubmitting} size="sm" className="gap-2 bg-blue-600 hover:bg-blue-700 border-none text-white">
+                <PlayCircle size={16} /> Iniciar Atendimento
               </Button>
             )}
-            {ticket.status === 'IN_DEVELOPMENT' && (
-              <Button onClick={() => handleStatusChange('IN_TEST')} isLoading={isSubmitting} size="sm" className="gap-2 bg-status-teste hover:bg-orange-700 border-none text-white">
-                <CheckCircle size={16} /> Enviar para Teste
-              </Button>
-            )}
-            {ticket.status === 'IN_TEST' && (
-              <Button onClick={() => handleStatusChange('WAITING_HOMOLOGATION')} isLoading={isSubmitting} size="sm" className="gap-2 bg-status-homologacao hover:bg-indigo-700 border-none text-white">
-                <CheckCircle size={16} /> Liberar para Homologação
-              </Button>
+            {ticket.status === 'InProgress' && (
+              <>
+                <Button onClick={() => handleStatusChange('WaitingUser')} isLoading={isSubmitting} size="sm" className="gap-2 bg-orange-500 hover:bg-orange-600 border-none text-white">
+                  <Clock size={16} /> Aguardar Usuário
+                </Button>
+                <Button onClick={() => handleStatusChange('Resolved')} isLoading={isSubmitting} size="sm" className="gap-2 bg-green-600 hover:bg-green-700 border-none text-white">
+                  <CheckCircle size={16} /> Resolver
+                </Button>
+              </>
             )}
           </div>
         )}
@@ -118,21 +121,11 @@ export default function TicketDetailsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Details & Comments */}
         <div className="lg:col-span-2 space-y-6">
-          
-          {ticket.status === 'WAITING_HOMOLOGATION' && (ticket.homologationResponsible?.id === user?.id || ticket.createdBy?.id === user?.id) && (
-            <HomologationPanel ticketId={id} onHomologationDone={fetchDetails} />
-          )}
-
           <div className="bg-surface-card border border-border-subtle rounded-lg p-6 shadow-sm">
             <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-4 border-b border-border-subtle pb-2">Descrição da Demanda</h3>
             <div className="text-text-primary text-sm whitespace-pre-wrap leading-relaxed">
               {ticket.description}
             </div>
-          </div>
-
-          <div className="bg-surface-card border border-border-subtle rounded-lg p-6 shadow-sm">
-            <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-4 border-b border-border-subtle pb-2">Casos de Teste (QA)</h3>
-            <TestCasesPanel ticketId={id} onTestUpdated={fetchDetails} />
           </div>
 
           {/* Comments Section */}

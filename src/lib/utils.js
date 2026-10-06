@@ -18,13 +18,11 @@ export function formatDate(dateString) {
 
 export const getStatusLabel = (status) => {
   const labels = {
-    NEW: "Novo",
-    ANALYZING: "Análise",
-    IN_DEVELOPMENT: "Desenvolvimento",
-    IN_TEST: "Teste",
-    WAITING_HOMOLOGATION: "Homologação",
-    RESOLVED: "Resolvido",
-    REJECTED: "Rejeitado"
+    Open: "Aberto",
+    InAnalysis: "Em Análise",
+    InProgress: "Em Atendimento",
+    WaitingUser: "Aguardando Usuário",
+    Resolved: "Resolvido"
   };
   return labels[status] || status;
 };

@@ -15,8 +15,23 @@ export const createTicket = async (data) => {
   return response.data;
 };
 
-export const changeTicketStatus = async (id, status) => {
-  const response = await api.put(`/tickets/${id}/status`, { status });
+export const startAnalysis = async (id) => {
+  const response = await api.post(`/tickets/${id}/analyze`);
+  return response.data;
+};
+
+export const startProgress = async (id) => {
+  const response = await api.post(`/tickets/${id}/start-progress`);
+  return response.data;
+};
+
+export const waitForUser = async (id) => {
+  const response = await api.post(`/tickets/${id}/wait-for-user`);
+  return response.data;
+};
+
+export const resolveTicket = async (id) => {
+  const response = await api.post(`/tickets/${id}/resolve`);
   return response.data;
 };
 

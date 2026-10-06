@@ -26,13 +26,11 @@ export default function DashboardPage() {
 
   const translateStatus = (status) => {
     const map = {
-      'New': { label: 'Novo', icon: 'add_circle', color: 'bg-blue-100 text-blue-700' },
+      'Open': { label: 'Novo', icon: 'add_circle', color: 'bg-blue-100 text-blue-700' },
       'InAnalysis': { label: 'Em análise', icon: 'search', color: 'bg-amber-100 text-amber-700' },
-      'InDevelopment': { label: 'Em desenvolvimento', icon: 'terminal', color: 'bg-purple-100 text-purple-700' },
-      'InTest': { label: 'Em teste', icon: 'rule', color: 'bg-orange-100 text-orange-700' },
-      'WaitingHomologation': { label: 'Homologação', icon: 'verified', color: 'bg-indigo-100 text-indigo-700' },
+      'InProgress': { label: 'Em atendimento', icon: 'terminal', color: 'bg-purple-100 text-purple-700' },
+      'WaitingUser': { label: 'Aguardando Usuário', icon: 'pending', color: 'bg-orange-100 text-orange-700' },
       'Resolved': { label: 'Resolvido', icon: 'check_circle', color: 'bg-emerald-100 text-emerald-700' },
-      'Rejected': { label: 'Rejeitado', icon: 'cancel', color: 'bg-red-100 text-red-700' },
     };
     return map[status] || { label: status, icon: 'info', color: 'bg-slate-100 text-slate-700' };
   };
@@ -97,7 +95,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0 bg-slate-50">
-              <span className="text-[12px] font-medium text-[#c8101e] truncate">Minha Homologação</span>
+              <span className="text-[12px] font-medium text-[#c8101e] truncate">Ação Pendente</span>
               <div className="mt-2 sm:mt-4 mb-2">
                 <span className="text-[26px] sm:text-[32px] font-semibold tracking-tight text-[#c8101e] leading-none">{stats?.pendingMyAction || 0}</span>
               </div>
@@ -124,15 +122,15 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0">
-              <span className="text-[12px] font-medium text-slate-500 truncate">Dev / Test</span>
+              <span className="text-[12px] font-medium text-slate-500 truncate">Atendimento</span>
               <div className="mt-2 sm:mt-4 mb-2">
-                <span className="text-[26px] sm:text-[28px] font-semibold tracking-tight text-slate-900 leading-none">{(stats?.inDevelopmentTickets || 0) + (stats?.inTestTickets || 0)}</span>
+                <span className="text-[26px] sm:text-[28px] font-semibold tracking-tight text-slate-900 leading-none">{stats?.inProgressTickets || 0}</span>
               </div>
             </div>
             <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0">
-              <span className="text-[12px] font-medium text-slate-500 truncate">Homologação</span>
+              <span className="text-[12px] font-medium text-slate-500 truncate">Ag. Usuário</span>
               <div className="mt-2 sm:mt-4 mb-2">
-                <span className="text-[26px] sm:text-[28px] font-semibold tracking-tight text-slate-900 leading-none">{stats?.waitingHomologationTickets || 0}</span>
+                <span className="text-[26px] sm:text-[28px] font-semibold tracking-tight text-slate-900 leading-none">{stats?.waitingUserTickets || 0}</span>
               </div>
             </div>
             <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0">

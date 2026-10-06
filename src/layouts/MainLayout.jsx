@@ -16,11 +16,9 @@ export default function MainLayout() {
   const baseMenuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
     { name: 'Meus Chamados', path: '/tickets', icon: 'inbox', roles: ['User'] },
-    { name: 'Fila de Chamados', path: '/tickets', icon: 'inbox', roles: ['Admin', 'Attendant'] },
+    { name: 'Kanban', path: '/tickets/kanban', icon: 'view_kanban', roles: ['Admin', 'Attendant'] },
+    { name: 'Chamados (Lista)', path: '/tickets', icon: 'list', roles: ['Admin', 'Attendant'] },
     { name: 'Novo chamado', path: '/tickets/new', icon: 'add_circle' },
-    { name: 'Desenvolvimento', path: '/tickets/development', icon: 'terminal', roles: ['Admin', 'Attendant'] },
-    { name: 'Testes', path: '/tickets/tests', icon: 'rule', roles: ['Admin', 'Attendant'] },
-    { name: 'Homologações', path: '/tickets/homologations', icon: 'verified', roles: ['Admin', 'Attendant'] },
     { name: 'Usuários', path: '/admin/users', icon: 'group', roles: ['Admin'] },
   ];
 
