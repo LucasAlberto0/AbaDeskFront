@@ -7,6 +7,8 @@ import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { formatDate, getStatusLabel, getCategoryLabel } from '../../../lib/utils';
 import useAuthStore from '../../auth/hooks/useAuthStore';
+import { TestCasesPanel } from '../../tests/components/TestCasesPanel';
+import { HomologationPanel } from '../../homologation/components/HomologationPanel';
 
 export default function TicketDetailsPage() {
   const { id } = useParams();
@@ -104,6 +106,11 @@ export default function TicketDetailsPage() {
                 <CheckCircle size={16} /> Enviar para Teste
               </Button>
             )}
+            {ticket.status === 'IN_TEST' && (
+              <Button onClick={() => handleStatusChange('WAITING_HOMOLOGATION')} isLoading={isSubmitting} size="sm" className="gap-2 bg-status-homologacao hover:bg-indigo-700 border-none text-white">
+                <CheckCircle size={16} /> Liberar para Homologação
+              </Button>
+            )}
           </div>
         )}
       </div>
@@ -111,11 +118,21 @@ export default function TicketDetailsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Details & Comments */}
         <div className="lg:col-span-2 space-y-6">
+          
+          {ticket.status === 'WAITING_HOMOLOGATION' && ticket.createdBy === user?.id && (
+            <HomologationPanel ticketId={id} onHomologationDone={fetchDetails} />
+          )}
+
           <div className="bg-surface-card border border-border-subtle rounded-lg p-6 shadow-sm">
             <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-4 border-b border-border-subtle pb-2">Descrição da Demanda</h3>
             <div className="text-text-primary text-sm whitespace-pre-wrap leading-relaxed">
               {ticket.description}
             </div>
+          </div>
+
+          <div className="bg-surface-card border border-border-subtle rounded-lg p-6 shadow-sm">
+            <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-4 border-b border-border-subtle pb-2">Casos de Teste (QA)</h3>
+            <TestCasesPanel ticketId={id} onTestUpdated={fetchDetails} />
           </div>
 
           {/* Comments Section */}
