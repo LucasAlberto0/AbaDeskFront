@@ -1,22 +1,33 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../hooks/useAuthStore';
-import { Eye, EyeOff, Mail } from 'lucide-react';
+import { Eye, EyeOff, Mail, User } from 'lucide-react';
 
-export default function LoginPage() {
-  const [email, setEmail] = useState('admin@abadesk.local');
-  const [password, setPassword] = useState('senha123');
+export default function RegisterPage() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState(0); // 0 = User, 1 = Attendant
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const register = useAuthStore((state) => state.register);
   const login = useAuthStore((state) => state.login);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await login(email, password);
+      await register(name, email, password, role);
+      // Fallback in case register doesn't log in automatically
+      const { isAuthenticated } = useAuthStore.getState();
+      if (!isAuthenticated) {
+        await login(email, password);
+      }
+      navigate('/');
     } catch (error) {
-      alert('Credenciais inválidas. Verifique seu usuário e senha.');
+      alert('Erro ao realizar o cadastro. Verifique os dados e tente novamente.');
     } finally {
       setIsSubmitting(false);
     }
@@ -37,7 +48,7 @@ export default function LoginPage() {
             <img alt="Ilustração de Gestão" className="w-full h-auto object-contain pointer-events-none select-none opacity-95" style={{ filter: 'brightness(0) invert(1)' }} src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbuFZf9UeCR-kOBftoGZWbSDbZ0CxM5jE5rT82KUAtMhs_E4HndLkpR9IDngrz28Z8vJyIO3EON_ETYLl-MFvAoAQsKzVKRMgB0CSkda-cEQg8Ubqm7TZmApsaEFRlQzntLEYgGxIQwVTvAdJ4dV5Gsh8VtR6wUF6BgAPLKnqbIiMbUnr2qhXfwwQ8NhQwyTK8eJpEadKN8rkeSYSnYyJRNHJ0-3lSacStCJwu4z3zGcUN_bAn_zVNiOQUR-eg5JISJA" />
           </div>
           <h1 className="text-2xl sm:text-3xl lg:text-[2.35rem] font-bold tracking-tight text-white leading-tight">GRUPO ABA INFRA</h1>
-          <p className="mt-4 text-base sm:text-lg text-white/90 font-normal leading-relaxed max-w-lg">Excelência e agilidade com atendimento personalizado</p>
+          <p className="mt-4 text-base sm:text-lg text-white/90 font-normal leading-relaxed max-w-lg">Crie sua conta e ganhe acesso à nossa plataforma unificada</p>
         </div>
 
         {/* Footer Note */}
@@ -48,7 +59,7 @@ export default function LoginPage() {
         </div>
       </section>
 
-      {/* Direita - Formulário de Login */}
+      {/* Direita - Formulário de Cadastro */}
       <section className="w-full lg:w-[46%] xl:w-[44%] flex-1 flex items-center justify-center p-6 sm:p-10 lg:p-14 bg-[#f8fafc]">
         <div className="w-full max-w-md bg-white rounded-2xl p-7 sm:p-10 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.08)] border border-slate-100">
           
@@ -57,17 +68,88 @@ export default function LoginPage() {
               <img alt="Logo ABA Desk" className="h-9 w-auto object-contain" style={{ filter: 'invert(1) contrast(1.15) brightness(0.2)' }} src="https://lh3.googleusercontent.com/aida-public/AB6AXuDX-Pdr1RjHID0FTyxO_nwLM149Z8UIl5EEArVt43MdpzerdXpYPGX_3H8_PnKvDnk5qEOznljzrPgn8x_dHPsvzkk_H9_AQxlFk7XQr1P4Yer1lYVxal1LvO3A3I5VRLOPFyFf4SFmiIDSNsRtuIEuBB0dx8sHw4UuAZPc24atDmFD414R3o2ipDtUajUCbt39fqmzhOV73gs7Xowk51KuqqR_IfhC9PngoVn8VB_gDgaENBg14Mh6a7uSQEmfX_4qIw" />
             </div>
             <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-              Acessar Plataforma
+              Criar Conta
             </h2>
             <p className="text-sm text-slate-500 mt-1">
-              Entre com suas credenciais de acesso corporativo
+              Preencha os dados para obter seu acesso
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            
+            <div className="mb-6">
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                Perfil de Acesso Solicitado <span className="text-[#c8101e]">*</span>
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                
+                {/* Opção Usuário */}
+                <div 
+                  onClick={() => setRole(0)}
+                  className={`relative flex flex-col p-3 cursor-pointer rounded-xl border-2 transition-all ${
+                    role === 0 ? 'border-[#c8101e] bg-red-50/30 shadow-sm' : 'border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-2">
+                      <User size={16} className={role === 0 ? 'text-[#c8101e]' : 'text-slate-400'} />
+                      <span className={`font-semibold text-[14px] ${role === 0 ? 'text-slate-900' : 'text-slate-700'}`}>Usuário</span>
+                    </div>
+                    <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
+                      role === 0 ? 'border-[#c8101e]' : 'border-slate-300'
+                    }`}>
+                      {role === 0 && <div className="w-2 h-2 rounded-full bg-[#c8101e]"></div>}
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-snug pr-1">Abertura e acompanhamento de chamados e serviços prediais.</p>
+                </div>
+
+                {/* Opção Suporte Técnico */}
+                <div 
+                  onClick={() => setRole(1)}
+                  className={`relative flex flex-col p-3 cursor-pointer rounded-xl border-2 transition-all ${
+                    role === 1 ? 'border-[#c8101e] bg-red-50/30 shadow-sm' : 'border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-2">
+                      <svg className={`w-4 h-4 ${role === 1 ? 'text-[#c8101e]' : 'text-slate-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                      <span className={`font-semibold text-[14px] ${role === 1 ? 'text-slate-900' : 'text-slate-700'}`}>Suporte Técnico</span>
+                    </div>
+                    <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
+                      role === 1 ? 'border-[#c8101e]' : 'border-slate-300'
+                    }`}>
+                      {role === 1 && <div className="w-2 h-2 rounded-full bg-[#c8101e]"></div>}
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-snug pr-1">Triagem, fila de suporte técnico e resolução de incidentes.</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5" htmlFor="name">
+                Nome Completo <span className="text-[#c8101e]">*</span>
+              </label>
+              <div className="relative rounded-lg shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <User size={16} />
+                </div>
+                <input 
+                  type="text" 
+                  id="name" 
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-2.5 sm:text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
+                  placeholder="Seu nome completo" 
+                  required 
+                />
+              </div>
+            </div>
+
             <div>
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5" htmlFor="email">
-                E-mail corporativo
+                E-mail corporativo <span className="text-[#c8101e]">*</span>
               </label>
               <div className="relative rounded-lg shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -79,7 +161,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="block w-full pl-10 pr-3 py-2.5 sm:text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
-                  placeholder="nome.sobrenome@grupoaba.com.br" 
+                  placeholder="nome@grupoaba.com.br" 
                   required 
                 />
               </div>
@@ -88,7 +170,7 @@ export default function LoginPage() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider" htmlFor="password">
-                  Senha de acesso
+                  Senha de acesso <span className="text-[#c8101e]">*</span>
                 </label>
               </div>
               <div className="relative rounded-lg shadow-sm">
@@ -114,36 +196,21 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-1">
-              <div className="flex items-center">
-                <input id="remember-me" type="checkbox" className="h-4 w-4 rounded border-slate-300 text-[#c8101e] focus:ring-[#c8101e]/40 cursor-pointer" />
-                <label htmlFor="remember-me" className="ml-2 block text-xs text-slate-600 select-none cursor-pointer">
-                  Lembrar de mim
-                </label>
-              </div>
-              <a href="#" className="text-xs font-semibold text-[#c8101e] hover:text-[#9c0c16] transition-colors hover:underline">
-                Esqueceu a senha?
-              </a>
-            </div>
-
             <div className="pt-2">
               <button 
                 type="submit" 
                 disabled={isSubmitting}
                 className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-transparent rounded-lg text-sm font-semibold text-white bg-[#c8101e] hover:bg-[#a70d18] active:bg-[#8b0c15] shadow-sm hover:shadow-md transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8101e] disabled:opacity-70"
               >
-                {isSubmitting ? 'Autenticando...' : 'Entrar no ABA Desk'}
-                {!isSubmitting && (
-                  <svg className="w-4 h-4 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                )}
+                {isSubmitting ? 'Cadastrando...' : 'Criar Conta ABA Desk'}
               </button>
             </div>
           </form>
 
           <div className="mt-6 text-center text-xs text-slate-500">
-            <span>Não tem uma conta corporativa? </span>
-            <Link to="/register" className="font-semibold text-[#c8101e] hover:text-[#9c0c16] hover:underline">
-              Cadastre-se
+            <span>Já possui conta? </span>
+            <Link to="/login" className="font-semibold text-[#c8101e] hover:text-[#9c0c16] hover:underline">
+              Fazer Login
             </Link>
           </div>
           

@@ -27,6 +27,31 @@ const useAuthStore = create((set) => ({
     }
   },
 
+  register: async (name, email, password, role = 0) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api.post('/auth/register', { name, email, password, role });
+      
+      // Auto login after register
+      const { accessToken, user } = response.data;
+      if (accessToken) {
+        localStorage.setItem('abadesk_token', accessToken);
+        localStorage.setItem('abadesk_user', JSON.stringify(user));
+        set({ user, token: accessToken, isAuthenticated: true, isLoading: false });
+      } else {
+        // Fallback if backend doesn't return token on register
+        set({ isLoading: false });
+        // Can manually redirect to login
+      }
+    } catch (error) {
+      set({ 
+        error: error.response?.data?.message || 'Erro ao realizar cadastro.', 
+        isLoading: false 
+      });
+      throw error;
+    }
+  },
+
   logout: () => {
     localStorage.removeItem('abadesk_token');
     localStorage.removeItem('abadesk_user');
