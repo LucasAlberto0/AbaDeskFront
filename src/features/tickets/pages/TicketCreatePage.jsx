@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { createTicket } from '../api/ticketService';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
@@ -21,6 +21,27 @@ export default function TicketCreatePage() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const companyUnits = [
+    { id: 'ABA Infra', label: 'ABA Infra', desc: 'Santos/SP e São Paulo', logo: '/logos/aba-infra.jpg' },
+    { id: 'FCA Log', label: 'FCA Log', desc: 'Santos/SP', logo: '/logos/fca-log.jpg' },
+    { id: 'Eudmarco', label: 'Eudmarco', desc: 'Santos/SP', logo: '/logos/eudmarco.png' },
+    { id: 'Adonai Quimica', label: 'Adonai Quimica', desc: 'Ilha Barnabé Santos/SP', logo: '/logos/adonai-quimica.png' },
+    { id: 'Concais', label: 'Concais', desc: 'Santos/SP', logo: '/logos/concais.png' }
+  ];
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsCompanyDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -74,9 +95,57 @@ export default function TicketCreatePage() {
                 <option value="High">Alta</option>
               </select>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 relative" ref={dropdownRef}>
               <label className="text-sm font-semibold text-text-secondary">Unidade da Empresa</label>
-              <Input name="companyUnit" value={formData.companyUnit} onChange={handleChange} required placeholder="Ex: Matriz SP" />
+              
+              <div 
+                onClick={() => setIsCompanyDropdownOpen(!isCompanyDropdownOpen)}
+                className="flex items-center justify-between h-10 w-full rounded-[4px] border border-border-subtle bg-white px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-primary cursor-pointer hover:bg-slate-50 transition-colors"
+              >
+                {formData.companyUnit ? (
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">{companyUnits.find(u => u.id === formData.companyUnit)?.label}</span>
+                    <span className="text-slate-500 text-xs truncate max-w-[120px]">{companyUnits.find(u => u.id === formData.companyUnit)?.desc}</span>
+                  </div>
+                ) : (
+                  <span className="text-slate-400">Selecione uma empresa</span>
+                )}
+                <ChevronDown size={16} className={`text-slate-400 transition-transform ${isCompanyDropdownOpen ? 'rotate-180' : ''}`} />
+              </div>
+
+              {isCompanyDropdownOpen && (
+                <div className="absolute z-50 mt-1 w-full max-h-64 overflow-y-auto bg-white border border-border-subtle rounded-lg shadow-lg py-1">
+                  {companyUnits.map((unit) => (
+                    <div
+                      key={unit.id}
+                      onClick={() => {
+                        setFormData({ ...formData, companyUnit: unit.id });
+                        setIsCompanyDropdownOpen(false);
+                      }}
+                      className="flex items-center gap-3 px-3 py-2 hover:bg-red-50 cursor-pointer transition-colors"
+                    >
+                      <div className="w-8 h-8 rounded bg-white border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden">
+                        <img 
+                          src={unit.logo} 
+                          alt={unit.label} 
+                          className="w-full h-full object-contain p-1"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                        <div className="hidden w-full h-full items-center justify-center text-slate-400 text-[10px] font-bold">
+                          {unit.label.substring(0, 2).toUpperCase()}
+                        </div>
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm font-semibold text-slate-900 truncate">{unit.label}</span>
+                        <span className="text-[11px] text-slate-500 truncate">{unit.desc}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-semibold text-text-secondary">Departamento</label>
