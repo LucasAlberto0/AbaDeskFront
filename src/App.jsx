@@ -1,18 +1,31 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import LoginPage from './features/auth/pages/LoginPage';
+import MainLayout from './layouts/MainLayout';
+import useAuthStore from './features/auth/hooks/useAuthStore';
 
-// Placeholder Components for routing test
-const LoginPlaceholder = () => <div className="flex h-screen items-center justify-center bg-surface-dim"><h1 className="text-3xl font-bold text-primary">Login Placeholder</h1></div>;
-const LayoutPlaceholder = ({ children }) => <div className="flex h-screen"><aside className="w-64 bg-surface-card border-r shadow-sm p-4">Sidebar</aside><main className="flex-1 p-8 bg-surface">{children}</main></div>;
-const DashboardPlaceholder = () => <div><h1 className="text-2xl font-bold">Dashboard</h1><p className="text-text-secondary mt-2">Bem vindo ao AbaDesk Enterprise.</p></div>;
+// Temporary Dashboard Placeholder to test the layout
+const DashboardPlaceholder = () => (
+  <div>
+    <h1 className="text-2xl font-bold text-text-primary tracking-tight">Dashboard</h1>
+    <p className="text-text-secondary mt-2">Bem vindo ao ABA Desk Enterprise.</p>
+  </div>
+);
 
 function App() {
+  const { isAuthenticated } = useAuthStore();
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<LoginPlaceholder />} />
+        <Route 
+          path="/login" 
+          element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />} 
+        />
         
-        {/* Protected routes placeholder */}
-        <Route path="/" element={<LayoutPlaceholder><DashboardPlaceholder /></LayoutPlaceholder>} />
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<DashboardPlaceholder />} />
+          {/* Outras rotas entrarão aqui depois */}
+        </Route>
         
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
