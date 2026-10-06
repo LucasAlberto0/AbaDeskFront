@@ -25,7 +25,6 @@ function App() {
           <Route path="tickets/new" element={<TicketCreatePage />} />
           <Route path="tickets/:id" element={<TicketDetailsPage />} />
           <Route path="admin/users" element={<UserManagementPage />} />
-          {/* Outras rotas entrarão aqui depois */}
         </Route>
         
         <Route path="*" element={<Navigate to="/" replace />} />
