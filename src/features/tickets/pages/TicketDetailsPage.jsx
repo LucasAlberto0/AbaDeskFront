@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, MessageSquare, Clock, Send, PlayCircle, CheckCircle } from 'lucide-react';
-import { getTicketDetails, changeTicketStatus, addTicketComment } from '../api/ticketService';
+import { getTicketDetails, addTicketComment } from '../api/ticketService';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { formatDate, getStatusLabel, getCategoryLabel } from '../../../lib/utils';
