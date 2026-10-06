@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: 'http://localhost:5002/api', // Endereço padrão do backend do AbaDesk
+  baseURL: 'http://localhost:5017/api', // Endereço correto do backend do AbaDesk
   headers: {
     'Content-Type': 'application/json',
   },

@@ -119,7 +119,7 @@ export default function TicketDetailsPage() {
         {/* Left Column: Details & Comments */}
         <div className="lg:col-span-2 space-y-6">
           
-          {ticket.status === 'WAITING_HOMOLOGATION' && ticket.createdBy === user?.id && (
+          {ticket.status === 'WAITING_HOMOLOGATION' && (ticket.homologationResponsible?.id === user?.id || ticket.createdBy?.id === user?.id) && (
             <HomologationPanel ticketId={id} onHomologationDone={fetchDetails} />
           )}
 
@@ -151,7 +151,7 @@ export default function TicketDetailsPage() {
                   className={`flex flex-col max-w-[85%] ${comment.userId === user?.id ? 'ml-auto items-end' : 'mr-auto items-start'}`}
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-semibold text-text-secondary">{comment.userName}</span>
+                    <span className="text-xs font-semibold text-text-secondary">{comment.user?.name}</span>
                     <span className="text-[10px] text-text-muted">{formatDate(comment.createdAt)}</span>
                   </div>
                   <div className={`p-3 rounded-lg text-sm ${
@@ -189,7 +189,7 @@ export default function TicketDetailsPage() {
           <div className="bg-surface-card border border-border-subtle rounded-lg p-5 shadow-sm space-y-4">
             <div>
               <p className="text-xs text-text-muted uppercase font-semibold">Solicitante</p>
-              <p className="text-sm font-medium text-text-primary">{ticket.createdByName}</p>
+              <p className="text-sm font-medium text-text-primary">{ticket.createdBy?.name}</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -218,7 +218,7 @@ export default function TicketDetailsPage() {
                   <div className="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-surface-card border-2 border-primary" />
                   <p className="text-sm font-semibold text-text-primary">{history.action}</p>
                   <p className="text-xs text-text-secondary mt-0.5">{history.description}</p>
-                  <p className="text-[10px] text-text-muted mt-1">{formatDate(history.createdAt)} • {history.userName}</p>
+                  <p className="text-[10px] text-text-muted mt-1">{formatDate(history.createdAt)} • {history.user?.name}</p>
                 </div>
               ))}
             </div>

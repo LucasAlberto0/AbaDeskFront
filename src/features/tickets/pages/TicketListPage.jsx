@@ -8,14 +8,19 @@ import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { formatDate, getStatusLabel, getCategoryLabel } from '../../../lib/utils';
 
-export default function TicketListPage() {
+export default function TicketListPage({ title = "Chamados", description = "Gerencie e acompanhe as solicitações da plataforma.", defaultStatus = null }) {
   const [tickets, setTickets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchTickets = async () => {
+      setIsLoading(true);
       try {
-        const data = await getTickets({ page: 1, pageSize: 20 });
+        // Pass status filter if provided
+        const params = { page: 1, pageSize: 50 };
+        if (defaultStatus) params.status = defaultStatus;
+        
+        const data = await getTickets(params);
         setTickets(data.items);
       } catch (error) {
         console.error("Erro ao buscar chamados:", error);
@@ -24,14 +29,14 @@ export default function TicketListPage() {
       }
     };
     fetchTickets();
-  }, []);
+  }, [defaultStatus]);
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary tracking-tight">Chamados</h1>
-          <p className="text-text-secondary mt-1">Gerencie e acompanhe as solicitações da plataforma.</p>
+          <h1 className="text-2xl font-bold text-text-primary tracking-tight">{title}</h1>
+          <p className="text-text-secondary mt-1">{description}</p>
         </div>
         <Link to="/tickets/new">
           <Button className="gap-2">
