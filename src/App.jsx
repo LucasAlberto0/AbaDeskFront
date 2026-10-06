@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './features/auth/pages/LoginPage';
 import MainLayout from './layouts/MainLayout';
 import DashboardPage from './features/dashboard/pages/DashboardPage';
+import TicketListPage from './features/tickets/pages/TicketListPage';
+import TicketDetailsPage from './features/tickets/pages/TicketDetailsPage';
+import TicketCreatePage from './features/tickets/pages/TicketCreatePage';
 import useAuthStore from './features/auth/hooks/useAuthStore';
 
 function App() {
@@ -17,6 +20,9 @@ function App() {
         
         <Route path="/" element={<MainLayout />}>
           <Route index element={<DashboardPage />} />
+          <Route path="tickets" element={<TicketListPage />} />
+          <Route path="tickets/new" element={<TicketCreatePage />} />
+          <Route path="tickets/:id" element={<TicketDetailsPage />} />
           {/* Outras rotas entrarão aqui depois */}
         </Route>
         
