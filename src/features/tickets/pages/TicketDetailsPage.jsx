@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, MessageSquare, Clock, Send, PlayCircle, CheckCircle } from 'lucide-react';
-import { getTicketDetails, addTicketComment, deleteTicket } from '../api/ticketService';
+import { ArrowLeft, MessageSquare, Clock, Send, PlayCircle, CheckCircle, Check } from 'lucide-react';
+import { getTicketDetails, addTicketComment, deleteTicket, startAnalysis, startProgress, waitForUser, resolveTicket } from '../api/ticketService';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { formatDate, getStatusLabel, getCategoryLabel } from '../../../lib/utils';
@@ -18,6 +18,8 @@ export default function TicketDetailsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState(null);
   const { user } = useAuthStore();
 
   const fetchDetails = async () => {
@@ -35,21 +37,29 @@ export default function TicketDetailsPage() {
     fetchDetails();
   }, [id]);
 
-  const handleStatusChange = async (newStatus) => {
-    if (!window.confirm(`Deseja alterar o status para ${getStatusLabel(newStatus)}?`)) return;
+  const confirmStatusChange = (newStatus) => {
+    setPendingStatus(newStatus);
+    setIsStatusModalOpen(true);
+  };
+
+  const handleStatusChange = async () => {
+    if (!pendingStatus) return;
     setIsSubmitting(true);
     try {
-      if (newStatus === 'InAnalysis') await import('../api/ticketService').then(m => m.startAnalysis(id));
-      else if (newStatus === 'InProgress') await import('../api/ticketService').then(m => m.startProgress(id));
-      else if (newStatus === 'WaitingUser') await import('../api/ticketService').then(m => m.waitForUser(id));
-      else if (newStatus === 'Resolved') await import('../api/ticketService').then(m => m.resolveTicket(id));
+      if (pendingStatus === 'InAnalysis') await startAnalysis(id);
+      else if (pendingStatus === 'InProgress') await startProgress(id);
+      else if (pendingStatus === 'WaitingUser') await waitForUser(id);
+      else if (pendingStatus === 'Resolved') await resolveTicket(id);
       
       await fetchDetails();
+      toast.success(`Status alterado para ${getStatusLabel(pendingStatus)}.`);
     } catch (error) {
       console.error(error);
-      alert('Erro ao alterar status.');
+      toast.error('Erro ao alterar status.');
     } finally {
       setIsSubmitting(false);
+      setIsStatusModalOpen(false);
+      setPendingStatus(null);
     }
   };
 
@@ -93,6 +103,21 @@ export default function TicketDetailsPage() {
 
   if (!ticket) return <div>Chamado não encontrado.</div>;
 
+  const steps = [
+    { id: 'Open', label: 'Aberto' },
+    { id: 'InAnalysis', label: 'Em Análise' },
+    { id: 'InProgress', label: 'Em Atendimento' },
+    { id: 'Resolved', label: 'Resolvido' }
+  ];
+
+  const getStepIndex = (status) => {
+    if (status === 'WaitingUser') return 2; // Treat as InProgress for the linear bar
+    const index = steps.findIndex(s => s.id === status);
+    return index >= 0 ? index : 0;
+  };
+
+  const currentStepIndex = getStepIndex(ticket.status);
+
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
       <div className="flex items-center justify-between">
@@ -103,9 +128,59 @@ export default function TicketDetailsPage() {
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold text-text-primary">#{ticket.protocolNumber}</h1>
-              <Badge status={ticket.status} label={getStatusLabel(ticket.status)} />
+              <Badge status={ticket.status} label={ticket.status === 'WaitingUser' ? 'Aguardando Usuário' : getStatusLabel(ticket.status)} />
             </div>
             <p className="text-text-secondary mt-1">{ticket.title}</p>
+          </div>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="hidden md:flex items-center justify-start flex-1 max-w-sm ml-10 mr-auto mt-2">
+          <div className="flex items-center w-full justify-between relative">
+            {/* Background Line */}
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-[2px] bg-gray-200 z-0" />
+            
+            {/* Animated Progress Line */}
+            <motion.div 
+              className="absolute left-0 top-1/2 -translate-y-1/2 h-[2px] bg-primary z-0"
+              initial={{ width: '0%' }}
+              animate={{ width: `${(currentStepIndex / (steps.length - 1)) * 100}%` }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            />
+
+            {steps.map((step, idx) => {
+              const isCompleted = idx < currentStepIndex;
+              const isCurrent = idx === currentStepIndex;
+              const isWaiting = isCurrent && ticket.status === 'WaitingUser';
+              
+              let bgColor = "bg-white border-gray-300";
+              let textColor = "text-gray-400";
+              let ringColor = "";
+
+              if (isCompleted) {
+                bgColor = "bg-primary border-primary text-white";
+                textColor = "text-primary font-medium";
+              } else if (isCurrent) {
+                bgColor = isWaiting ? "bg-orange-500 border-orange-500 text-white" : "bg-primary border-primary text-white";
+                textColor = isWaiting ? "text-orange-600 font-bold" : "text-primary font-bold";
+                ringColor = isWaiting ? "ring-2 ring-orange-200" : "ring-2 ring-red-100";
+              }
+
+              return (
+                <div key={step.id} className="flex flex-col items-center gap-1 relative z-10">
+                  <motion.div 
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: isCurrent ? 1.1 : 1 }}
+                    className={`w-5 h-5 rounded-full border-[1.5px] flex items-center justify-center text-[9px] transition-colors duration-300 ${bgColor} ${ringColor}`}
+                  >
+                    {isCompleted ? <Check size={10} strokeWidth={3} /> : (idx + 1)}
+                  </motion.div>
+                  <span className={`absolute top-6 w-20 text-center text-[9px] uppercase tracking-wider ${textColor}`}>
+                    {step.label}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -120,21 +195,21 @@ export default function TicketDetailsPage() {
           {user?.role !== 'User' && (
           <div className="flex gap-2">
             {ticket.status === 'Open' && (
-              <Button onClick={() => handleStatusChange('InAnalysis')} isLoading={isSubmitting} size="sm">
+              <Button onClick={() => confirmStatusChange('InAnalysis')} isLoading={isSubmitting && pendingStatus === 'InAnalysis'} size="sm">
                 Iniciar Análise
               </Button>
             )}
             {(ticket.status === 'InAnalysis' || ticket.status === 'WaitingUser') && (
-              <Button onClick={() => handleStatusChange('InProgress')} isLoading={isSubmitting} size="sm" className="gap-2 bg-blue-600 hover:bg-blue-700 border-none text-white">
+              <Button onClick={() => confirmStatusChange('InProgress')} isLoading={isSubmitting && pendingStatus === 'InProgress'} size="sm" className="gap-2 bg-blue-600 hover:bg-blue-700 border-none text-white">
                 <PlayCircle size={16} /> Iniciar Atendimento
               </Button>
             )}
             {ticket.status === 'InProgress' && (
               <>
-                <Button onClick={() => handleStatusChange('WaitingUser')} isLoading={isSubmitting} size="sm" className="gap-2 bg-orange-500 hover:bg-orange-600 border-none text-white">
+                <Button onClick={() => confirmStatusChange('WaitingUser')} isLoading={isSubmitting && pendingStatus === 'WaitingUser'} size="sm" className="gap-2 bg-orange-500 hover:bg-orange-600 border-none text-white">
                   <Clock size={16} /> Aguardar Usuário
                 </Button>
-                <Button onClick={() => handleStatusChange('Resolved')} isLoading={isSubmitting} size="sm" className="gap-2 bg-green-600 hover:bg-green-700 border-none text-white">
+                <Button onClick={() => confirmStatusChange('Resolved')} isLoading={isSubmitting && pendingStatus === 'Resolved'} size="sm" className="gap-2 bg-green-600 hover:bg-green-700 border-none text-white">
                   <CheckCircle size={16} /> Resolver
                 </Button>
               </>
@@ -261,6 +336,19 @@ export default function TicketDetailsPage() {
         title="Excluir Chamado"
         message="Tem certeza que deseja excluir este chamado? Todos os comentários e históricos associados a ele também serão perdidos. Esta ação não pode ser desfeita."
         confirmText="Sim, excluir chamado"
+      />
+
+      <ConfirmModal
+        isOpen={isStatusModalOpen}
+        onClose={() => {
+          setIsStatusModalOpen(false);
+          setPendingStatus(null);
+        }}
+        onConfirm={handleStatusChange}
+        isLoading={isSubmitting}
+        title="Alterar Status"
+        message={`Tem certeza que deseja alterar o status do chamado para "${pendingStatus ? getStatusLabel(pendingStatus) : ''}"?`}
+        confirmText="Confirmar alteração"
       />
     </div>
   );
