@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import useAuthStore from '../hooks/useAuthStore';
 import { Eye, EyeOff, Mail } from 'lucide-react';
+import { api } from '../../../lib/axios';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -15,10 +16,33 @@ export default function LoginPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await login(email, password);
+      // Fazemos a chamada de API diretamente para podermos intervir com o Toast + Delay
+      const response = await api.post('/auth/login', { email, password });
+      
+      toast.success('Login realizado com sucesso!', { 
+        duration: 4000,
+        style: { background: '#10B981', color: '#fff', fontWeight: '500' }
+      });
+      
+      // Aguarda 4 segundos conforme solicitado
+      await new Promise(resolve => setTimeout(resolve, 4000));
+      
+      const { accessToken, user } = response.data;
+
+      // Normalização de roles (mesma lógica do useAuthStore)
+      if (user && user.role === 0) user.role = 'User';
+      if (user && user.role === 1) user.role = 'Attendant';
+      if (user && user.role === 2) user.role = 'Admin';
+
+      // Persiste sessão
+      sessionStorage.setItem('abadesk_token', accessToken);
+      sessionStorage.setItem('abadesk_user', JSON.stringify(user));
+
+      // Atualiza o Zustand Store (o que vai causar o redirecionamento imediato no App.jsx)
+      useAuthStore.setState({ user, token: accessToken, isAuthenticated: true, isLoading: false });
+      
     } catch (error) {
       toast.error(error.response?.data?.message || 'Credenciais inválidas. Verifique seu usuário e senha.');
-    } finally {
       setIsSubmitting(false);
     }
   };

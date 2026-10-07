@@ -29,62 +29,67 @@ export function AboutModal({ isOpen, onClose }) {
             </div>
 
             {/* Conteúdo com scroll */}
-            <div className="p-6 md:p-8 space-y-6 overflow-y-auto max-h-[60vh] bg-slate-50">
+            <div className="p-8 md:p-10 space-y-10 overflow-y-auto max-h-[65vh] bg-white">
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
+              <motion.p 
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+                className="text-lg text-slate-600 leading-relaxed font-medium"
+              >
+                O AbaDesk foi desenhado para revolucionar a comunicação entre clientes e equipe técnica, garantindo que nenhuma solicitação seja perdida em um fluxo moderno, colaborativo e transparente.
+              </motion.p>
+
+              <div className="space-y-8">
                 <motion.div 
-                  initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
-                  className="bg-white p-5 rounded-xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
+                  initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
+                  className="relative pl-6 before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-1 before:bg-[#c8101e] before:rounded-full"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
-                    <span className="material-symbols-outlined">person</span>
-                  </div>
-                  <h3 className="font-bold text-slate-800 mb-2">Para Usuários</h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">
-                    Abra chamados para reportar bugs, solicitar melhorias ou tirar dúvidas. Acompanhe o status das suas solicitações e interaja diretamente com a equipe técnica.
+                  <h3 className="text-xl font-bold text-slate-800 mb-2 tracking-tight">Para Usuários Finais</h3>
+                  <p className="text-slate-600 leading-relaxed">
+                    Um canal direto e sem burocracias. Abra chamados para reportar bugs, solicitar melhorias ou tirar dúvidas. Acompanhe cada etapa do seu atendimento em tempo real e interaja diretamente com a equipe responsável.
                   </p>
                 </motion.div>
 
                 <motion.div 
-                  initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
-                  className="bg-white p-5 rounded-xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
+                  initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}
+                  className="relative pl-6 before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-1 before:bg-slate-800 before:rounded-full"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center mb-4">
-                    <span className="material-symbols-outlined">support_agent</span>
-                  </div>
-                  <h3 className="font-bold text-slate-800 mb-2">Para o Suporte</h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">
-                    Analise os chamados através do modo lista ou Kanban. Atribua prioridades, responda às solicitações e movimente os tickets pelos estágios de atendimento.
+                  <h3 className="text-xl font-bold text-slate-800 mb-2 tracking-tight">Para a Equipe de Suporte</h3>
+                  <p className="text-slate-600 leading-relaxed">
+                    Produtividade em foco. Analise demandas através de listas detalhadas ou pelo painel visual Kanban. Atribua prioridades, registre o andamento técnico e movimente os tickets pelos estágios vitais do fluxo operacional.
                   </p>
                 </motion.div>
 
                 <motion.div 
-                  initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}
-                  className="bg-white p-5 rounded-xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
+                  initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
+                  className="relative pl-6 before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-1 before:bg-slate-300 before:rounded-full"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center mb-4">
-                    <span className="material-symbols-outlined">shield_person</span>
-                  </div>
-                  <h3 className="font-bold text-slate-800 mb-2">Para Administradores</h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">
-                    Tenha o controle total. Gerencie os usuários da plataforma, crie novos acessos (Suporte Técnico, Admins e Usuários), além de supervisionar todos os tickets.
+                  <h3 className="text-xl font-bold text-slate-800 mb-2 tracking-tight">Administração e Controle</h3>
+                  <p className="text-slate-600 leading-relaxed">
+                    Gestão centralizada. Administradores possuem uma visão tática para gerenciar permissões de acesso (Suporte, Admin, Usuário comum), além de supervisionar métricas vitais e gargalos em todos os tickets ativos.
                   </p>
                 </motion.div>
 
                 <motion.div 
-                  initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
-                  className="bg-white p-5 rounded-xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
+                  initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+                  className="bg-slate-50/50 rounded-2xl p-6 mt-4 border border-slate-100"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center mb-4">
-                    <span className="material-symbols-outlined">account_tree</span>
-                  </div>
-                  <h3 className="font-bold text-slate-800 mb-2">Fluxo Dinâmico</h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">
-                    O ciclo de vida do chamado vai de <span className="font-semibold text-slate-800">Aberto</span>, para <span className="font-semibold text-slate-800">Em Análise</span>, <span className="font-semibold text-slate-800">Em Progresso</span> e, finalmente, <span className="font-semibold text-slate-800">Resolvido</span>. Tudo com alertas visuais.
+                  <h3 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[#c8101e] text-[20px]">sync</span>
+                    Fluxo de Trabalho Estruturado
+                  </h3>
+                  <p className="text-sm text-slate-600 leading-relaxed mb-5">
+                    O sistema garante o cumprimento das regras de negócio guiando os chamados por etapas claras, sequenciais e imutáveis:
                   </p>
+                  <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs font-semibold text-slate-600">
+                    <span className="px-4 py-1.5 bg-white border border-slate-200 rounded-full shadow-sm hover:border-[#c8101e]/30 transition-colors cursor-default">Novo</span>
+                    <span className="material-symbols-outlined text-slate-300 text-[14px]">arrow_forward_ios</span>
+                    <span className="px-4 py-1.5 bg-white border border-slate-200 rounded-full shadow-sm hover:border-[#c8101e]/30 transition-colors cursor-default">Análise</span>
+                    <span className="material-symbols-outlined text-slate-300 text-[14px]">arrow_forward_ios</span>
+                    <span className="px-4 py-1.5 bg-white border border-slate-200 rounded-full shadow-sm hover:border-[#c8101e]/30 transition-colors cursor-default">Progresso</span>
+                    <span className="material-symbols-outlined text-slate-300 text-[14px]">arrow_forward_ios</span>
+                    <span className="px-4 py-1.5 bg-white border border-slate-200 rounded-full shadow-sm hover:border-[#c8101e]/30 transition-colors cursor-default">Resolvido</span>
+                  </div>
                 </motion.div>
-
               </div>
             </div>
 

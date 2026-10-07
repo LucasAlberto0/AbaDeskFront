@@ -35,7 +35,7 @@ export default function DashboardPage() {
           <span className="text-[12px] font-medium tracking-wide uppercase text-slate-400 block mb-1">Visão Geral</span>
           <h1 className="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900 flex flex-wrap items-baseline gap-1">
             <span>Olá, {user?.name?.split(' ')[0] || 'Usuário'}</span>
-            <span className="text-slate-400 font-normal text-[16px] sm:text-[20px]">· Operação ABA Infra</span>
+            <span className="text-slate-400 font-normal text-[16px] sm:text-[20px]">· {user?.jobTitle || 'Membro da Equipe'}</span>
           </h1>
         </div>
         <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
