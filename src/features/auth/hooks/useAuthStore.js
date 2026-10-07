@@ -35,25 +35,34 @@ const useAuthStore = create((set) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await api.post('/auth/register', { name, email, password, role, jobTitle, companyUnit });
-      
-      // Auto login after register
-      const { accessToken, user } = response.data;
-      if (accessToken) {
-        if (user && user.role === 0) user.role = 'User';
-        if (user && user.role === 1) user.role = 'Attendant';
-        if (user && user.role === 2) user.role = 'Admin';
-
-        sessionStorage.setItem('abadesk_token', accessToken);
-        sessionStorage.setItem('abadesk_user', JSON.stringify(user));
-        set({ user, token: accessToken, isAuthenticated: true, isLoading: false });
-      } else {
-        // Fallback if backend doesn't return token on register
-        set({ isLoading: false });
-        // Can manually redirect to login
-      }
+      // Do not auto-login, let the user be redirected
+      set({ isLoading: false });
     } catch (error) {
       set({ 
         error: error.response?.data?.message || 'Erro ao realizar cadastro.', 
+        isLoading: false 
+      });
+      throw error;
+    }
+  },
+
+  updateProfile: async (name, companyUnit) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api.patch('/auth/profile', { name, companyUnit });
+      const { accessToken, user } = response.data;
+
+      if (user && user.role === 0) user.role = 'User';
+      if (user && user.role === 1) user.role = 'Attendant';
+      if (user && user.role === 2) user.role = 'Admin';
+
+      sessionStorage.setItem('abadesk_token', accessToken);
+      sessionStorage.setItem('abadesk_user', JSON.stringify(user));
+
+      set({ user, token: accessToken, isLoading: false });
+    } catch (error) {
+      set({ 
+        error: error.response?.data?.message || 'Erro ao atualizar perfil.', 
         isLoading: false 
       });
       throw error;

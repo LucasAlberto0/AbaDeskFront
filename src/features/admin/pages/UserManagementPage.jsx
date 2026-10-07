@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, UserPlus } from 'lucide-react';
-import { getUsers, createUser } from '../api/userService';
+import { Plus, UserPlus, Trash2 } from 'lucide-react';
+import { getUsers, createUser, deleteUser } from '../api/userService';
 import { Button } from '../../../components/ui/Button';
-import { Input } from '../../../components/ui/Input';
 import { formatDate } from '../../../lib/utils';
 import { Badge } from '../../../components/ui/Badge';
+import { ConfirmModal } from '../../../components/ui/ConfirmModal';
+import toast from 'react-hot-toast';
 
 export default function UserManagementPage() {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [deleteUserId, setDeleteUserId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -23,7 +26,7 @@ export default function UserManagementPage() {
   const fetchUsers = async () => {
     try {
       const data = await getUsers();
-      setUsers(data);
+      setUsers(data.items || data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -47,11 +50,28 @@ export default function UserManagementPage() {
       setShowModal(false);
       setFormData({ name: '', email: '', password: '', role: 'User' });
       await fetchUsers();
+      toast.success('Usuário cadastrado com sucesso!');
     } catch (error) {
       console.error(error);
-      alert('Erro ao criar usuário.');
+      toast.error('Erro ao criar usuário.');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteUserId) return;
+    setIsDeleting(true);
+    try {
+      await deleteUser(deleteUserId);
+      await fetchUsers();
+      toast.success('Usuário inativado/excluído com sucesso.');
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.response?.data?.message || 'Erro ao excluir usuário.');
+    } finally {
+      setIsDeleting(false);
+      setDeleteUserId(null);
     }
   };
 
@@ -81,6 +101,7 @@ export default function UserManagementPage() {
                   <th className="px-6 py-4 font-semibold">E-mail</th>
                   <th className="px-6 py-4 font-semibold">Cargo</th>
                   <th className="px-6 py-4 font-semibold">Criação</th>
+                  <th className="px-6 py-4 font-semibold text-right">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border-subtle">
@@ -104,11 +125,24 @@ export default function UserManagementPage() {
                     <td className="px-6 py-4">
                       {u.role === 'Admin' ? (
                         <Badge status="IN_DEVELOPMENT" label="Administrador" className="bg-purple-100 text-purple-700 border-purple-200" />
+                      ) : u.role === 'Attendant' ? (
+                        <Badge status="IN_PROGRESS" label="Suporte Técnico" className="bg-blue-100 text-blue-700 border-blue-200" />
                       ) : (
                         <Badge status="NEW" label="Usuário Padrão" className="bg-gray-100 text-gray-700 border-gray-200" />
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">{formatDate(u.createdAt)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      {u.role !== 'Admin' && (
+                        <button 
+                          onClick={() => setDeleteUserId(u.id)}
+                          className="text-red-500 hover:text-red-700 transition-colors"
+                          title="Excluir Usuário"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
+                    </td>
                   </motion.tr>
                 ))}
               </tbody>
@@ -145,6 +179,7 @@ export default function UserManagementPage() {
                 <label className="text-sm font-semibold text-text-secondary">Perfil de Acesso</label>
                 <select name="role" value={formData.role} onChange={handleChange} className="flex h-10 w-full rounded-[4px] border border-border-subtle bg-white px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-primary">
                   <option value="User">Usuário Padrão</option>
+                  <option value="Attendant">Suporte Técnico</option>
                   <option value="Admin">Administrador (TI)</option>
                 </select>
               </div>
@@ -156,6 +191,16 @@ export default function UserManagementPage() {
           </motion.div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteUserId}
+        onClose={() => setDeleteUserId(null)}
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+        title="Excluir Usuário"
+        message="Tem certeza que deseja excluir ou inativar este usuário? O acesso dele será imediatamente revogado."
+        confirmText="Sim, excluir"
+      />
     </div>
   );
 }

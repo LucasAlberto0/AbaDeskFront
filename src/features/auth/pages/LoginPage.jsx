@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import useAuthStore from '../hooks/useAuthStore';
 import { Eye, EyeOff, Mail } from 'lucide-react';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('admin@abadesk.local');
-  const [password, setPassword] = useState('senha123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const login = useAuthStore((state) => state.login);
@@ -16,7 +17,7 @@ export default function LoginPage() {
     try {
       await login(email, password);
     } catch (error) {
-      alert('Credenciais inválidas. Verifique seu usuário e senha.');
+      toast.error(error.response?.data?.message || 'Credenciais inválidas. Verifique seu usuário e senha.');
     } finally {
       setIsSubmitting(false);
     }
@@ -79,10 +80,13 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="block w-full pl-10 pr-3 py-2.5 sm:text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
-                  placeholder="nome.sobrenome@grupoaba.com.br" 
+                  placeholder="admin@abadesk.local" 
                   required 
                 />
               </div>
+              <p className="mt-1.5 text-[11px] text-slate-500">
+                Acesso de teste: <button type="button" onClick={() => {setEmail('admin@abadesk.local'); setPassword('senha123');}} className="font-medium text-[#c8101e] hover:underline">admin@abadesk.local</button>
+              </p>
             </div>
 
             <div>
@@ -101,7 +105,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="block w-full pl-10 pr-10 py-2.5 sm:text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
-                  placeholder="••••••••••••" 
+                  placeholder="senha123" 
                   required 
                 />
                 <button 

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { createTicket } from '../api/ticketService';
+import toast from 'react-hot-toast';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 
@@ -48,10 +49,11 @@ export default function TicketCreatePage() {
     setIsSubmitting(true);
     try {
       const result = await createTicket(formData);
+      toast.success('Chamado criado com sucesso!');
       navigate(`/tickets/${result.id}`);
     } catch (error) {
       console.error(error);
-      alert('Erro ao criar chamado. Verifique os campos.');
+      toast.error('Erro ao criar chamado. Verifique os campos ou suas permissões.');
     } finally {
       setIsSubmitting(false);
     }

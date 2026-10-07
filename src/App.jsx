@@ -10,6 +10,7 @@ import UserManagementPage from './features/admin/pages/UserManagementPage';
 import RegisterPage from './features/auth/pages/RegisterPage';
 import useAuthStore from './features/auth/hooks/useAuthStore';
 import ProtectedRoute from './components/ProtectedRoute';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const { isAuthenticated } = useAuthStore();
@@ -40,6 +41,7 @@ function App() {
         
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <Toaster position="top-center" />
     </BrowserRouter>
   );
 }

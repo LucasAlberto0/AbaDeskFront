@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../hooks/useAuthStore';
 import { Eye, EyeOff, Mail, User, ChevronDown, Check } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -31,15 +32,13 @@ export default function RegisterPage() {
     setIsSubmitting(true);
     try {
       await register(name, email, password, role, jobTitle, companyUnit);
-      // Fallback in case register doesn't log in automatically
-      const { isAuthenticated } = useAuthStore.getState();
-      if (!isAuthenticated) {
-        await login(email, password);
-      }
-      navigate('/');
+      useAuthStore.getState().logout(); // ensure state is clear
+      toast.success('Conta criada com sucesso! Redirecionando para o login em 5 segundos...', { duration: 5000 });
+      setTimeout(() => {
+        navigate('/login');
+      }, 5000);
     } catch (error) {
-      alert('Erro ao realizar o cadastro. Verifique os dados e tente novamente.');
-    } finally {
+      toast.error(error.response?.data?.message || 'Erro ao realizar o cadastro. Verifique os dados e tente novamente.');
       setIsSubmitting(false);
     }
   };

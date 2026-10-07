@@ -7,13 +7,15 @@ import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { formatDate, getStatusLabel, getCategoryLabel } from '../../../lib/utils';
 import useAuthStore from '../../auth/hooks/useAuthStore';
-
-
+import toast from 'react-hot-toast';
+import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 export default function TicketDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [ticket, setTicket] = useState(null);
   const [commentText, setCommentText] = useState('');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuthStore();
@@ -52,15 +54,17 @@ export default function TicketDetailsPage() {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Tem certeza que deseja excluir este chamado? Esta ação é irreversível.")) return;
-    setIsSubmitting(true);
+    setIsDeleting(true);
     try {
       await deleteTicket(id);
+      toast.success('Chamado excluído.');
       navigate('/tickets');
     } catch (error) {
       console.error(error);
-      alert('Erro ao excluir chamado.');
-      setIsSubmitting(false);
+      toast.error('Erro ao excluir chamado.');
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
     }
   };
 
@@ -108,7 +112,7 @@ export default function TicketDetailsPage() {
         {/* Actions (Delete & Workflow) */}
         <div className="flex gap-2 items-center">
           {(user?.role === 'Admin' || (user?.role === 'User' && ticket.createdBy?.id === user?.id)) && (
-            <Button onClick={handleDelete} isLoading={isSubmitting} size="sm" className="bg-red-600 hover:bg-red-700 border-none text-white mr-2">
+            <Button onClick={() => setIsDeleteModalOpen(true)} isLoading={isSubmitting} size="sm" className="bg-red-600 hover:bg-red-700 border-none text-white mr-2">
               Excluir
             </Button>
           )}
@@ -240,6 +244,16 @@ export default function TicketDetailsPage() {
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+        title="Excluir Chamado"
+        message="Tem certeza que deseja excluir este chamado? Todos os comentários e históricos associados a ele também serão perdidos. Esta ação não pode ser desfeita."
+        confirmText="Sim, excluir chamado"
+      />
     </div>
   );
 }
