@@ -49,46 +49,132 @@ export default function DashboardPage() {
       {/* METRICS GRID */}
       <section className="w-full">
         {(user?.role === 'User' || user?.role === 0) ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { title: 'Meus Chamados', value: stats?.totalTickets || 0, icon: 'receipt_long', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
-              { title: 'Abertos', value: stats?.openTickets || 0, icon: 'fiber_new', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
-              { title: 'Em Andamento', value: stats?.inProgressTickets || 0, icon: 'terminal', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
-              { title: 'Resolvidos', value: stats?.resolvedTickets || 0, icon: 'check_circle', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
-            ].map((card, idx) => (
-              <div key={idx} className={`relative overflow-hidden rounded-xl border border-slate-200/70 shadow-[0_2px_8px_rgba(0,0,0,0.04)] p-5 transition-all hover:shadow-md hover:-translate-y-0.5 ${card.bg}`}>
-                <div className="flex items-center justify-between mb-3">
-                  <span className={`text-[13px] font-semibold text-slate-500 uppercase tracking-wider`}>{card.title}</span>
-                  <span className={`material-symbols-outlined text-[22px] ${card.iconColor}`}>{card.icon}</span>
-                </div>
-                <div>
-                  <span className={`text-3xl font-bold tracking-tight ${card.textColor}`}>{card.value}</span>
-                </div>
-              </div>
-            ))}
+          <div className="w-full flex justify-center mt-1 mb-4">
+            <div className="relative w-full max-w-[340px]">
+              <svg viewBox="60 60 380 380" className="w-full h-auto drop-shadow-xl overflow-visible">
+                {/* Left Shape: Abertos */}
+                <g onClick={() => navigate('/tickets?status=Open')} className="group cursor-pointer transition-transform duration-300 hover:-translate-x-1.5 hover:-translate-y-1.5">
+                  <path 
+                    d="M 240 279 L 240 60 A 400 400 0 0 0 60 383 Z" 
+                    className="fill-[#c8101e] transition-all duration-300 group-hover:fill-[#e51a28]" 
+                  />
+                  <foreignObject x="85" y="140" width="160" height="160">
+                    <div className="w-full h-full flex flex-col items-center justify-center text-white p-1">
+                      <span className="material-symbols-outlined text-[26px] mb-1 opacity-90 transition-all duration-300 group-hover:scale-125 group-hover:-rotate-12">fiber_new</span>
+                      <span className="text-[10px] font-bold tracking-wider uppercase opacity-90 text-center leading-tight transition-opacity duration-300 group-hover:opacity-100">Abertos</span>
+                      <span className="text-[48px] font-black mt-1 leading-none transition-transform duration-300 group-hover:scale-110">{stats?.openTickets || 0}</span>
+                    </div>
+                  </foreignObject>
+                </g>
+
+                {/* Right Shape: Em Andamento */}
+                <g onClick={() => navigate('/tickets?status=InProgress')} className="group cursor-pointer transition-transform duration-300 hover:translate-x-1.5 hover:-translate-y-1.5">
+                  <path 
+                    d="M 260 279 L 260 60 A 400 400 0 0 1 440 383 Z" 
+                    className="fill-[#9c0c16] transition-all duration-300 group-hover:fill-[#b8101b]" 
+                  />
+                  <foreignObject x="255" y="140" width="160" height="160">
+                    <div className="w-full h-full flex flex-col items-center justify-center text-white p-1">
+                      <span className="material-symbols-outlined text-[26px] mb-1 opacity-90 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12">terminal</span>
+                      <span className="text-[10px] font-bold tracking-wider uppercase opacity-90 text-center leading-tight transition-opacity duration-300 group-hover:opacity-100">Andamento</span>
+                      <span className="text-[48px] font-black mt-1 leading-none transition-transform duration-300 group-hover:scale-110">{stats?.inProgressTickets || 0}</span>
+                    </div>
+                  </foreignObject>
+                </g>
+
+                {/* Bottom Shape: Resolvidos */}
+                <g onClick={() => navigate('/tickets?status=Resolved')} className="group cursor-pointer transition-transform duration-300 hover:translate-y-2">
+                  <path 
+                    d="M 250 296 L 75 397 A 400 400 0 0 0 425 397 Z" 
+                    className="fill-[#7a0810] transition-all duration-300 group-hover:fill-[#9c0c16]" 
+                  />
+                  <foreignObject x="150" y="315" width="200" height="100">
+                    <div className="w-full h-full flex flex-col items-center justify-center text-white p-1">
+                      <span className="text-[48px] font-black leading-none transition-transform duration-300 group-hover:scale-110">{stats?.resolvedTickets || 0}</span>
+                      <span className="text-[10px] font-bold tracking-wider uppercase opacity-90 text-center flex items-center gap-1 mt-1 transition-opacity duration-300 group-hover:opacity-100">
+                        <span className="material-symbols-outlined text-[14px] transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">check_circle</span> Resolvidos
+                      </span>
+                    </div>
+                  </foreignObject>
+                </g>
+              </svg>
+            </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
-            {[
-              { title: 'Total', value: stats?.totalTickets || 0, icon: 'receipt_long', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
-              { title: 'Abertos', value: stats?.openTickets || 0, icon: 'fiber_new', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
-              { title: 'Análise', value: stats?.inAnalysisTickets || 0, icon: 'search', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
-              { title: 'Atendimento', value: stats?.inProgressTickets || 0, icon: 'terminal', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
-              { title: 'Ag. Usuário', value: stats?.waitingUserTickets || 0, icon: 'pending', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
-              { title: 'Resolvidos', value: stats?.resolvedTickets || 0, icon: 'check_circle', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
-              { title: 'Taxa Res.', value: `${stats?.resolutionRate || 0}%`, icon: 'trending_up', iconColor: 'text-emerald-500', textColor: 'text-emerald-600', bg: 'bg-emerald-50/50 border-emerald-100' },
-              { title: 'Pendente Comigo', value: stats?.pendingMyAction || 0, icon: 'notification_important', iconColor: 'text-white/80', textColor: 'text-white', bg: 'bg-gradient-to-br from-[#c8101e] to-[#920914] border-transparent shadow-[0_4px_12px_rgba(200,16,30,0.3)]' },
-            ].map((card, idx) => (
-              <div key={idx} className={`relative overflow-hidden rounded-xl border ${card.bg.includes('border') ? '' : 'border-slate-200/70'} shadow-[0_2px_8px_rgba(0,0,0,0.04)] p-5 transition-all hover:shadow-md hover:-translate-y-0.5 ${card.bg}`}>
-                <div className="flex items-center justify-between mb-3">
-                  <span className={`text-[12px] font-semibold ${card.textColor === 'text-white' ? 'text-white/80' : 'text-slate-500'} uppercase tracking-wider`}>{card.title}</span>
-                  <span className={`material-symbols-outlined text-[22px] ${card.iconColor}`}>{card.icon}</span>
-                </div>
-                <div>
-                  <span className={`text-3xl font-bold tracking-tight ${card.textColor}`}>{card.value}</span>
-                </div>
-              </div>
-            ))}
+          <div className="w-full flex justify-center mt-1 mb-4">
+            <div className="relative w-full max-w-[400px]">
+              <svg viewBox="60 60 380 380" className="w-full h-auto drop-shadow-2xl overflow-visible">
+                {/* Left Shape: Abertos + Subs */}
+                <g onClick={() => navigate('/tickets?status=Open')} className="group cursor-pointer transition-transform duration-300 hover:-translate-x-1.5 hover:-translate-y-1.5">
+                  <path d="M 240 279 L 240 60 A 400 400 0 0 0 60 383 Z" className="fill-[#c8101e] transition-all duration-300 group-hover:fill-[#e51a28]" />
+                  <foreignObject x="85" y="130" width="160" height="180">
+                    <div className="w-full h-full flex flex-col items-center justify-center text-white p-1">
+                      <span className="material-symbols-outlined text-[20px] mb-1 opacity-90 transition-all duration-300 group-hover:scale-125 group-hover:-rotate-12">fiber_new</span>
+                      <span className="text-[8px] font-bold tracking-wider uppercase opacity-90 text-center leading-tight transition-opacity duration-300 group-hover:opacity-100">Abertos</span>
+                      <span className="text-[36px] font-black leading-none mt-1 transition-transform duration-300 group-hover:scale-110">{stats?.openTickets || 0}</span>
+                      
+                      <div className="flex gap-4 mt-2 pt-2 border-t border-white/20 w-4/5 justify-center">
+                        <div className="flex flex-col items-center group-hover:-translate-y-0.5 transition-transform delay-75">
+                          <span className="text-[12px] font-bold leading-none">{stats?.inAnalysisTickets || 0}</span>
+                          <span className="text-[6px] font-medium tracking-widest uppercase opacity-80 mt-1">Análise</span>
+                        </div>
+                        <div className="flex flex-col items-center group-hover:-translate-y-0.5 transition-transform delay-100">
+                          <span className="text-[12px] font-bold leading-none">{stats?.waitingUserTickets || 0}</span>
+                          <span className="text-[6px] font-medium tracking-widest uppercase opacity-80 mt-1">Ag. Usuário</span>
+                        </div>
+                      </div>
+                    </div>
+                  </foreignObject>
+                </g>
+
+                {/* Right Shape: Em Andamento + Subs */}
+                <g onClick={() => navigate('/tickets?status=InProgress')} className="group cursor-pointer transition-transform duration-300 hover:translate-x-1.5 hover:-translate-y-1.5">
+                  <path d="M 260 279 L 260 60 A 400 400 0 0 1 440 383 Z" className="fill-[#9c0c16] transition-all duration-300 group-hover:fill-[#b8101b]" />
+                  <foreignObject x="255" y="130" width="160" height="180">
+                    <div className="w-full h-full flex flex-col items-center justify-center text-white p-1">
+                      <span className="material-symbols-outlined text-[20px] mb-1 opacity-90 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12">terminal</span>
+                      <span className="text-[8px] font-bold tracking-wider uppercase opacity-90 text-center leading-tight transition-opacity duration-300 group-hover:opacity-100">Andamento</span>
+                      <span className="text-[36px] font-black leading-none mt-1 transition-transform duration-300 group-hover:scale-110">{stats?.inProgressTickets || 0}</span>
+                      
+                      <div className="flex gap-4 mt-2 pt-2 border-t border-white/20 w-4/5 justify-center">
+                        <div className="flex flex-col items-center text-orange-200 group-hover:-translate-y-0.5 transition-transform delay-75">
+                          <span className="text-[12px] font-bold leading-none">{stats?.pendingMyAction || 0}</span>
+                          <span className="text-[6px] font-medium tracking-widest uppercase opacity-90 mt-1 flex items-center gap-0.5">
+                            <span className="material-symbols-outlined text-[7px]">notification_important</span> Pendente
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </foreignObject>
+                </g>
+
+                {/* Bottom Shape: Resolvidos + Subs */}
+                <g onClick={() => navigate('/tickets?status=Resolved')} className="group cursor-pointer transition-transform duration-300 hover:translate-y-2">
+                  <path d="M 250 296 L 75 397 A 400 400 0 0 0 425 397 Z" className="fill-[#7a0810] transition-all duration-300 group-hover:fill-[#9c0c16]" />
+                  <foreignObject x="150" y="305" width="200" height="120">
+                    <div className="w-full h-full flex flex-col items-center justify-center text-white p-1">
+                      <span className="text-[36px] font-black leading-none transition-transform duration-300 group-hover:scale-110">{stats?.resolvedTickets || 0}</span>
+                      <span className="text-[8px] font-bold tracking-wider uppercase opacity-90 text-center flex items-center gap-1 mt-1 transition-opacity duration-300 group-hover:opacity-100">
+                        <span className="material-symbols-outlined text-[10px] transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">check_circle</span> Resolvidos
+                      </span>
+
+                      <div className="flex gap-8 mt-2 pt-2 border-t border-white/20 w-3/5 justify-center">
+                        <div className="flex flex-col items-center group-hover:-translate-y-0.5 transition-transform delay-75">
+                          <span className="text-[12px] font-bold leading-none">{stats?.totalTickets || 0}</span>
+                          <span className="text-[6px] font-medium tracking-widest uppercase opacity-80 mt-1">Total</span>
+                        </div>
+                        <div className="flex flex-col items-center text-emerald-300 group-hover:-translate-y-0.5 transition-transform delay-100">
+                          <span className="text-[12px] font-bold leading-none">{stats?.resolutionRate || 0}%</span>
+                          <span className="text-[6px] font-medium tracking-widest uppercase opacity-90 mt-1 flex items-center gap-0.5">
+                            <span className="material-symbols-outlined text-[7px]">trending_up</span> Taxa
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </foreignObject>
+                </g>
+              </svg>
+            </div>
           </div>
         )}
       </section>
