@@ -16,8 +16,25 @@ export default function TicketCreatePage() {
     department: '',
     systemName: '',
     category: 'Bug',
-    priority: 'Medium'
+    priority: 'Medium',
+    attachmentBase64: ''
   });
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('A imagem deve ter no máximo 5MB');
+        e.target.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, attachmentBase64: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -170,6 +187,24 @@ export default function TicketCreatePage() {
               className="flex w-full rounded-[4px] border border-border-subtle bg-white px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-primary resize-none"
               placeholder="Descreva o passo a passo para reproduzir o problema ou o detalhamento da sua necessidade..."
             />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-text-secondary">Anexo de Imagem (Obrigatório) <span className="text-[#c8101e]">*</span></label>
+            <div className="flex flex-col gap-3">
+              <input 
+                type="file" 
+                accept="image/*"
+                onChange={handleFileChange}
+                required
+                className="flex w-full rounded-[4px] border border-border-subtle bg-white px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-primary file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-[#c8101e] hover:file:bg-red-100 transition-colors cursor-pointer"
+              />
+              {formData.attachmentBase64 && (
+                <div className="relative inline-block border border-slate-200 rounded-lg p-1 bg-slate-50 self-start">
+                  <img src={formData.attachmentBase64} alt="Preview" className="h-32 object-contain rounded" />
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex justify-end pt-4 border-t border-border-subtle">

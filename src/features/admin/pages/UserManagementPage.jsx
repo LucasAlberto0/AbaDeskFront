@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, UserPlus, Trash2 } from 'lucide-react';
-import { getUsers, createUser, deleteUser } from '../api/userService';
+import { Plus, UserPlus, Trash2, Pencil } from 'lucide-react';
+import { getUsers, createUser, updateUser, deleteUser } from '../api/userService';
 import { Button } from '../../../components/ui/Button';
+import { Input } from '../../../components/ui/Input';
 import { formatDate } from '../../../lib/utils';
 import { Badge } from '../../../components/ui/Badge';
 import { ConfirmModal } from '../../../components/ui/ConfirmModal';
@@ -14,13 +15,15 @@ export default function UserManagementPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [deleteUserId, setDeleteUserId] = useState(null);
+  const [editUserId, setEditUserId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    role: 'User'
+    role: 'User',
+    isActive: true
   });
 
   const fetchUsers = async () => {
@@ -46,17 +49,41 @@ export default function UserManagementPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await createUser(formData);
+      if (editUserId) {
+        await updateUser(editUserId, formData);
+        toast.success('Usuário atualizado com sucesso!');
+      } else {
+        await createUser(formData);
+        toast.success('Usuário cadastrado com sucesso!');
+      }
       setShowModal(false);
-      setFormData({ name: '', email: '', password: '', role: 'User' });
+      setFormData({ name: '', email: '', password: '', role: 'User', isActive: true });
+      setEditUserId(null);
       await fetchUsers();
-      toast.success('Usuário cadastrado com sucesso!');
     } catch (error) {
       console.error(error);
-      toast.error('Erro ao criar usuário.');
+      toast.error(editUserId ? 'Erro ao atualizar usuário.' : 'Erro ao criar usuário.');
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const openCreateModal = () => {
+    setEditUserId(null);
+    setFormData({ name: '', email: '', password: '', role: 'User', isActive: true });
+    setShowModal(true);
+  };
+
+  const openEditModal = (u) => {
+    setEditUserId(u.id);
+    setFormData({
+      name: u.name,
+      email: u.email,
+      role: u.role,
+      isActive: u.isActive,
+      password: '' // Password left blank
+    });
+    setShowModal(true);
   };
 
   const handleDelete = async () => {
@@ -82,7 +109,7 @@ export default function UserManagementPage() {
           <h1 className="text-2xl font-bold text-text-primary tracking-tight">Gestão de Usuários</h1>
           <p className="text-text-secondary mt-1">Administre os acessos e perfis da plataforma AbaDesk.</p>
         </div>
-        <Button onClick={() => setShowModal(true)} className="gap-2">
+        <Button onClick={openCreateModal} className="gap-2">
           <UserPlus size={18} /> Novo Usuário
         </Button>
       </div>
@@ -134,13 +161,22 @@ export default function UserManagementPage() {
                     <td className="px-6 py-4 whitespace-nowrap">{formatDate(u.createdAt)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       {u.role !== 'Admin' && (
-                        <button 
-                          onClick={() => setDeleteUserId(u.id)}
-                          className="text-red-500 hover:text-red-700 transition-colors"
-                          title="Excluir Usuário"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                        <div className="flex items-center justify-end gap-3">
+                          <button 
+                            onClick={() => openEditModal(u)}
+                            className="text-blue-500 hover:text-blue-700 transition-colors"
+                            title="Editar Usuário"
+                          >
+                            <Pencil size={16} />
+                          </button>
+                          <button 
+                            onClick={() => setDeleteUserId(u.id)}
+                            className="text-red-500 hover:text-red-700 transition-colors"
+                            title="Excluir Usuário"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       )}
                     </td>
                   </motion.tr>
@@ -159,7 +195,7 @@ export default function UserManagementPage() {
             className="bg-surface-card rounded-lg shadow-xl w-full max-w-md overflow-hidden"
           >
             <div className="p-4 border-b border-border-subtle bg-gray-50 flex justify-between items-center">
-              <h3 className="font-bold text-text-primary">Cadastrar Novo Usuário</h3>
+              <h3 className="font-bold text-text-primary">{editUserId ? 'Editar Usuário' : 'Cadastrar Novo Usuário'}</h3>
               <button onClick={() => setShowModal(false)} className="text-text-muted hover:text-text-primary">✕</button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
@@ -171,10 +207,12 @@ export default function UserManagementPage() {
                 <label className="text-sm font-semibold text-text-secondary">E-mail Corporativo</label>
                 <Input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="joao@abadesk.local" />
               </div>
-              <div className="space-y-1">
-                <label className="text-sm font-semibold text-text-secondary">Senha</label>
-                <Input type="password" name="password" value={formData.password} onChange={handleChange} required placeholder="••••••••" />
-              </div>
+              {!editUserId && (
+                <div className="space-y-1">
+                  <label className="text-sm font-semibold text-text-secondary">Senha</label>
+                  <Input type="password" name="password" value={formData.password} onChange={handleChange} required placeholder="••••••••" />
+                </div>
+              )}
               <div className="space-y-1">
                 <label className="text-sm font-semibold text-text-secondary">Perfil de Acesso</label>
                 <select name="role" value={formData.role} onChange={handleChange} className="flex h-10 w-full rounded-[4px] border border-border-subtle bg-white px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-primary">

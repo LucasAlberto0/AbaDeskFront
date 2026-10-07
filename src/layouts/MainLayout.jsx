@@ -169,10 +169,6 @@ export default function MainLayout() {
           <div className="flex items-center gap-2 sm:gap-4 flex-1 justify-end min-w-0">
             <HeaderSearch />
             <div className="flex items-center gap-1 shrink-0">
-              <button className="p-1.5 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition-colors relative" title="Notificações">
-                <span className="material-symbols-outlined text-[20px]">notifications</span>
-                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-white ring-2 ring-[#c8101e]"></span>
-              </button>
               <button 
                 onClick={() => setIsAboutModalOpen(true)}
                 className="p-1.5 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition-colors" 
