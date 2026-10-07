@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import useAuthStore from '../../auth/hooks/useAuthStore';
 import { getDashboardSummary } from '../api/dashboardService';
 import { getTickets } from '../../tickets/api/ticketService';
@@ -27,9 +28,18 @@ export default function DashboardPage() {
 
 
   return (
-    <div className="space-y-6 md:space-y-8 min-w-0 w-full">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="space-y-6 md:space-y-8 min-w-0 w-full"
+    >
       
-      <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 flex-wrap min-w-0">
+      <motion.section 
+        initial={{ opacity: 0, y: -15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.4 }}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 flex-wrap min-w-0"
+      >
         <div className="min-w-0 flex-1">
           <span className="text-[12px] font-medium tracking-wide uppercase text-slate-400 block mb-1">Visão Geral</span>
           <h1 className="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900 flex flex-wrap items-baseline gap-1">
@@ -43,9 +53,14 @@ export default function DashboardPage() {
             <span>Novo chamado</span>
           </Link>
         </div>
-      </section>
+      </motion.section>
 
-      <section className="w-full">
+      <motion.section 
+        initial={{ opacity: 0, scale: 0.96 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.2, duration: 0.5, type: "spring", stiffness: 100 }}
+        className="w-full"
+      >
         {(user?.role === 'User' || user?.role === 0) ? (
           <div className="w-full flex justify-center mt-1 mb-4">
             <div className="relative w-full max-w-[340px]">
@@ -169,9 +184,14 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
-      </section>
+      </motion.section>
 
-      <section className="bg-white border border-slate-200/70 rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.03)] min-w-0 w-full">
+      <motion.section 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.4 }}
+        className="bg-white border border-slate-200/70 rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.03)] min-w-0 w-full"
+      >
         <div className="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between gap-3 min-w-0">
           <div>
             <h2 className="text-[15px] font-semibold text-slate-900 tracking-tight">Chamados Recentes</h2>
@@ -202,11 +222,14 @@ export default function DashboardPage() {
               {!isLoading && recentTickets.length === 0 && (
                 <tr><td colSpan="6" className="py-4 text-center text-slate-500">Nenhum chamado encontrado.</td></tr>
               )}
-              {!isLoading && recentTickets.map((ticket) => {
+              {!isLoading && recentTickets.map((ticket, index) => {
                 const statusInfo = translateStatus(ticket.status);
                 const categoryInfo = translateCategory(ticket.category);
                 return (
-                  <tr 
+                  <motion.tr 
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 + (index * 0.05), duration: 0.3 }}
                     key={ticket.id} 
                     onClick={() => navigate(`/tickets/${ticket.id}`)}
                     className="hover:bg-slate-50/70 transition-colors group cursor-pointer"
@@ -235,14 +258,14 @@ export default function DashboardPage() {
                     <td className="py-3.5 px-4 sm:px-6 text-right text-[12px] text-slate-400 whitespace-nowrap">
                       {new Date(ticket.createdAt).toLocaleDateString('pt-BR')} {new Date(ticket.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                     </td>
-                  </tr>
+                  </motion.tr>
                 );
               })}
             </tbody>
           </table>
         </div>
-      </section>
+      </motion.section>
 
-    </div>
+    </motion.div>
   );
 }

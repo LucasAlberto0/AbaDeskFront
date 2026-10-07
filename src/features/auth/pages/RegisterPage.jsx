@@ -33,10 +33,10 @@ export default function RegisterPage() {
     try {
       await register(name, email, password, role, jobTitle, companyUnit);
       useAuthStore.getState().logout(); // ensure state is clear
-      toast.success('Conta criada com sucesso! Redirecionando para o login em 5 segundos...', { duration: 5000 });
+      toast.success('Conta criada com sucesso! Redirecionando para o login...', { duration: 3000 });
       setTimeout(() => {
         navigate('/login');
-      }, 5000);
+      }, 3000);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Erro ao realizar o cadastro. Verifique os dados e tente novamente.');
       setIsSubmitting(false);
@@ -80,7 +80,7 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
             
             <div className="mb-6">
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
@@ -224,6 +224,8 @@ export default function RegisterPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="block w-full pl-10 pr-3 py-2.5 sm:text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
                   placeholder="nome@grupoaba.com.br" 
+                  autoComplete="off"
+                  data-lpignore="true"
                   required 
                 />
               </div>
@@ -246,6 +248,8 @@ export default function RegisterPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   className="block w-full pl-10 pr-10 py-2.5 sm:text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
                   placeholder="••••••••••••" 
+                  autoComplete="new-password"
+                  data-lpignore="true"
                   required 
                 />
                 <button 

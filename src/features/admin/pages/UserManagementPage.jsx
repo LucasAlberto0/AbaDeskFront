@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, UserPlus, Trash2, Pencil } from 'lucide-react';
 import { getUsers, createUser, updateUser, deleteUser } from '../api/userService';
 import { Button } from '../../../components/ui/Button';
@@ -90,9 +90,12 @@ export default function UserManagementPage() {
     if (!deleteUserId) return;
     setIsDeleting(true);
     try {
-      await deleteUser(deleteUserId);
-      await fetchUsers();
-      toast.success('Usuário inativado/excluído com sucesso.');
+      const response = await deleteUser(deleteUserId);
+      // Remove instantly from local state to trigger smooth exit animation
+      setUsers(prev => prev.filter(u => u.id !== deleteUserId));
+      toast.success(response.message || 'Usuário inativado/excluído com sucesso.');
+      // Update from server in background just in case
+      getUsers().then(data => setUsers((data.items || data).filter(u => u.isActive)));
     } catch (error) {
       console.error(error);
       toast.error(error?.response?.data?.message || 'Erro ao excluir usuário.');
@@ -132,20 +135,22 @@ export default function UserManagementPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border-subtle">
-                {users.map((u, index) => (
-                  <motion.tr 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    key={u.id} 
-                    className="hover:bg-gray-50/80 transition-colors group"
-                  >
+                <AnimatePresence>
+                  {users.filter(u => u.isActive).map((u, index) => (
+                    <motion.tr 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20, height: 0, transition: { duration: 0.3 } }}
+                      transition={{ delay: Math.min(index * 0.05, 0.3) }}
+                      key={u.id} 
+                      className="hover:bg-gray-50/80 transition-colors group overflow-hidden"
+                    >
                     <td className="px-6 py-4 font-medium text-text-primary">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
-                          {u.name.charAt(0)}
+                          {(u?.name || 'U').charAt(0).toUpperCase()}
                         </div>
-                        {u.name}
+                        {u?.name || 'Sem nome'}
                       </div>
                     </td>
                     <td className="px-6 py-4">{u.email}</td>
@@ -179,8 +184,9 @@ export default function UserManagementPage() {
                         </div>
                       )}
                     </td>
-                  </motion.tr>
-                ))}
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
               </tbody>
             </table>
           )}

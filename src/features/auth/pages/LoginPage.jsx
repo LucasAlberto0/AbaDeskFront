@@ -94,13 +94,10 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="block w-full pl-10 pr-3 py-2.5 sm:text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
-                  placeholder="admin@abadesk.local" 
+                  placeholder="voce@empresa.com.br" 
                   required 
                 />
               </div>
-              <p className="mt-1.5 text-[11px] text-slate-500">
-                Acesso de teste: <button type="button" onClick={() => {setEmail('admin@abadesk.local'); setPassword('senha123');}} className="font-medium text-[#c8101e] hover:underline">admin@abadesk.local</button>
-              </p>
             </div>
 
             <div>
@@ -119,7 +116,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="block w-full pl-10 pr-10 py-2.5 sm:text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
-                  placeholder="senha123" 
+                  placeholder="••••••••" 
                   required 
                 />
                 <button 
