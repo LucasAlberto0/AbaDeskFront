@@ -29,7 +29,6 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6 md:space-y-8 min-w-0 w-full">
       
-      {/* HEADER SECTION */}
       <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 flex-wrap min-w-0">
         <div className="min-w-0 flex-1">
           <span className="text-[12px] font-medium tracking-wide uppercase text-slate-400 block mb-1">Visão Geral</span>
@@ -46,13 +45,11 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* METRICS GRID */}
       <section className="w-full">
         {(user?.role === 'User' || user?.role === 0) ? (
           <div className="w-full flex justify-center mt-1 mb-4">
             <div className="relative w-full max-w-[340px]">
               <svg viewBox="60 60 380 380" className="w-full h-auto drop-shadow-xl overflow-visible">
-                {/* Left Shape: Abertos */}
                 <g onClick={() => navigate('/tickets?status=Open')} className="group cursor-pointer transition-transform duration-300 hover:-translate-x-1.5 hover:-translate-y-1.5">
                   <path 
                     d="M 240 279 L 240 60 A 400 400 0 0 0 60 383 Z" 
@@ -67,7 +64,6 @@ export default function DashboardPage() {
                   </foreignObject>
                 </g>
 
-                {/* Right Shape: Em Andamento */}
                 <g onClick={() => navigate('/tickets?status=InProgress')} className="group cursor-pointer transition-transform duration-300 hover:translate-x-1.5 hover:-translate-y-1.5">
                   <path 
                     d="M 260 279 L 260 60 A 400 400 0 0 1 440 383 Z" 
@@ -82,7 +78,6 @@ export default function DashboardPage() {
                   </foreignObject>
                 </g>
 
-                {/* Bottom Shape: Resolvidos */}
                 <g onClick={() => navigate('/tickets?status=Resolved')} className="group cursor-pointer transition-transform duration-300 hover:translate-y-2">
                   <path 
                     d="M 250 296 L 75 397 A 400 400 0 0 0 425 397 Z" 
@@ -104,7 +99,6 @@ export default function DashboardPage() {
           <div className="w-full flex justify-center mt-1 mb-4">
             <div className="relative w-full max-w-[400px]">
               <svg viewBox="60 60 380 380" className="w-full h-auto drop-shadow-2xl overflow-visible">
-                {/* Left Shape: Abertos + Subs */}
                 <g onClick={() => navigate('/tickets?status=Open')} className="group cursor-pointer transition-transform duration-300 hover:-translate-x-1.5 hover:-translate-y-1.5">
                   <path d="M 240 279 L 240 60 A 400 400 0 0 0 60 383 Z" className="fill-[#c8101e] transition-all duration-300 group-hover:fill-[#e51a28]" />
                   <foreignObject x="85" y="130" width="160" height="180">
@@ -127,7 +121,6 @@ export default function DashboardPage() {
                   </foreignObject>
                 </g>
 
-                {/* Right Shape: Em Andamento + Subs */}
                 <g onClick={() => navigate('/tickets?status=InProgress')} className="group cursor-pointer transition-transform duration-300 hover:translate-x-1.5 hover:-translate-y-1.5">
                   <path d="M 260 279 L 260 60 A 400 400 0 0 1 440 383 Z" className="fill-[#9c0c16] transition-all duration-300 group-hover:fill-[#b8101b]" />
                   <foreignObject x="255" y="130" width="160" height="180">
@@ -148,7 +141,6 @@ export default function DashboardPage() {
                   </foreignObject>
                 </g>
 
-                {/* Bottom Shape: Resolvidos + Subs */}
                 <g onClick={() => navigate('/tickets?status=Resolved')} className="group cursor-pointer transition-transform duration-300 hover:translate-y-2">
                   <path d="M 250 296 L 75 397 A 400 400 0 0 0 425 397 Z" className="fill-[#7a0810] transition-all duration-300 group-hover:fill-[#9c0c16]" />
                   <foreignObject x="150" y="305" width="200" height="120">
@@ -179,7 +171,6 @@ export default function DashboardPage() {
         )}
       </section>
 
-      {/* CHAMADOS RECENTES SECTION */}
       <section className="bg-white border border-slate-200/70 rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.03)] min-w-0 w-full">
         <div className="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between gap-3 min-w-0">
           <div>

@@ -27,7 +27,6 @@ export default function KanbanBoardPage() {
 
   const fetchTickets = async () => {
     try {
-      // Fetch tickets without pagination limit for Kanban (or a high limit)
       const data = await getTickets({ pageSize: 100 });
       
       const newColumns = {
@@ -61,17 +60,14 @@ export default function KanbanBoardPage() {
   const onDragEnd = async (result) => {
     const { source, destination, draggableId } = result;
 
-    // Dropped outside the list
     if (!destination) return;
 
-    // Dropped in the same place
     if (source.droppableId === destination.droppableId && source.index === destination.index) return;
 
     const sourceStatus = source.droppableId;
     const destStatus = destination.droppableId;
     const ticketId = draggableId;
 
-    // Validation rules according to user request
     const isValidTransition = () => {
       if (sourceStatus === 'Open' && destStatus === 'InAnalysis') return true;
       if (sourceStatus === 'InAnalysis' && destStatus === 'InProgress') return true;
@@ -86,7 +82,6 @@ export default function KanbanBoardPage() {
       return;
     }
 
-    // Optimistic UI update
     const sourceList = Array.from(columns[sourceStatus]);
     const destList = Array.from(columns[destStatus]);
     
@@ -100,17 +95,14 @@ export default function KanbanBoardPage() {
       [destStatus]: destList
     });
 
-    // API Call
     try {
       if (destStatus === 'InAnalysis') await startAnalysis(ticketId);
       else if (destStatus === 'InProgress') await startProgress(ticketId);
       else if (destStatus === 'WaitingUser') await waitForUser(ticketId);
       else if (destStatus === 'Resolved') await resolveTicket(ticketId);
       
-      // We don't need to refetch immediately, optimistic update is enough
     } catch (error) {
       alert('Erro ao mover o chamado: ' + (error.response?.data?.message || error.message));
-      // Revert on error
       fetchTickets();
     }
   };

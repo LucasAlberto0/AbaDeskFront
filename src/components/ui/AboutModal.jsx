@@ -13,7 +13,6 @@ export function AboutModal({ isOpen, onClose }) {
             transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
             className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col"
           >
-            {/* Header com fundo de marca */}
             <div className="relative bg-[#c8101e] p-6 text-white overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-[#c8101e] via-[#b80e1b] to-[#920914] opacity-95"></div>
               <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)", backgroundSize: "24px 24px" }}></div>
@@ -28,7 +27,6 @@ export function AboutModal({ isOpen, onClose }) {
               </div>
             </div>
 
-            {/* Conteúdo com scroll */}
             <div className="p-8 md:p-10 space-y-10 overflow-y-auto max-h-[65vh] bg-white">
               
               <motion.p 
@@ -93,7 +91,6 @@ export function AboutModal({ isOpen, onClose }) {
               </div>
             </div>
 
-            {/* Footer */}
             <div className="p-5 bg-white border-t border-slate-100 flex justify-end">
               <button 
                 onClick={onClose}

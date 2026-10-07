@@ -44,7 +44,6 @@ export default function MainLayout() {
   return (
     <div className="bg-[#FAFAFA] font-sans text-slate-800 antialiased selection:bg-red-500/10 selection:text-[#9d0012] min-h-screen">
       
-      {/* Sidebar */}
       <aside className={`fixed left-0 top-0 h-full ${isCollapsed ? 'w-20' : 'w-72'} bg-[#9d0012] shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between select-none text-white transition-all duration-300`}>
         <div className="flex flex-col">
           <div className={`pt-5 pb-3 ${isCollapsed ? 'px-2 flex justify-center' : 'px-5'}`}>
@@ -69,7 +68,6 @@ export default function MainLayout() {
                 let isActive = location.pathname === item.path;
                 if (!isActive && item.path !== '/') {
                   if (item.path === '/tickets') {
-                    // Para "/tickets", só fica ativo em detalhes (/tickets/123), mas não em /kanban ou /new
                     isActive = location.pathname.startsWith('/tickets/') && 
                                !location.pathname.startsWith('/tickets/kanban') && 
                                !location.pathname.startsWith('/tickets/new') &&
@@ -106,7 +104,6 @@ export default function MainLayout() {
           </div>
         </div>
 
-        {/* User Profile Box */}
         <div className={`p-3 mx-3 mb-3 flex ${isCollapsed ? 'flex-col items-center' : 'flex-col'} gap-2 bg-black/20 rounded-xl overflow-hidden`}>
           <div className={`flex items-center ${isCollapsed ? 'justify-center w-full' : 'gap-2 px-1 py-1'}`}>
             <div className="w-9 h-9 rounded-full bg-white text-[#9d0012] flex items-center justify-center font-bold text-[13px] shadow-sm shrink-0 ring-2 ring-white/30">
@@ -159,7 +156,6 @@ export default function MainLayout() {
       </aside>
 
       <div className={`${isCollapsed ? 'pl-20' : 'pl-72'} flex flex-col min-h-screen min-w-0 w-full overflow-x-hidden transition-all duration-300`}>
-        {/* Header */}
         <header className={`fixed top-0 ${isCollapsed ? 'left-20' : 'left-72'} right-0 h-16 bg-[#c8101e] border-b border-[#a70d18] z-40 flex items-center justify-between px-4 sm:px-6 lg:px-8 gap-4 min-w-0 shadow-sm transition-all duration-300`}>
           <div className="flex items-center gap-2 sm:gap-3 min-w-0 shrink">
             <span className="text-[13px] text-white/70 font-normal whitespace-nowrap">ABA Infra</span>
@@ -184,7 +180,6 @@ export default function MainLayout() {
           </div>
         </header>
 
-        {/* Content */}
         <main className="relative pt-16 w-full flex-1 min-w-0">
           <div className="p-4 sm:p-6 lg:p-8 max-w-[1440px] mx-auto w-full">
             <Outlet />

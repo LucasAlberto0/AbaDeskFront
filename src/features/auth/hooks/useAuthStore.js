@@ -35,7 +35,6 @@ const useAuthStore = create((set) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await api.post('/auth/register', { name, email, password, role, jobTitle, companyUnit });
-      // Do not auto-login, let the user be redirected
       set({ isLoading: false });
     } catch (error) {
       set({ 
@@ -78,7 +77,6 @@ const useAuthStore = create((set) => ({
   clearError: () => set({ error: null })
 }));
 
-// Listener para deslogar em caso de 401
 window.addEventListener('auth:unauthorized', () => {
   useAuthStore.getState().logout();
 });

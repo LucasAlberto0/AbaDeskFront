@@ -16,7 +16,6 @@ export default function TicketListPage({ title = "Chamados", description = "Gere
     const fetchTickets = async () => {
       setIsLoading(true);
       try {
-        // Pass status filter if provided
         const params = { page: 1, pageSize: 50 };
         if (defaultStatus) params.status = defaultStatus;
         

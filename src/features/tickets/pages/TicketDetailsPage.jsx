@@ -134,13 +134,10 @@ export default function TicketDetailsPage() {
           </div>
         </div>
 
-        {/* Progress Bar */}
         <div className="hidden md:flex items-center justify-start flex-1 max-w-sm ml-10 mr-auto mt-2">
           <div className="flex items-center w-full justify-between relative">
-            {/* Background Line */}
             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-[2px] bg-gray-200 z-0" />
             
-            {/* Animated Progress Line */}
             <motion.div 
               className="absolute left-0 top-1/2 -translate-y-1/2 h-[2px] bg-primary z-0"
               initial={{ width: '0%' }}
@@ -184,7 +181,6 @@ export default function TicketDetailsPage() {
           </div>
         </div>
 
-        {/* Actions (Delete & Workflow) */}
         <div className="flex gap-2 items-center">
           {(user?.role === 'Admin' || (user?.role === 'User' && ticket.createdBy?.id === user?.id)) && (
             <Button onClick={() => setIsDeleteModalOpen(true)} isLoading={isSubmitting} size="sm" className="bg-red-600 hover:bg-red-700 border-none text-white mr-2">
@@ -220,7 +216,6 @@ export default function TicketDetailsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: Details & Comments */}
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-surface-card border border-border-subtle rounded-lg p-6 shadow-sm">
             <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-4 border-b border-border-subtle pb-2">Descrição da Demanda</h3>
@@ -237,7 +232,6 @@ export default function TicketDetailsPage() {
             )}
           </div>
 
-          {/* Comments Section */}
           <div className="bg-surface-card border border-border-subtle rounded-lg p-0 shadow-sm overflow-hidden flex flex-col h-[500px]">
             <div className="p-4 border-b border-border-subtle bg-gray-50 flex items-center gap-2">
               <MessageSquare size={18} className="text-text-muted" />
@@ -286,7 +280,6 @@ export default function TicketDetailsPage() {
           </div>
         </div>
 
-        {/* Right Column: Metadata & Timeline */}
         <div className="space-y-6">
           <div className="bg-surface-card border border-border-subtle rounded-lg p-5 shadow-sm space-y-4">
             <div>

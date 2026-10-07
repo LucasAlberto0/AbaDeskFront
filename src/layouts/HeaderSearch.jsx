@@ -13,7 +13,6 @@ export function HeaderSearch() {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  // Handle CMD+K
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -29,7 +28,6 @@ export function HeaderSearch() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Handle outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target) && !inputRef.current.contains(e.target)) {
@@ -40,7 +38,6 @@ export function HeaderSearch() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Debounced search
   useEffect(() => {
     const timer = setTimeout(async () => {
       if (query.trim().length >= 2) {

@@ -46,13 +46,10 @@ export default function RegisterPage() {
   return (
     <div className="h-screen font-sans antialiased text-slate-800 bg-[#f9fafb] flex flex-col lg:flex-row w-full overflow-hidden">
       
-      {/* Esquerda - Institucional (aba-infra red) */}
       <section className="hidden lg:flex lg:w-[54%] xl:w-[56%] bg-[#c8101e] relative flex-col justify-between p-8 sm:p-12 lg:p-16 text-white overflow-hidden shadow-2xl z-10">
-        {/* Background Decorative Elements */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#c8101e] via-[#b80e1b] to-[#920914] opacity-95"></div>
         <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)", backgroundSize: "28px 28px" }}></div>
 
-        {/* Center Hero Content */}
         <div className="relative z-10 my-auto py-8 max-w-xl mx-auto flex flex-col items-center text-center">
           <div className="w-64 sm:w-80 md:w-96 mb-6 drop-shadow-md transition-transform duration-500 hover:scale-[1.02]">
             <img alt="Ilustração de Gestão" className="w-full h-auto object-contain pointer-events-none select-none opacity-95" style={{ filter: 'brightness(0) invert(1)' }} src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbuFZf9UeCR-kOBftoGZWbSDbZ0CxM5jE5rT82KUAtMhs_E4HndLkpR9IDngrz28Z8vJyIO3EON_ETYLl-MFvAoAQsKzVKRMgB0CSkda-cEQg8Ubqm7TZmApsaEFRlQzntLEYgGxIQwVTvAdJ4dV5Gsh8VtR6wUF6BgAPLKnqbIiMbUnr2qhXfwwQ8NhQwyTK8eJpEadKN8rkeSYSnYyJRNHJ0-3lSacStCJwu4z3zGcUN_bAn_zVNiOQUR-eg5JISJA" />
@@ -61,7 +58,6 @@ export default function RegisterPage() {
           <p className="mt-4 text-base sm:text-lg text-white/90 font-normal leading-relaxed max-w-lg">Crie sua conta e ganhe acesso à nossa plataforma unificada</p>
         </div>
 
-        {/* Footer Note */}
         <div className="relative z-10 text-xs text-white/60 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-white/15 pt-4">
           <span>© 2026 Lucas Alberto. Todos os direitos reservados.</span>
           <span className="text-white/40 hidden sm:inline">•</span>
@@ -69,7 +65,6 @@ export default function RegisterPage() {
         </div>
       </section>
 
-      {/* Direita - Formulário de Cadastro */}
       <section className="w-full lg:w-[46%] xl:w-[44%] flex-1 flex items-center justify-center p-6 sm:p-10 lg:p-14 bg-[#f8fafc]">
         <div className="w-full max-w-md bg-white rounded-2xl p-7 sm:p-10 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.08)] border border-slate-100">
           
@@ -93,7 +88,6 @@ export default function RegisterPage() {
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 
-                {/* Opção Usuário */}
                 <div 
                   onClick={() => setRole(0)}
                   className={`relative flex flex-col p-4 cursor-pointer rounded-xl border-2 transition-all ${
@@ -114,7 +108,6 @@ export default function RegisterPage() {
                   <p className="text-[12px] text-slate-500 leading-snug">Abertura e acompanhamento de chamados e serviços prediais.</p>
                 </div>
 
-                {/* Opção Suporte Técnico */}
                 <div 
                   onClick={() => setRole(1)}
                   className={`relative flex flex-col p-4 cursor-pointer rounded-xl border-2 transition-all ${
