@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import useAuthStore from '../../auth/hooks/useAuthStore';
 import { getDashboardSummary } from '../api/dashboardService';
 import { getTickets } from '../../tickets/api/ticketService';
+import { translateStatus, translateCategory } from '../../../lib/utils';
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
@@ -24,27 +25,6 @@ export default function DashboardPage() {
       .finally(() => setIsLoading(false));
   }, []);
 
-  const translateStatus = (status) => {
-    const map = {
-      'Open': { label: 'Novo', icon: 'add_circle', color: 'bg-blue-100 text-blue-700' },
-      'InAnalysis': { label: 'Em análise', icon: 'search', color: 'bg-amber-100 text-amber-700' },
-      'InProgress': { label: 'Em atendimento', icon: 'terminal', color: 'bg-purple-100 text-purple-700' },
-      'WaitingUser': { label: 'Aguardando Usuário', icon: 'pending', color: 'bg-orange-100 text-orange-700' },
-      'Resolved': { label: 'Resolvido', icon: 'check_circle', color: 'bg-emerald-100 text-emerald-700' },
-    };
-    return map[status] || { label: status, icon: 'info', color: 'bg-slate-100 text-slate-700' };
-  };
-
-  const translateCategory = (cat) => {
-    const map = {
-      'Hardware': { label: 'Hardware', icon: 'computer' },
-      'Software': { label: 'Software', icon: 'terminal' },
-      'Network': { label: 'Rede', icon: 'wifi' },
-      'Access': { label: 'Acesso', icon: 'key' },
-      'Other': { label: 'Outros', icon: 'more_horiz' },
-    };
-    return map[cat] || { label: cat, icon: 'category' };
-  };
 
   return (
     <div className="space-y-6 md:space-y-8 min-w-0 w-full">
@@ -66,85 +46,49 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* METRICS ROW */}
-      <section className="bg-white border border-slate-200/70 rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.03)] w-full min-w-0">
+      {/* METRICS GRID */}
+      <section className="w-full">
         {(user?.role === 'User' || user?.role === 0) ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-100">
-            <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0">
-              <span className="text-[12px] font-medium text-slate-500 truncate">Meus Chamados</span>
-              <div className="mt-2 sm:mt-4 mb-2">
-                <span className="text-[26px] sm:text-[32px] font-semibold tracking-tight text-slate-900 leading-none">{stats?.totalTickets || 0}</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { title: 'Meus Chamados', value: stats?.totalTickets || 0, icon: 'receipt_long', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
+              { title: 'Abertos', value: stats?.openTickets || 0, icon: 'fiber_new', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
+              { title: 'Em Andamento', value: stats?.inProgressTickets || 0, icon: 'terminal', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
+              { title: 'Resolvidos', value: stats?.resolvedTickets || 0, icon: 'check_circle', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
+            ].map((card, idx) => (
+              <div key={idx} className={`relative overflow-hidden rounded-xl border border-slate-200/70 shadow-[0_2px_8px_rgba(0,0,0,0.04)] p-5 transition-all hover:shadow-md hover:-translate-y-0.5 ${card.bg}`}>
+                <div className="flex items-center justify-between mb-3">
+                  <span className={`text-[13px] font-semibold text-slate-500 uppercase tracking-wider`}>{card.title}</span>
+                  <span className={`material-symbols-outlined text-[22px] ${card.iconColor}`}>{card.icon}</span>
+                </div>
+                <div>
+                  <span className={`text-3xl font-bold tracking-tight ${card.textColor}`}>{card.value}</span>
+                </div>
               </div>
-            </div>
-            <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0">
-              <span className="text-[12px] font-medium text-slate-500 truncate">Abertos</span>
-              <div className="mt-2 sm:mt-4 mb-2">
-                <span className="text-[26px] sm:text-[32px] font-semibold tracking-tight text-slate-900 leading-none">{stats?.openTickets || 0}</span>
-              </div>
-            </div>
-            <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0">
-              <span className="text-[12px] font-medium text-slate-500 truncate">Em Andamento</span>
-              <div className="mt-2 sm:mt-4 mb-2">
-                <span className="text-[26px] sm:text-[32px] font-semibold tracking-tight text-slate-900 leading-none">{stats?.inProgressTickets || 0}</span>
-              </div>
-            </div>
-            <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0">
-              <span className="text-[12px] font-medium text-slate-500 truncate">Resolvidos</span>
-              <div className="mt-2 sm:mt-4 mb-2">
-                <span className="text-[26px] sm:text-[32px] font-semibold tracking-tight text-slate-900 leading-none">{stats?.resolvedTickets || 0}</span>
-              </div>
-            </div>
+            ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 divide-y md:divide-y-0 md:divide-x divide-slate-100">
-            <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0">
-              <span className="text-[12px] font-medium text-slate-500 truncate">Total</span>
-              <div className="mt-2 sm:mt-4 mb-2">
-                <span className="text-[26px] sm:text-[28px] font-semibold tracking-tight text-slate-900 leading-none">{stats?.totalTickets || 0}</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
+            {[
+              { title: 'Total', value: stats?.totalTickets || 0, icon: 'receipt_long', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
+              { title: 'Abertos', value: stats?.openTickets || 0, icon: 'fiber_new', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
+              { title: 'Análise', value: stats?.inAnalysisTickets || 0, icon: 'search', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
+              { title: 'Atendimento', value: stats?.inProgressTickets || 0, icon: 'terminal', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
+              { title: 'Ag. Usuário', value: stats?.waitingUserTickets || 0, icon: 'pending', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
+              { title: 'Resolvidos', value: stats?.resolvedTickets || 0, icon: 'check_circle', iconColor: 'text-[#c8101e]', textColor: 'text-slate-900', bg: 'bg-white' },
+              { title: 'Taxa Res.', value: `${stats?.resolutionRate || 0}%`, icon: 'trending_up', iconColor: 'text-emerald-500', textColor: 'text-emerald-600', bg: 'bg-emerald-50/50 border-emerald-100' },
+              { title: 'Pendente Comigo', value: stats?.pendingMyAction || 0, icon: 'notification_important', iconColor: 'text-white/80', textColor: 'text-white', bg: 'bg-gradient-to-br from-[#c8101e] to-[#920914] border-transparent shadow-[0_4px_12px_rgba(200,16,30,0.3)]' },
+            ].map((card, idx) => (
+              <div key={idx} className={`relative overflow-hidden rounded-xl border ${card.bg.includes('border') ? '' : 'border-slate-200/70'} shadow-[0_2px_8px_rgba(0,0,0,0.04)] p-5 transition-all hover:shadow-md hover:-translate-y-0.5 ${card.bg}`}>
+                <div className="flex items-center justify-between mb-3">
+                  <span className={`text-[12px] font-semibold ${card.textColor === 'text-white' ? 'text-white/80' : 'text-slate-500'} uppercase tracking-wider`}>{card.title}</span>
+                  <span className={`material-symbols-outlined text-[22px] ${card.iconColor}`}>{card.icon}</span>
+                </div>
+                <div>
+                  <span className={`text-3xl font-bold tracking-tight ${card.textColor}`}>{card.value}</span>
+                </div>
               </div>
-            </div>
-            <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0">
-              <span className="text-[12px] font-medium text-slate-500 truncate">Abertos</span>
-              <div className="mt-2 sm:mt-4 mb-2">
-                <span className="text-[26px] sm:text-[28px] font-semibold tracking-tight text-slate-900 leading-none">{stats?.openTickets || 0}</span>
-              </div>
-            </div>
-            <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0">
-              <span className="text-[12px] font-medium text-slate-500 truncate">Análise</span>
-              <div className="mt-2 sm:mt-4 mb-2">
-                <span className="text-[26px] sm:text-[28px] font-semibold tracking-tight text-slate-900 leading-none">{stats?.inAnalysisTickets || 0}</span>
-              </div>
-            </div>
-            <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0">
-              <span className="text-[12px] font-medium text-slate-500 truncate">Atendimento</span>
-              <div className="mt-2 sm:mt-4 mb-2">
-                <span className="text-[26px] sm:text-[28px] font-semibold tracking-tight text-slate-900 leading-none">{stats?.inProgressTickets || 0}</span>
-              </div>
-            </div>
-            <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0">
-              <span className="text-[12px] font-medium text-slate-500 truncate">Ag. Usuário</span>
-              <div className="mt-2 sm:mt-4 mb-2">
-                <span className="text-[26px] sm:text-[28px] font-semibold tracking-tight text-slate-900 leading-none">{stats?.waitingUserTickets || 0}</span>
-              </div>
-            </div>
-            <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0">
-              <span className="text-[12px] font-medium text-slate-500 truncate">Resolvidos</span>
-              <div className="mt-2 sm:mt-4 mb-2">
-                <span className="text-[26px] sm:text-[28px] font-semibold tracking-tight text-slate-900 leading-none">{stats?.resolvedTickets || 0}</span>
-              </div>
-            </div>
-            <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0">
-              <span className="text-[12px] font-medium text-slate-500 truncate">Taxa Res.</span>
-              <div className="mt-2 sm:mt-4 mb-2">
-                <span className="text-[26px] sm:text-[28px] font-semibold tracking-tight text-emerald-600 leading-none">{stats?.resolutionRate || 0}%</span>
-              </div>
-            </div>
-            <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0 bg-slate-50">
-              <span className="text-[12px] font-medium text-[#c8101e] truncate">Pendente</span>
-              <div className="mt-2 sm:mt-4 mb-2">
-                <span className="text-[26px] sm:text-[28px] font-semibold tracking-tight text-[#c8101e] leading-none">{stats?.pendingMyAction || 0}</span>
-              </div>
-            </div>
+            ))}
           </div>
         )}
       </section>
@@ -191,13 +135,13 @@ export default function DashboardPage() {
                     className="hover:bg-slate-50/70 transition-colors group cursor-pointer"
                   >
                     <td className="py-3.5 px-4 sm:px-6 font-mono text-[12px] text-slate-500 flex items-center gap-1.5 whitespace-nowrap">
-                      <span className="material-symbols-outlined text-[15px] text-[#c8101e]">confirmation_number</span>#{ticket.id}
+                      <span className="material-symbols-outlined text-[15px] text-[#c8101e]">confirmation_number</span>#{ticket.protocolNumber}
                     </td>
                     <td className="py-3.5 px-4 sm:px-6 font-medium text-slate-900">
                       <span className="group-hover:text-[#c8101e] transition-colors block max-w-[220px] truncate">{ticket.title}</span>
                     </td>
-                    <td className="py-3.5 px-4 sm:px-6 text-slate-600 whitespace-nowrap">
-                      {ticket.requesterName}
+                    <td className="py-3.5 px-4 sm:px-6 text-slate-600 whitespace-nowrap truncate max-w-[150px]">
+                      {ticket.createdByName}
                     </td>
                     <td className="py-3.5 px-4 sm:px-6 text-slate-500 whitespace-nowrap">
                       <span className="inline-flex items-center gap-1.5">
@@ -212,7 +156,7 @@ export default function DashboardPage() {
                       </span>
                     </td>
                     <td className="py-3.5 px-4 sm:px-6 text-right text-[12px] text-slate-400 whitespace-nowrap">
-                      {new Date(ticket.createdAt).toLocaleDateString('pt-BR')}
+                      {new Date(ticket.createdAt).toLocaleDateString('pt-BR')} {new Date(ticket.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                     </td>
                   </tr>
                 );

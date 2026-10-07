@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import useAuthStore from '../features/auth/hooks/useAuthStore';
+import { AboutModal } from '../components/ui/AboutModal';
+import { SettingsModal } from '../components/ui/SettingsModal';
+import { HeaderSearch } from './HeaderSearch';
 
 export default function MainLayout() {
   const { user, logout } = useAuthStore();
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   const getInitials = (name) => {
     if (!name) return 'U';
@@ -14,12 +19,22 @@ export default function MainLayout() {
     return parts[0][0];
   };
 
+  const getPageTitle = () => {
+    if (location.pathname.startsWith('/dashboard')) return 'Dashboard';
+    if (location.pathname.startsWith('/admin/users')) return 'Gestão de Usuários';
+    if (location.pathname === '/tickets/kanban') return 'Kanban de Chamados';
+    if (location.pathname === '/tickets/new') return 'Novo Chamado';
+    if (location.pathname.startsWith('/tickets/')) return 'Detalhes do Chamado';
+    if (location.pathname.startsWith('/tickets')) return 'Lista de Chamados';
+    return 'Central de Atendimento';
+  };
+
   const baseMenuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
     { name: 'Meus Chamados', path: '/tickets', icon: 'inbox', roles: ['User'] },
     { name: 'Kanban', path: '/tickets/kanban', icon: 'view_kanban', roles: ['Admin', 'Attendant'] },
     { name: 'Chamados (Lista)', path: '/tickets', icon: 'list', roles: ['Admin', 'Attendant'] },
-    { name: 'Novo chamado', path: '/tickets/new', icon: 'add_circle' },
+    { name: 'Novo chamado', path: '/tickets/new', icon: 'add_circle', roles: ['Admin', 'User'] },
     { name: 'Usuários', path: '/admin/users', icon: 'group', roles: ['Admin'] },
   ];
 
@@ -37,7 +52,7 @@ export default function MainLayout() {
               {isCollapsed ? (
                 <img alt="ABA Logo" className="h-8 w-8 object-contain" src="/abalogo-fechada.png" />
               ) : (
-                <img alt="ABA Desk" className="h-10 w-auto object-contain mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2c4Y60Nywy7aQfTHpkHHqmUdjIUE--2FTMoK7wIFKEyHDL68q196ppPDwAVP9ydkaIDVZTWLJauMTkagUz_5qSg32xMDbvWHzDYlAuHY0MLthz2gDizkPAUaflD9OUnvU-VDWxKjxVDtPZqLooMaicA4-668yYR-T3eVPPxpu7R_YLlXLUJmtJxZ0AWA_0uIq9y9AGKT6ihj8GCE9-icTmtN_okvZ-JmvGnWZ5MMLsFLTBTBxXhpC_uVQ3cEOxqYyew" />
+                <img alt="ABA Desk" className="h-14 w-auto object-contain mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2c4Y60Nywy7aQfTHpkHHqmUdjIUE--2FTMoK7wIFKEyHDL68q196ppPDwAVP9ydkaIDVZTWLJauMTkagUz_5qSg32xMDbvWHzDYlAuHY0MLthz2gDizkPAUaflD9OUnvU-VDWxKjxVDtPZqLooMaicA4-668yYR-T3eVPPxpu7R_YLlXLUJmtJxZ0AWA_0uIq9y9AGKT6ihj8GCE9-icTmtN_okvZ-JmvGnWZ5MMLsFLTBTBxXhpC_uVQ3cEOxqYyew" />
               )}
             </div>
             {!isCollapsed && <p className="text-xs text-white/70 leading-tight truncate pl-0.5">Central de Atendimento e Gestão</p>}
@@ -51,7 +66,19 @@ export default function MainLayout() {
             )}
             <nav className="flex flex-col gap-0.5">
               {menuItems.map(item => {
-                const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
+                let isActive = location.pathname === item.path;
+                if (!isActive && item.path !== '/') {
+                  if (item.path === '/tickets') {
+                    // Para "/tickets", só fica ativo em detalhes (/tickets/123), mas não em /kanban ou /new
+                    isActive = location.pathname.startsWith('/tickets/') && 
+                               !location.pathname.startsWith('/tickets/kanban') && 
+                               !location.pathname.startsWith('/tickets/new') &&
+                               !location.pathname.startsWith('/admin');
+                  } else {
+                    isActive = location.pathname.startsWith(item.path);
+                  }
+                }
+
                 return (
                   <Link 
                     key={item.name}
@@ -112,7 +139,11 @@ export default function MainLayout() {
           <div className={`flex items-center ${isCollapsed ? 'flex-col gap-2' : 'justify-between pt-1'}`}>
             <div className={`flex items-center gap-1 ${isCollapsed ? 'flex-col' : ''}`}>
               {!isCollapsed && (
-                <button className="p-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center" title="Configurações">
+                <button 
+                  onClick={() => setIsSettingsModalOpen(true)}
+                  className="p-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center" 
+                  title="Configurações"
+                >
                   <span className="material-symbols-outlined text-[18px]">settings</span>
                 </button>
               )}
@@ -133,21 +164,20 @@ export default function MainLayout() {
           <div className="flex items-center gap-2 sm:gap-3 min-w-0 shrink">
             <span className="text-[13px] text-white/70 font-normal whitespace-nowrap">ABA Infra</span>
             <span className="text-white/40">/</span>
-            <span className="text-[13px] text-white font-medium truncate">Central de Atendimento</span>
-            <span className="hidden md:inline-flex items-center gap-1.5 ml-2 px-2.5 py-0.5 rounded-full text-[11px] font-medium text-white bg-white/10 border border-white/20 whitespace-nowrap shrink-0 backdrop-blur-sm">Operacional</span>
+            <span className="text-[13px] text-white font-medium truncate">{getPageTitle()}</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-4 flex-1 justify-end min-w-0">
-            <div className="relative w-full max-w-md min-w-0 flex-1 hidden sm:block">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/70 text-[17px]">search</span>
-              <input className="w-full h-9 pl-9 pr-10 sm:pr-12 rounded-lg bg-white/15 border border-white/20 text-[13px] text-white placeholder:text-white/70 focus:outline-none focus:bg-white focus:text-slate-900 focus:placeholder:text-slate-400 transition-colors" placeholder="Buscar chamados, protocolos..." type="text" />
-              <kbd className="hidden md:inline-block absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-white/80 font-mono bg-white/10 border border-white/15 px-1.5 py-0.5 rounded">⌘K</kbd>
-            </div>
+            <HeaderSearch />
             <div className="flex items-center gap-1 shrink-0">
               <button className="p-1.5 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition-colors relative" title="Notificações">
                 <span className="material-symbols-outlined text-[20px]">notifications</span>
                 <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-white ring-2 ring-[#c8101e]"></span>
               </button>
-              <button className="p-1.5 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition-colors" title="Ajuda">
+              <button 
+                onClick={() => setIsAboutModalOpen(true)}
+                className="p-1.5 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition-colors" 
+                title="Ajuda e Sobre"
+              >
                 <span className="material-symbols-outlined text-[20px]">help_outline</span>
               </button>
               <div className="h-4 w-px bg-white/20 mx-1"></div>
@@ -165,6 +195,8 @@ export default function MainLayout() {
           </div>
         </main>
       </div>
+      <AboutModal isOpen={isAboutModalOpen} onClose={() => setIsAboutModalOpen(false)} />
+      <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} />
     </div>
   );
 }
