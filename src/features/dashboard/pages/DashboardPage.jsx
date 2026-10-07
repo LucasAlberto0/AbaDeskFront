@@ -68,8 +68,8 @@ export default function DashboardPage() {
 
       {/* METRICS ROW */}
       <section className="bg-white border border-slate-200/70 rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.03)] w-full min-w-0">
-        {user?.role === 'User' ? (
-          <div className="grid grid-cols-2 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+        {(user?.role === 'User' || user?.role === 0) ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-100">
             <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0">
               <span className="text-[12px] font-medium text-slate-500 truncate">Meus Chamados</span>
               <div className="mt-2 sm:mt-4 mb-2">
@@ -92,12 +92,6 @@ export default function DashboardPage() {
               <span className="text-[12px] font-medium text-slate-500 truncate">Resolvidos</span>
               <div className="mt-2 sm:mt-4 mb-2">
                 <span className="text-[26px] sm:text-[32px] font-semibold tracking-tight text-slate-900 leading-none">{stats?.resolvedTickets || 0}</span>
-              </div>
-            </div>
-            <div className="p-4 sm:p-6 flex flex-col justify-between min-w-0 bg-slate-50">
-              <span className="text-[12px] font-medium text-[#c8101e] truncate">Ação Pendente</span>
-              <div className="mt-2 sm:mt-4 mb-2">
-                <span className="text-[26px] sm:text-[32px] font-semibold tracking-tight text-[#c8101e] leading-none">{stats?.pendingMyAction || 0}</span>
               </div>
             </div>
           </div>

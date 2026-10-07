@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
 export const Button = React.forwardRef(({ className, variant = 'primary', size = 'md', children, isLoading, ...props }, ref) => {
-  const baseStyles = "inline-flex items-center justify-center rounded-[4px] font-semibold transition-colors focus:outline-none disabled:opacity-50 disabled:pointer-events-none";
+  const baseStyles = "inline-flex items-center justify-center rounded-[4px] font-semibold transition-colors focus:outline-none cursor-pointer disabled:opacity-50 disabled:pointer-events-none";
   
   const variants = {
     primary: "bg-primary text-white hover:bg-primary-container active:bg-[#700306]",

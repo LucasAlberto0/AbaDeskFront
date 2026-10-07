@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, MessageSquare, Clock, Send, PlayCircle, CheckCircle } from 'lucide-react';
-import { getTicketDetails, addTicketComment } from '../api/ticketService';
+import { getTicketDetails, addTicketComment, deleteTicket } from '../api/ticketService';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { formatDate, getStatusLabel, getCategoryLabel } from '../../../lib/utils';
@@ -11,6 +11,7 @@ import useAuthStore from '../../auth/hooks/useAuthStore';
 
 export default function TicketDetailsPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [ticket, setTicket] = useState(null);
   const [commentText, setCommentText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -46,6 +47,19 @@ export default function TicketDetailsPage() {
       console.error(error);
       alert('Erro ao alterar status.');
     } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm("Tem certeza que deseja excluir este chamado? Esta ação é irreversível.")) return;
+    setIsSubmitting(true);
+    try {
+      await deleteTicket(id);
+      navigate('/tickets');
+    } catch (error) {
+      console.error(error);
+      alert('Erro ao excluir chamado.');
       setIsSubmitting(false);
     }
   };
@@ -91,8 +105,15 @@ export default function TicketDetailsPage() {
           </div>
         </div>
 
-        {/* Workflow Actions (Basic state machine preview) */}
-        {user?.role !== 'User' && (
+        {/* Actions (Delete & Workflow) */}
+        <div className="flex gap-2 items-center">
+          {(user?.role === 'Admin' || (user?.role === 'User' && ticket.createdBy?.id === user?.id)) && (
+            <Button onClick={handleDelete} isLoading={isSubmitting} size="sm" className="bg-red-600 hover:bg-red-700 border-none text-white mr-2">
+              Excluir
+            </Button>
+          )}
+
+          {user?.role !== 'User' && (
           <div className="flex gap-2">
             {ticket.status === 'Open' && (
               <Button onClick={() => handleStatusChange('InAnalysis')} isLoading={isSubmitting} size="sm">
@@ -116,6 +137,7 @@ export default function TicketDetailsPage() {
             )}
           </div>
         )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

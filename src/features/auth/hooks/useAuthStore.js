@@ -2,9 +2,9 @@ import { create } from 'zustand';
 import { api } from '../../../lib/axios';
 
 const useAuthStore = create((set) => ({
-  user: JSON.parse(localStorage.getItem('abadesk_user')) || null,
-  token: localStorage.getItem('abadesk_token') || null,
-  isAuthenticated: !!localStorage.getItem('abadesk_token'),
+  user: JSON.parse(sessionStorage.getItem('abadesk_user')) || null,
+  token: sessionStorage.getItem('abadesk_token') || null,
+  isAuthenticated: !!sessionStorage.getItem('abadesk_token'),
   isLoading: false,
   error: null,
 
@@ -14,8 +14,12 @@ const useAuthStore = create((set) => ({
       const response = await api.post('/auth/login', { email, password });
       const { accessToken, user } = response.data;
 
-      localStorage.setItem('abadesk_token', accessToken);
-      localStorage.setItem('abadesk_user', JSON.stringify(user));
+      if (user && user.role === 0) user.role = 'User';
+      if (user && user.role === 1) user.role = 'Attendant';
+      if (user && user.role === 2) user.role = 'Admin';
+
+      sessionStorage.setItem('abadesk_token', accessToken);
+      sessionStorage.setItem('abadesk_user', JSON.stringify(user));
 
       set({ user, token: accessToken, isAuthenticated: true, isLoading: false });
     } catch (error) {
@@ -27,16 +31,20 @@ const useAuthStore = create((set) => ({
     }
   },
 
-  register: async (name, email, password, role = 0) => {
+  register: async (name, email, password, role = 0, jobTitle = '', companyUnit = '') => {
     set({ isLoading: true, error: null });
     try {
-      const response = await api.post('/auth/register', { name, email, password, role });
+      const response = await api.post('/auth/register', { name, email, password, role, jobTitle, companyUnit });
       
       // Auto login after register
       const { accessToken, user } = response.data;
       if (accessToken) {
-        localStorage.setItem('abadesk_token', accessToken);
-        localStorage.setItem('abadesk_user', JSON.stringify(user));
+        if (user && user.role === 0) user.role = 'User';
+        if (user && user.role === 1) user.role = 'Attendant';
+        if (user && user.role === 2) user.role = 'Admin';
+
+        sessionStorage.setItem('abadesk_token', accessToken);
+        sessionStorage.setItem('abadesk_user', JSON.stringify(user));
         set({ user, token: accessToken, isAuthenticated: true, isLoading: false });
       } else {
         // Fallback if backend doesn't return token on register
@@ -53,8 +61,8 @@ const useAuthStore = create((set) => ({
   },
 
   logout: () => {
-    localStorage.removeItem('abadesk_token');
-    localStorage.removeItem('abadesk_user');
+    sessionStorage.removeItem('abadesk_token');
+    sessionStorage.removeItem('abadesk_user');
     set({ user: null, token: null, isAuthenticated: false });
   },
 

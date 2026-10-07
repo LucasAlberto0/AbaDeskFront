@@ -39,3 +39,8 @@ export const addTicketComment = async (id, content) => {
   const response = await api.post(`/tickets/${id}/comments`, { content });
   return response.data;
 };
+
+export const deleteTicket = async (id) => {
+  const response = await api.delete(`/tickets/${id}`);
+  return response.data;
+};
