@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, MessageSquare, Clock, Send, PlayCircle, CheckCircle, Check } from 'lucide-react';
@@ -9,6 +9,7 @@ import { formatDate, getStatusLabel, getCategoryLabel } from '../../../lib/utils
 import useAuthStore from '../../auth/hooks/useAuthStore';
 import toast from 'react-hot-toast';
 import { ConfirmModal } from '../../../components/ui/ConfirmModal';
+import * as signalR from '@microsoft/signalr';
 export default function TicketDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -21,6 +22,10 @@ export default function TicketDetailsPage() {
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState(null);
   const { user } = useAuthStore();
+  const [hubConnection, setHubConnection] = useState(null);
+  const [typingUsers, setTypingUsers] = useState([]);
+  const [typingTimeout, setTypingTimeout] = useState(null);
+  const messagesEndRef = useRef(null);
 
   const fetchDetails = async () => {
     try {
@@ -35,7 +40,56 @@ export default function TicketDetailsPage() {
 
   useEffect(() => {
     fetchDetails();
+
+    const token = sessionStorage.getItem('abadesk_token');
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl("http://localhost:5017/hubs/ticket", {
+        accessTokenFactory: () => token
+      })
+      .withAutomaticReconnect()
+      .build();
+
+    connection.start()
+      .then(() => {
+        connection.invoke("JoinTicketGroup", id);
+      })
+      .catch(err => console.error("Erro no SignalR:", err));
+
+    connection.on("ReceiveComment", (newComment) => {
+      setTicket(prev => {
+        if (!prev) return prev;
+        if (prev.comments?.find(c => c.id === newComment.id)) return prev;
+        return {
+          ...prev,
+          comments: [...(prev.comments || []), newComment]
+        };
+      });
+      scrollToBottom();
+    });
+
+    connection.on("UserTyping", (userName, isTyping) => {
+      setTypingUsers(prev => {
+        if (isTyping && !prev.includes(userName)) return [...prev, userName];
+        if (!isTyping) return prev.filter(u => u !== userName);
+        return prev;
+      });
+    });
+
+    setHubConnection(connection);
+
+    return () => {
+      if (connection) {
+        connection.invoke("LeaveTicketGroup", id).catch(e => console.error(e));
+        connection.stop();
+      }
+    };
   }, [id]);
+
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
 
   const confirmStatusChange = (newStatus) => {
     setPendingStatus(newStatus);
@@ -50,7 +104,7 @@ export default function TicketDetailsPage() {
       else if (pendingStatus === 'InProgress') await startProgress(id);
       else if (pendingStatus === 'WaitingUser') await waitForUser(id);
       else if (pendingStatus === 'Resolved') await resolveTicket(id);
-      
+
       await fetchDetails();
       toast.success(`Status alterado para ${getStatusLabel(pendingStatus)}.`);
     } catch (error) {
@@ -83,13 +137,36 @@ export default function TicketDetailsPage() {
     if (!commentText.trim()) return;
     setIsSubmitting(true);
     try {
-      await addTicketComment(id, commentText);
+      const newComment = await addTicketComment(id, commentText);
       setCommentText('');
-      await fetchDetails();
+      if (hubConnection) hubConnection.invoke("Typing", id, user?.name, false).catch(console.error);
+
+      setTicket(prev => {
+        if (!prev) return prev;
+        if (prev.comments?.find(c => c.id === newComment.id)) return prev;
+        return { ...prev, comments: [...(prev.comments || []), newComment] };
+      });
+      scrollToBottom();
     } catch (error) {
       console.error(error);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleTyping = (e) => {
+    setCommentText(e.target.value);
+
+    if (hubConnection) {
+      hubConnection.invoke("Typing", id, user?.name, true).catch(console.error);
+
+      if (typingTimeout) clearTimeout(typingTimeout);
+
+      const timeout = setTimeout(() => {
+        hubConnection.invoke("Typing", id, user?.name, false).catch(console.error);
+      }, 2000);
+
+      setTypingTimeout(timeout);
     }
   };
 
@@ -111,7 +188,7 @@ export default function TicketDetailsPage() {
   ];
 
   const getStepIndex = (status) => {
-    if (status === 'WaitingUser') return 2; // Treat as InProgress for the linear bar
+    if (status === 'WaitingUser') return 2;
     const index = steps.findIndex(s => s.id === status);
     return index >= 0 ? index : 0;
   };
@@ -137,8 +214,8 @@ export default function TicketDetailsPage() {
         <div className="hidden md:flex items-center justify-start flex-1 max-w-sm ml-10 mr-auto mt-2">
           <div className="flex items-center w-full justify-between relative">
             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-[2px] bg-gray-200 z-0" />
-            
-            <motion.div 
+
+            <motion.div
               className="absolute left-0 top-1/2 -translate-y-1/2 h-[2px] bg-primary z-0"
               initial={{ width: '0%' }}
               animate={{ width: `${(currentStepIndex / (steps.length - 1)) * 100}%` }}
@@ -149,7 +226,7 @@ export default function TicketDetailsPage() {
               const isCompleted = idx < currentStepIndex;
               const isCurrent = idx === currentStepIndex;
               const isWaiting = isCurrent && ticket.status === 'WaitingUser';
-              
+
               let bgColor = "bg-white border-gray-300";
               let textColor = "text-gray-400";
               let ringColor = "";
@@ -165,7 +242,7 @@ export default function TicketDetailsPage() {
 
               return (
                 <div key={step.id} className="flex flex-col items-center gap-1 relative z-10">
-                  <motion.div 
+                  <motion.div
                     initial={{ scale: 0.8 }}
                     animate={{ scale: isCurrent ? 1.1 : 1 }}
                     className={`w-5 h-5 rounded-full border-[1.5px] flex items-center justify-center text-[9px] transition-colors duration-300 ${bgColor} ${ringColor}`}
@@ -189,29 +266,29 @@ export default function TicketDetailsPage() {
           )}
 
           {user?.role !== 'User' && (
-          <div className="flex gap-2">
-            {ticket.status === 'Open' && (
-              <Button onClick={() => confirmStatusChange('InAnalysis')} isLoading={isSubmitting && pendingStatus === 'InAnalysis'} size="sm">
-                Iniciar Análise
-              </Button>
-            )}
-            {(ticket.status === 'InAnalysis' || ticket.status === 'WaitingUser') && (
-              <Button onClick={() => confirmStatusChange('InProgress')} isLoading={isSubmitting && pendingStatus === 'InProgress'} size="sm" className="gap-2 bg-blue-600 hover:bg-blue-700 border-none text-white">
-                <PlayCircle size={16} /> Iniciar Atendimento
-              </Button>
-            )}
-            {ticket.status === 'InProgress' && (
-              <>
-                <Button onClick={() => confirmStatusChange('WaitingUser')} isLoading={isSubmitting && pendingStatus === 'WaitingUser'} size="sm" className="gap-2 bg-orange-500 hover:bg-orange-600 border-none text-white">
-                  <Clock size={16} /> Aguardar Usuário
+            <div className="flex gap-2">
+              {ticket.status === 'Open' && (
+                <Button onClick={() => confirmStatusChange('InAnalysis')} isLoading={isSubmitting && pendingStatus === 'InAnalysis'} size="sm">
+                  Iniciar Análise
                 </Button>
-                <Button onClick={() => confirmStatusChange('Resolved')} isLoading={isSubmitting && pendingStatus === 'Resolved'} size="sm" className="gap-2 bg-green-600 hover:bg-green-700 border-none text-white">
-                  <CheckCircle size={16} /> Resolver
+              )}
+              {(ticket.status === 'InAnalysis' || ticket.status === 'WaitingUser') && (
+                <Button onClick={() => confirmStatusChange('InProgress')} isLoading={isSubmitting && pendingStatus === 'InProgress'} size="sm" className="gap-2 bg-blue-600 hover:bg-blue-700 border-none text-white">
+                  <PlayCircle size={16} /> Iniciar Atendimento
                 </Button>
-              </>
-            )}
-          </div>
-        )}
+              )}
+              {ticket.status === 'InProgress' && (
+                <>
+                  <Button onClick={() => confirmStatusChange('WaitingUser')} isLoading={isSubmitting && pendingStatus === 'WaitingUser'} size="sm" className="gap-2 bg-orange-500 hover:bg-orange-600 border-none text-white">
+                    <Clock size={16} /> Aguardar Usuário
+                  </Button>
+                  <Button onClick={() => confirmStatusChange('Resolved')} isLoading={isSubmitting && pendingStatus === 'Resolved'} size="sm" className="gap-2 bg-green-600 hover:bg-green-700 border-none text-white">
+                    <CheckCircle size={16} /> Resolver
+                  </Button>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -237,24 +314,23 @@ export default function TicketDetailsPage() {
               <MessageSquare size={18} className="text-text-muted" />
               <h3 className="font-semibold text-text-primary">Comentários</h3>
             </div>
-            
+
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-surface/30">
               {ticket.comments?.map((comment) => (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  key={comment.id} 
+                  key={comment.id}
                   className={`flex flex-col max-w-[85%] ${comment.userId === user?.id ? 'ml-auto items-end' : 'mr-auto items-start'}`}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-semibold text-text-secondary">{comment.user?.name}</span>
                     <span className="text-[10px] text-text-muted">{formatDate(comment.createdAt)}</span>
                   </div>
-                  <div className={`p-3 rounded-lg text-sm ${
-                    comment.userId === user?.id 
-                      ? 'bg-primary text-white rounded-tr-none' 
+                  <div className={`p-3 rounded-lg text-sm ${comment.userId === user?.id
+                      ? 'bg-primary text-white rounded-tr-none'
                       : 'bg-white border border-border-subtle text-text-primary rounded-tl-none'
-                  }`}>
+                    }`}>
                     {comment.content}
                   </div>
                 </motion.div>
@@ -262,13 +338,31 @@ export default function TicketDetailsPage() {
               {ticket.comments?.length === 0 && (
                 <div className="text-center text-text-muted text-sm py-10">Nenhum comentário ainda.</div>
               )}
+              {typingUsers.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="flex flex-col max-w-[85%] mr-auto items-start"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-semibold text-text-secondary">{typingUsers.join(', ')} digitando...</span>
+                  </div>
+                  <div className="p-3 bg-white border border-border-subtle rounded-lg rounded-tl-none flex gap-1 items-center h-10">
+                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                  </div>
+                </motion.div>
+              )}
+              <div ref={messagesEndRef} />
             </div>
 
             <form onSubmit={handleCommentSubmit} className="p-4 border-t border-border-subtle bg-white flex gap-2">
               <input
                 type="text"
                 value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
+                onChange={handleTyping}
                 placeholder="Escreva uma mensagem..."
                 className="flex-1 bg-surface border border-border-subtle rounded-[4px] px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors"
                 disabled={isSubmitting}
