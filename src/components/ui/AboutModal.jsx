@@ -18,7 +18,9 @@ export function AboutModal({ isOpen, onClose }) {
               <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)", backgroundSize: "24px 24px" }}></div>
               <div className="relative z-10 flex justify-between items-start">
                 <div>
-                  <h2 className="text-2xl font-bold tracking-tight">Bem-vindo ao AbaDesk</h2>
+                  <h2 className="flex items-center gap-2 text-2xl font-bold tracking-tight">
+                    Bem-vindo ao <img alt="ABA Desk" className="h-10 w-auto object-contain mix-blend-screen -ml-1" src="/assets/logo-white.png" />
+                  </h2>
                   <p className="text-white/80 mt-1 text-sm font-medium">Sua central inteligente de atendimento</p>
                 </div>
                 <button onClick={onClose} className="p-1.5 rounded-full hover:bg-white/20 transition-colors text-white/80 hover:text-white flex items-center justify-center">

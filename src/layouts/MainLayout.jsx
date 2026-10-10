@@ -51,7 +51,7 @@ export default function MainLayout() {
               {isCollapsed ? (
                 <img alt="ABA Logo" className="h-8 w-8 object-contain" src="/abalogo-fechada.png" />
               ) : (
-                <img alt="ABA Desk" className="h-14 w-auto object-contain mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2c4Y60Nywy7aQfTHpkHHqmUdjIUE--2FTMoK7wIFKEyHDL68q196ppPDwAVP9ydkaIDVZTWLJauMTkagUz_5qSg32xMDbvWHzDYlAuHY0MLthz2gDizkPAUaflD9OUnvU-VDWxKjxVDtPZqLooMaicA4-668yYR-T3eVPPxpu7R_YLlXLUJmtJxZ0AWA_0uIq9y9AGKT6ihj8GCE9-icTmtN_okvZ-JmvGnWZ5MMLsFLTBTBxXhpC_uVQ3cEOxqYyew" />
+                <img alt="ABA Desk" className="h-14 w-auto object-contain mix-blend-screen" src="/assets/logo-white.png" />
               )}
             </div>
             {!isCollapsed && <p className="text-xs text-white/70 leading-tight truncate pl-0.5">Central de Atendimento e Gestão</p>}

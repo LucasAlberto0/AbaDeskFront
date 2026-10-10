@@ -51,7 +51,7 @@ export default function LoginPage() {
 
         <div className="relative z-10 my-auto py-8 max-w-xl mx-auto flex flex-col items-center text-center">
           <div className="w-64 sm:w-80 md:w-96 mb-6 drop-shadow-md transition-transform duration-500 hover:scale-[1.02]">
-            <img alt="Ilustração de Gestão" className="w-full h-auto object-contain pointer-events-none select-none opacity-95" style={{ filter: 'brightness(0) invert(1)' }} src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbuFZf9UeCR-kOBftoGZWbSDbZ0CxM5jE5rT82KUAtMhs_E4HndLkpR9IDngrz28Z8vJyIO3EON_ETYLl-MFvAoAQsKzVKRMgB0CSkda-cEQg8Ubqm7TZmApsaEFRlQzntLEYgGxIQwVTvAdJ4dV5Gsh8VtR6wUF6BgAPLKnqbIiMbUnr2qhXfwwQ8NhQwyTK8eJpEadKN8rkeSYSnYyJRNHJ0-3lSacStCJwu4z3zGcUN_bAn_zVNiOQUR-eg5JISJA" />
+            <img alt="Ilustração de Gestão" className="w-full h-auto object-contain pointer-events-none select-none opacity-95" style={{ filter: 'brightness(0) invert(1)' }} src="/assets/illustration.png" />
           </div>
           <h1 className="text-2xl sm:text-3xl lg:text-[2.35rem] font-bold tracking-tight text-white leading-tight">GRUPO ABA INFRA</h1>
           <p className="mt-4 text-base sm:text-lg text-white/90 font-normal leading-relaxed max-w-lg">Excelência e agilidade com atendimento personalizado</p>
@@ -69,7 +69,7 @@ export default function LoginPage() {
           
           <div className="flex flex-col items-center text-center mb-7">
             <div className="h-10 mb-4 flex items-center justify-center">
-              <img alt="Logo ABA Desk" className="h-9 w-auto object-contain" style={{ filter: 'invert(1) contrast(1.15) brightness(0.2)' }} src="https://lh3.googleusercontent.com/aida-public/AB6AXuDX-Pdr1RjHID0FTyxO_nwLM149Z8UIl5EEArVt43MdpzerdXpYPGX_3H8_PnKvDnk5qEOznljzrPgn8x_dHPsvzkk_H9_AQxlFk7XQr1P4Yer1lYVxal1LvO3A3I5VRLOPFyFf4SFmiIDSNsRtuIEuBB0dx8sHw4UuAZPc24atDmFD414R3o2ipDtUajUCbt39fqmzhOV73gs7Xowk51KuqqR_IfhC9PngoVn8VB_gDgaENBg14Mh6a7uSQEmfX_4qIw" />
+              <img alt="Logo ABA Desk" className="h-9 w-auto object-contain" style={{ filter: 'invert(1) contrast(1.15) brightness(0.2)' }} src="/assets/logo-dark.png" />
             </div>
             <h2 className="text-2xl font-bold tracking-tight text-slate-900">
               Acessar Plataforma
