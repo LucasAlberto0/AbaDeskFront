@@ -321,13 +321,13 @@ export default function TicketDetailsPage() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   key={comment.id}
-                  className={`flex flex-col max-w-[85%] ${comment.userId === user?.id ? 'ml-auto items-end' : 'mr-auto items-start'}`}
+                  className={`flex flex-col max-w-[85%] ${comment.user?.email === user?.email ? 'ml-auto items-end' : 'mr-auto items-start'}`}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-semibold text-text-secondary">{comment.user?.name}</span>
                     <span className="text-[10px] text-text-muted">{formatDate(comment.createdAt)}</span>
                   </div>
-                  <div className={`p-3 rounded-lg text-sm ${comment.userId === user?.id
+                  <div className={`p-3 rounded-lg text-sm ${comment.user?.email === user?.email
                       ? 'bg-primary text-white rounded-tr-none'
                       : 'bg-white border border-border-subtle text-text-primary rounded-tl-none'
                     }`}>
