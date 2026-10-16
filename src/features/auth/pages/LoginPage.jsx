@@ -43,7 +43,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="h-screen font-sans antialiased text-slate-800 bg-[#f9fafb] flex flex-col lg:flex-row w-full overflow-hidden">
+    <div className="min-h-screen font-sans antialiased text-slate-800 bg-[#f9fafb] flex flex-col lg:flex-row w-full lg:h-screen lg:overflow-hidden overflow-y-auto">
       
       <section className="hidden lg:flex lg:w-[54%] xl:w-[56%] bg-[#c8101e] relative flex-col justify-between p-8 sm:p-12 lg:p-16 text-white overflow-hidden shadow-2xl z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-[#c8101e] via-[#b80e1b] to-[#920914] opacity-95"></div>
@@ -64,17 +64,17 @@ export default function LoginPage() {
         </div>
       </section>
 
-      <section className="w-full lg:w-[46%] xl:w-[44%] flex-1 flex items-center justify-center p-6 sm:p-10 lg:p-14 bg-[#f8fafc]">
-        <div className="w-full max-w-md bg-white rounded-2xl p-7 sm:p-10 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.08)] border border-slate-100">
+      <section className="w-full lg:w-[46%] xl:w-[44%] flex-1 flex items-center justify-center p-3.5 sm:p-8 lg:p-14 bg-[#f8fafc]">
+        <div className="w-full max-w-md bg-white rounded-2xl p-5 sm:p-8 md:p-10 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.08)] border border-slate-100">
           
-          <div className="flex flex-col items-center text-center mb-7">
+          <div className="flex flex-col items-center text-center mb-5 sm:mb-7">
             <div className="h-10 mb-4 flex items-center justify-center">
-              <img alt="Logo ABA Desk" className="h-9 w-auto object-contain" style={{ filter: 'invert(1) contrast(1.15) brightness(0.2)' }} src="/img/brand/logo-dark.png" />
+              <img alt="Logo ABA Desk" className="h-8 sm:h-9 w-auto object-contain" style={{ filter: 'invert(1) contrast(1.15) brightness(0.2)' }} src="/img/brand/logo-dark.png" />
             </div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
               Acessar Plataforma
             </h2>
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
               Entre com suas credenciais de acesso corporativo
             </p>
           </div>
@@ -93,7 +93,7 @@ export default function LoginPage() {
                   id="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2.5 sm:text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
+                  className="block w-full pl-10 pr-3 py-2.5 text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
                   placeholder="voce@empresa.com.br" 
                   required 
                 />
@@ -115,7 +115,7 @@ export default function LoginPage() {
                   id="password" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full pl-10 pr-10 py-2.5 sm:text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
+                  className="block w-full pl-10 pr-10 py-2.5 text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
                   placeholder="••••••••" 
                   required 
                 />
@@ -129,7 +129,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-1">
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
               <div className="flex items-center">
                 <input id="remember-me" type="checkbox" className="h-4 w-4 rounded border-slate-300 text-[#c8101e] focus:ring-[#c8101e]/40 cursor-pointer" />
                 <label htmlFor="remember-me" className="ml-2 block text-xs text-slate-600 select-none cursor-pointer">

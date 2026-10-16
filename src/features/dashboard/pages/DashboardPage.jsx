@@ -41,14 +41,14 @@ export default function DashboardPage() {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 flex-wrap min-w-0"
       >
         <div className="min-w-0 flex-1">
-          <span className="text-[12px] font-medium tracking-wide uppercase text-slate-400 block mb-1">Visão Geral</span>
-          <h1 className="text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900 flex flex-wrap items-baseline gap-1">
+          <span className="text-[11px] sm:text-[12px] font-medium tracking-wide uppercase text-slate-400 block mb-0.5 sm:mb-1">Visão Geral</span>
+          <h1 className="text-[19px] xs:text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900 flex flex-wrap items-baseline gap-1">
             <span>Olá, {user?.name?.split(' ')[0] || 'Usuário'}</span>
-            <span className="text-slate-400 font-normal text-[16px] sm:text-[20px]">· {user?.jobTitle || 'Membro da Equipe'}</span>
+            <span className="text-slate-400 font-normal text-[14px] xs:text-[16px] sm:text-[20px]">· {user?.jobTitle || 'Membro da Equipe'}</span>
           </h1>
         </div>
-        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
-          <Link to="/tickets/new" className="h-9 px-3.5 rounded-lg bg-[#c8101e] hover:bg-[#a70d18] text-white text-[13px] font-medium flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-[0.98] whitespace-nowrap">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0 w-full sm:w-auto">
+          <Link to="/tickets/new" className="h-9 px-3.5 rounded-lg bg-[#c8101e] hover:bg-[#a70d18] text-white text-[13px] font-medium flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-[0.98] whitespace-nowrap w-full sm:w-auto">
             <span className="material-symbols-outlined text-[17px]">add</span>
             <span>Novo chamado</span>
           </Link>
@@ -192,14 +192,14 @@ export default function DashboardPage() {
         transition={{ delay: 0.3, duration: 0.4 }}
         className="bg-white border border-slate-200/70 rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.03)] min-w-0 w-full"
       >
-        <div className="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between gap-3 min-w-0">
+        <div className="p-3 sm:p-6 border-b border-slate-100 flex items-center justify-between gap-3 min-w-0">
           <div>
-            <h2 className="text-[15px] font-semibold text-slate-900 tracking-tight">Chamados Recentes</h2>
-            <p className="text-[13px] text-slate-500 mt-0.5">Últimas solicitações registradas na plataforma</p>
+            <h2 className="text-[14px] sm:text-[15px] font-semibold text-slate-900 tracking-tight">Chamados Recentes</h2>
+            <p className="text-[12px] sm:text-[13px] text-slate-500 mt-0.5">Últimas solicitações registradas na plataforma</p>
           </div>
-          <Link to="/tickets" className="text-[13px] font-medium text-[#c8101e] hover:text-slate-900 transition-colors flex items-center gap-1 shrink-0">
+          <Link to="/tickets" className="text-[12px] sm:text-[13px] font-medium text-[#c8101e] hover:text-slate-900 transition-colors flex items-center gap-1 shrink-0">
             <span>Ver todos</span>
-            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            <span className="material-symbols-outlined text-[15px] sm:text-[16px]">arrow_forward</span>
           </Link>
         </div>
         
@@ -207,12 +207,12 @@ export default function DashboardPage() {
           <table className="w-full text-left min-w-[580px]">
             <thead>
               <tr className="border-b border-slate-100 text-[11px] font-medium uppercase tracking-wider text-slate-400">
-                <th className="py-3 px-4 sm:px-6">ID</th>
-                <th className="py-3 px-4 sm:px-6">Assunto</th>
-                <th className="py-3 px-4 sm:px-6">Solicitante</th>
-                <th className="py-3 px-4 sm:px-6">Categoria</th>
-                <th className="py-3 px-4 sm:px-6">Status</th>
-                <th className="py-3 px-4 sm:px-6 text-right">Abertura</th>
+                <th className="py-3 px-3 sm:px-6">ID</th>
+                <th className="py-3 px-3 sm:px-6">Assunto</th>
+                <th className="py-3 px-3 sm:px-6">Solicitante</th>
+                <th className="py-3 px-3 sm:px-6">Categoria</th>
+                <th className="py-3 px-3 sm:px-6">Status</th>
+                <th className="py-3 px-3 sm:px-6 text-right">Abertura</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-[13px]">
@@ -234,28 +234,28 @@ export default function DashboardPage() {
                     onClick={() => navigate(`/tickets/${ticket.id}`)}
                     className="hover:bg-slate-50/70 transition-colors group cursor-pointer"
                   >
-                    <td className="py-3.5 px-4 sm:px-6 font-mono text-[12px] text-slate-500 flex items-center gap-1.5 whitespace-nowrap">
+                    <td className="py-3.5 px-3 sm:px-6 font-mono text-[12px] text-slate-500 flex items-center gap-1.5 whitespace-nowrap">
                       <span className="material-symbols-outlined text-[15px] text-[#c8101e]">confirmation_number</span>#{ticket.protocolNumber}
                     </td>
-                    <td className="py-3.5 px-4 sm:px-6 font-medium text-slate-900">
+                    <td className="py-3.5 px-3 sm:px-6 font-medium text-slate-900">
                       <span className="group-hover:text-[#c8101e] transition-colors block max-w-[220px] truncate">{ticket.title}</span>
                     </td>
-                    <td className="py-3.5 px-4 sm:px-6 text-slate-600 whitespace-nowrap truncate max-w-[150px]">
+                    <td className="py-3.5 px-3 sm:px-6 text-slate-600 whitespace-nowrap truncate max-w-[150px]">
                       {ticket.createdByName}
                     </td>
-                    <td className="py-3.5 px-4 sm:px-6 text-slate-500 whitespace-nowrap">
+                    <td className="py-3.5 px-3 sm:px-6 text-slate-500 whitespace-nowrap">
                       <span className="inline-flex items-center gap-1.5">
                         <span className="material-symbols-outlined text-[15px] text-[#c8101e]">{categoryInfo.icon}</span>
                         {categoryInfo.label}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 sm:px-6 whitespace-nowrap">
+                    <td className="py-3.5 px-3 sm:px-6 whitespace-nowrap">
                       <span className={`inline-flex items-center gap-1.5 text-[12px] font-medium px-2 py-0.5 rounded-full ${statusInfo.color}`}>
                         <span className="material-symbols-outlined text-[13px]">{statusInfo.icon}</span>
                         {statusInfo.label}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 sm:px-6 text-right text-[12px] text-slate-400 whitespace-nowrap">
+                    <td className="py-3.5 px-3 sm:px-6 text-right text-[12px] text-slate-400 whitespace-nowrap">
                       {new Date(ticket.createdAt).toLocaleDateString('pt-BR')} {new Date(ticket.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                     </td>
                   </motion.tr>

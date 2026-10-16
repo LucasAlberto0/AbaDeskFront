@@ -58,25 +58,25 @@ export function SettingsModal({ isOpen, onClose }) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-4 bg-slate-900/50 backdrop-blur-sm">
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
-            className="bg-white rounded-2xl shadow-xl w-full max-w-md"
+            className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
           >
-            <div className="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center rounded-t-2xl">
+            <div className="p-4 sm:p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center rounded-t-2xl">
               <div>
-                <h3 className="font-bold text-slate-800 text-lg">Configurações de Perfil</h3>
-                <p className="text-sm text-slate-500">Atualize seus dados pessoais e empresa.</p>
+                <h3 className="font-bold text-slate-800 text-base sm:text-lg">Configurações de Perfil</h3>
+                <p className="text-xs sm:text-sm text-slate-500">Atualize seus dados pessoais e empresa.</p>
               </div>
-              <button onClick={onClose} className="p-1.5 rounded-md hover:bg-slate-200 transition-colors text-slate-500 hover:text-slate-800">
+              <button onClick={onClose} className="p-1.5 rounded-md hover:bg-slate-200 transition-colors text-slate-500 hover:text-slate-800 shrink-0">
                 <span className="material-symbols-outlined text-[20px]">close</span>
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-5">
+            <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5">
               <div className="space-y-1">
                 <label className="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
                   <User size={16} /> Nome Completo
@@ -98,11 +98,11 @@ export function SettingsModal({ isOpen, onClose }) {
                   className="flex items-center justify-between h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer hover:bg-slate-50 transition-all"
                 >
                   {companyUnit ? (
-                    <span className="font-medium text-slate-800">{companyUnit}</span>
+                    <span className="font-medium text-slate-800 truncate pr-2">{companyUnit}</span>
                   ) : (
                     <span className="text-slate-400">Selecione uma empresa</span>
                   )}
-                  <ChevronDown size={16} className={`text-slate-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown size={16} className={`text-slate-400 shrink-0 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                 </div>
 
                 <AnimatePresence>
@@ -144,11 +144,11 @@ export function SettingsModal({ isOpen, onClose }) {
                 </AnimatePresence>
               </div>
 
-              <div className="pt-4 flex gap-3 justify-end border-t border-slate-100">
-                <Button type="button" variant="ghost" onClick={onClose} disabled={isSubmitting}>
+              <div className="pt-4 flex flex-col-reverse xs:flex-row gap-2 sm:gap-3 justify-end border-t border-slate-100">
+                <Button type="button" variant="ghost" onClick={onClose} disabled={isSubmitting} className="w-full xs:w-auto">
                   Cancelar
                 </Button>
-                <Button type="submit" isLoading={isSubmitting} className="gap-2">
+                <Button type="submit" isLoading={isSubmitting} className="gap-2 w-full xs:w-auto">
                   <Save size={16} /> Salvar Alterações
                 </Button>
               </div>

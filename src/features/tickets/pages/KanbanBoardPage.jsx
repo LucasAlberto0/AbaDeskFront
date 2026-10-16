@@ -131,11 +131,11 @@ export default function KanbanBoardPage() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)]">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="flex flex-col min-h-[500px] h-[calc(100vh-8rem)]">
+      <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Kanban de Chamados</h1>
-          <p className="text-sm text-slate-500 mt-1">Arraste os cards para atualizar o status.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Kanban de Chamados</h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5 sm:mt-1">Arraste os cards para atualizar o status.</p>
         </div>
       </div>
 
@@ -143,7 +143,7 @@ export default function KanbanBoardPage() {
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="flex gap-4 min-w-max h-full">
             {KANBAN_COLUMNS.map(column => (
-              <div key={column.id} className="w-80 flex flex-col bg-slate-100/50 rounded-xl border border-slate-200/60 overflow-hidden">
+              <div key={column.id} className="w-[270px] sm:w-80 flex flex-col bg-slate-100/50 rounded-xl border border-slate-200/60 overflow-hidden">
                 <div className="p-3 border-b border-slate-200/60 bg-slate-100 flex items-center justify-between">
                   <h2 className="font-semibold text-slate-700 text-sm">{column.title}</h2>
                   <span className="bg-white text-slate-500 text-xs font-medium px-2 py-0.5 rounded-full shadow-sm">

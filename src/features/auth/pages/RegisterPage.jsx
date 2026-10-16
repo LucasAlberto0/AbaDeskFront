@@ -44,7 +44,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="h-screen font-sans antialiased text-slate-800 bg-[#f9fafb] flex flex-col lg:flex-row w-full overflow-hidden">
+    <div className="min-h-screen font-sans antialiased text-slate-800 bg-[#f9fafb] flex flex-col lg:flex-row w-full lg:h-screen lg:overflow-hidden overflow-y-auto">
       
       <section className="hidden lg:flex lg:w-[54%] xl:w-[56%] bg-[#c8101e] relative flex-col justify-between p-8 sm:p-12 lg:p-16 text-white overflow-hidden shadow-2xl z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-[#c8101e] via-[#b80e1b] to-[#920914] opacity-95"></div>
@@ -65,17 +65,17 @@ export default function RegisterPage() {
         </div>
       </section>
 
-      <section className="w-full lg:w-[46%] xl:w-[44%] flex-1 flex items-center justify-center p-6 sm:p-10 lg:p-14 bg-[#f8fafc]">
-        <div className="w-full max-w-md bg-white rounded-2xl p-7 sm:p-10 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.08)] border border-slate-100">
+      <section className="w-full lg:w-[46%] xl:w-[44%] flex-1 flex items-center justify-center p-3.5 sm:p-8 lg:p-14 bg-[#f8fafc] py-8 lg:py-14">
+        <div className="w-full max-w-md bg-white rounded-2xl p-5 sm:p-8 md:p-10 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.08)] border border-slate-100">
           
-          <div className="flex flex-col items-center text-center mb-7">
+          <div className="flex flex-col items-center text-center mb-5 sm:mb-7">
             <div className="h-10 mb-4 flex items-center justify-center">
-              <img alt="Logo ABA Desk" className="h-9 w-auto object-contain" style={{ filter: 'invert(1) contrast(1.15) brightness(0.2)' }} src="/img/brand/logo-dark.png" />
+              <img alt="Logo ABA Desk" className="h-8 sm:h-9 w-auto object-contain" style={{ filter: 'invert(1) contrast(1.15) brightness(0.2)' }} src="/img/brand/logo-dark.png" />
             </div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
               Criar Conta
             </h2>
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
               Preencha os dados para obter seu acesso
             </p>
           </div>
@@ -90,7 +90,7 @@ export default function RegisterPage() {
                 
                 <div 
                   onClick={() => setRole(0)}
-                  className={`relative flex flex-col p-4 cursor-pointer rounded-xl border-2 transition-all ${
+                  className={`relative flex flex-col p-3 sm:p-4 cursor-pointer rounded-xl border-2 transition-all ${
                     role === 0 ? 'border-[#c8101e] bg-red-50/30 shadow-sm' : 'border-slate-200 hover:border-slate-300'
                   }`}
                 >
@@ -110,7 +110,7 @@ export default function RegisterPage() {
 
                 <div 
                   onClick={() => setRole(1)}
-                  className={`relative flex flex-col p-4 cursor-pointer rounded-xl border-2 transition-all ${
+                  className={`relative flex flex-col p-3 sm:p-4 cursor-pointer rounded-xl border-2 transition-all ${
                     role === 1 ? 'border-[#c8101e] bg-red-50/30 shadow-sm' : 'border-slate-200 hover:border-slate-300'
                   }`}
                 >

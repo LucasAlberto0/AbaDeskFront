@@ -78,17 +78,17 @@ export default function TicketCreatePage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <div className="flex items-center gap-4">
-        <Link to="/tickets" className="text-text-muted hover:text-primary transition-colors">
-          <ArrowLeft size={24} />
+      <div className="flex items-center gap-3 sm:gap-4">
+        <Link to="/tickets" className="text-text-muted hover:text-primary transition-colors shrink-0">
+          <ArrowLeft size={22} />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-text-primary tracking-tight">Novo Chamado</h1>
-          <p className="text-text-secondary mt-1">Preencha os dados abaixo para abrir uma solicitação.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-text-primary tracking-tight">Novo Chamado</h1>
+          <p className="text-xs sm:text-sm text-text-secondary mt-0.5 sm:mt-1">Preencha os dados abaixo para abrir uma solicitação.</p>
         </div>
       </div>
 
-      <div className="bg-surface-card border border-border-subtle rounded-lg p-6 shadow-sm">
+      <div className="bg-surface-card border border-border-subtle rounded-lg p-4 sm:p-6 shadow-sm">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <label className="text-sm font-semibold text-text-secondary">Título do Problema/Requisição</label>
@@ -122,9 +122,9 @@ export default function TicketCreatePage() {
                 className="flex items-center justify-between h-10 w-full rounded-[4px] border border-border-subtle bg-white px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-primary cursor-pointer hover:bg-slate-50 transition-colors"
               >
                 {formData.companyUnit ? (
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold">{companyUnits.find(u => u.id === formData.companyUnit)?.label}</span>
-                    <span className="text-slate-500 text-xs truncate max-w-[120px]">{companyUnits.find(u => u.id === formData.companyUnit)?.desc}</span>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="font-semibold truncate">{companyUnits.find(u => u.id === formData.companyUnit)?.label}</span>
+                    <span className="text-slate-500 text-xs truncate max-w-[120px] hidden xs:inline">{companyUnits.find(u => u.id === formData.companyUnit)?.desc}</span>
                   </div>
                 ) : (
                   <span className="text-slate-400">Selecione uma empresa</span>
@@ -208,7 +208,7 @@ export default function TicketCreatePage() {
           </div>
 
           <div className="flex justify-end pt-4 border-t border-border-subtle">
-            <Button type="submit" isLoading={isSubmitting}>
+            <Button type="submit" isLoading={isSubmitting} className="w-full sm:w-auto">
               Registrar Chamado
             </Button>
           </div>

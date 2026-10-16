@@ -107,12 +107,12 @@ export default function UserManagementPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary tracking-tight">Gestão de Usuários</h1>
-          <p className="text-text-secondary mt-1">Administre os acessos e perfis da plataforma AbaDesk.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-text-primary tracking-tight">Gestão de Usuários</h1>
+          <p className="text-xs sm:text-sm text-text-secondary mt-0.5 sm:mt-1">Administre os acessos e perfis da plataforma AbaDesk.</p>
         </div>
-        <Button onClick={openCreateModal} className="gap-2">
+        <Button onClick={openCreateModal} className="gap-2 w-full sm:w-auto">
           <UserPlus size={18} /> Novo Usuário
         </Button>
       </div>
@@ -124,14 +124,14 @@ export default function UserManagementPage() {
               <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent" />
             </div>
           ) : (
-            <table className="w-full text-left text-sm text-text-secondary">
+            <table className="w-full text-left text-sm text-text-secondary min-w-[580px]">
               <thead className="bg-gray-50/50 text-xs uppercase text-text-muted border-b border-border-subtle">
                 <tr>
-                  <th className="px-6 py-4 font-semibold">Nome</th>
-                  <th className="px-6 py-4 font-semibold">E-mail</th>
-                  <th className="px-6 py-4 font-semibold">Cargo</th>
-                  <th className="px-6 py-4 font-semibold">Criação</th>
-                  <th className="px-6 py-4 font-semibold text-right">Ações</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold">Nome</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold">E-mail</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold">Cargo</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold">Criação</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold text-right">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border-subtle">
@@ -145,16 +145,16 @@ export default function UserManagementPage() {
                       key={u.id} 
                       className="hover:bg-gray-50/80 transition-colors group overflow-hidden"
                     >
-                    <td className="px-6 py-4 font-medium text-text-primary">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 font-medium text-text-primary">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
                           {(u?.name || 'U').charAt(0).toUpperCase()}
                         </div>
-                        {u?.name || 'Sem nome'}
+                        <span className="truncate max-w-[150px] sm:max-w-none">{u?.name || 'Sem nome'}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">{u.email}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4">{u.email}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4">
                       {u.role === 'Admin' ? (
                         <Badge status="IN_DEVELOPMENT" label="Administrador" className="bg-purple-100 text-purple-700 border-purple-200" />
                       ) : u.role === 'Attendant' ? (
@@ -163,8 +163,8 @@ export default function UserManagementPage() {
                         <Badge status="NEW" label="Usuário Padrão" className="bg-gray-100 text-gray-700 border-gray-200" />
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{formatDate(u.createdAt)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">{formatDate(u.createdAt)}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-right">
                       {u.role !== 'Admin' && (
                         <div className="flex items-center justify-end gap-3">
                           <button 
@@ -194,42 +194,42 @@ export default function UserManagementPage() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-text-primary/50 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-text-primary/50 backdrop-blur-sm p-3 sm:p-4">
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-surface-card rounded-lg shadow-xl w-full max-w-md overflow-hidden"
           >
             <div className="p-4 border-b border-border-subtle bg-gray-50 flex justify-between items-center">
-              <h3 className="font-bold text-text-primary">{editUserId ? 'Editar Usuário' : 'Cadastrar Novo Usuário'}</h3>
-              <button onClick={() => setShowModal(false)} className="text-text-muted hover:text-text-primary">✕</button>
+              <h3 className="font-bold text-text-primary text-base sm:text-lg">{editUserId ? 'Editar Usuário' : 'Cadastrar Novo Usuário'}</h3>
+              <button onClick={() => setShowModal(false)} className="text-text-muted hover:text-text-primary p-1">✕</button>
             </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
               <div className="space-y-1">
-                <label className="text-sm font-semibold text-text-secondary">Nome Completo</label>
+                <label className="text-xs sm:text-sm font-semibold text-text-secondary">Nome Completo</label>
                 <Input name="name" value={formData.name} onChange={handleChange} required placeholder="João da Silva" />
               </div>
               <div className="space-y-1">
-                <label className="text-sm font-semibold text-text-secondary">E-mail Corporativo</label>
+                <label className="text-xs sm:text-sm font-semibold text-text-secondary">E-mail Corporativo</label>
                 <Input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="joao@abadesk.local" />
               </div>
               {!editUserId && (
                 <div className="space-y-1">
-                  <label className="text-sm font-semibold text-text-secondary">Senha</label>
+                  <label className="text-xs sm:text-sm font-semibold text-text-secondary">Senha</label>
                   <Input type="password" name="password" value={formData.password} onChange={handleChange} required placeholder="••••••••" />
                 </div>
               )}
               <div className="space-y-1">
-                <label className="text-sm font-semibold text-text-secondary">Perfil de Acesso</label>
+                <label className="text-xs sm:text-sm font-semibold text-text-secondary">Perfil de Acesso</label>
                 <select name="role" value={formData.role} onChange={handleChange} className="flex h-10 w-full rounded-[4px] border border-border-subtle bg-white px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-primary">
                   <option value="User">Usuário Padrão</option>
                   <option value="Attendant">Suporte Técnico</option>
                   <option value="Admin">Administrador (TI)</option>
                 </select>
               </div>
-              <div className="pt-4 flex gap-3 justify-end">
-                <Button type="button" variant="ghost" onClick={() => setShowModal(false)}>Cancelar</Button>
-                <Button type="submit" isLoading={isSubmitting}>Salvar Usuário</Button>
+              <div className="pt-4 flex flex-col-reverse xs:flex-row gap-2 sm:gap-3 justify-end">
+                <Button type="button" variant="ghost" onClick={() => setShowModal(false)} className="w-full xs:w-auto">Cancelar</Button>
+                <Button type="submit" isLoading={isSubmitting} className="w-full xs:w-auto">Salvar Usuário</Button>
               </div>
             </form>
           </motion.div>

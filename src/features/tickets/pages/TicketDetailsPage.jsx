@@ -197,17 +197,17 @@ export default function TicketDetailsPage() {
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link to="/tickets" className="text-text-muted hover:text-primary transition-colors">
-            <ArrowLeft size={24} />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
+          <Link to="/tickets" className="text-text-muted hover:text-primary transition-colors shrink-0 mt-0.5 sm:mt-0">
+            <ArrowLeft size={22} />
           </Link>
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-text-primary">#{ticket.protocolNumber}</h1>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-text-primary break-all">#{ticket.protocolNumber}</h1>
               <Badge status={ticket.status} label={ticket.status === 'WaitingUser' ? 'Aguardando Usuário' : getStatusLabel(ticket.status)} />
             </div>
-            <p className="text-text-secondary mt-1">{ticket.title}</p>
+            <p className="text-text-secondary mt-0.5 sm:mt-1 text-sm break-words">{ticket.title}</p>
           </div>
         </div>
 
@@ -258,31 +258,31 @@ export default function TicketDetailsPage() {
           </div>
         </div>
 
-        <div className="flex gap-2 items-center">
+        <div className="flex flex-wrap gap-2 items-center w-full sm:w-auto">
           {(user?.role === 'Admin' || (user?.role === 'User' && ticket.createdBy?.id === user?.id)) && (
-            <Button onClick={() => setIsDeleteModalOpen(true)} isLoading={isSubmitting} size="sm" className="bg-red-600 hover:bg-red-700 border-none text-white mr-2">
+            <Button onClick={() => setIsDeleteModalOpen(true)} isLoading={isSubmitting} size="sm" className="bg-red-600 hover:bg-red-700 border-none text-white flex-1 sm:flex-initial">
               Excluir
             </Button>
           )}
 
           {user?.role !== 'User' && (
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               {ticket.status === 'Open' && (
-                <Button onClick={() => confirmStatusChange('InAnalysis')} isLoading={isSubmitting && pendingStatus === 'InAnalysis'} size="sm">
+                <Button onClick={() => confirmStatusChange('InAnalysis')} isLoading={isSubmitting && pendingStatus === 'InAnalysis'} size="sm" className="flex-1 sm:flex-initial">
                   Iniciar Análise
                 </Button>
               )}
               {(ticket.status === 'InAnalysis' || ticket.status === 'WaitingUser') && (
-                <Button onClick={() => confirmStatusChange('InProgress')} isLoading={isSubmitting && pendingStatus === 'InProgress'} size="sm" className="gap-2 bg-blue-600 hover:bg-blue-700 border-none text-white">
+                <Button onClick={() => confirmStatusChange('InProgress')} isLoading={isSubmitting && pendingStatus === 'InProgress'} size="sm" className="gap-2 bg-blue-600 hover:bg-blue-700 border-none text-white flex-1 sm:flex-initial">
                   <PlayCircle size={16} /> Iniciar Atendimento
                 </Button>
               )}
               {ticket.status === 'InProgress' && (
                 <>
-                  <Button onClick={() => confirmStatusChange('WaitingUser')} isLoading={isSubmitting && pendingStatus === 'WaitingUser'} size="sm" className="gap-2 bg-orange-500 hover:bg-orange-600 border-none text-white">
+                  <Button onClick={() => confirmStatusChange('WaitingUser')} isLoading={isSubmitting && pendingStatus === 'WaitingUser'} size="sm" className="gap-2 bg-orange-500 hover:bg-orange-600 border-none text-white flex-1 sm:flex-initial">
                     <Clock size={16} /> Aguardar Usuário
                   </Button>
-                  <Button onClick={() => confirmStatusChange('Resolved')} isLoading={isSubmitting && pendingStatus === 'Resolved'} size="sm" className="gap-2 bg-green-600 hover:bg-green-700 border-none text-white">
+                  <Button onClick={() => confirmStatusChange('Resolved')} isLoading={isSubmitting && pendingStatus === 'Resolved'} size="sm" className="gap-2 bg-green-600 hover:bg-green-700 border-none text-white flex-1 sm:flex-initial">
                     <CheckCircle size={16} /> Resolver
                   </Button>
                 </>
@@ -294,7 +294,7 @@ export default function TicketDetailsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-surface-card border border-border-subtle rounded-lg p-6 shadow-sm">
+          <div className="bg-surface-card border border-border-subtle rounded-lg p-4 sm:p-6 shadow-sm">
             <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-4 border-b border-border-subtle pb-2">Descrição da Demanda</h3>
             <div className="text-text-primary text-sm whitespace-pre-wrap leading-relaxed">
               {ticket.description}
@@ -309,19 +309,19 @@ export default function TicketDetailsPage() {
             )}
           </div>
 
-          <div className="bg-surface-card border border-border-subtle rounded-lg p-0 shadow-sm overflow-hidden flex flex-col h-[500px]">
-            <div className="p-4 border-b border-border-subtle bg-gray-50 flex items-center gap-2">
+          <div className="bg-surface-card border border-border-subtle rounded-lg p-0 shadow-sm overflow-hidden flex flex-col h-[450px] sm:h-[500px]">
+            <div className="p-3.5 sm:p-4 border-b border-border-subtle bg-gray-50 flex items-center gap-2">
               <MessageSquare size={18} className="text-text-muted" />
               <h3 className="font-semibold text-text-primary">Comentários</h3>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-surface/30">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4 bg-surface/30">
               {ticket.comments?.map((comment) => (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   key={comment.id}
-                  className={`flex flex-col max-w-[85%] ${comment.user?.email === user?.email ? 'ml-auto items-end' : 'mr-auto items-start'}`}
+                  className={`flex flex-col max-w-[90%] sm:max-w-[85%] ${comment.user?.email === user?.email ? 'ml-auto items-end' : 'mr-auto items-start'}`}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-semibold text-text-secondary">{comment.user?.name}</span>
@@ -343,7 +343,7 @@ export default function TicketDetailsPage() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  className="flex flex-col max-w-[85%] mr-auto items-start"
+                  className="flex flex-col max-w-[90%] sm:max-w-[85%] mr-auto items-start"
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-semibold text-text-secondary">{typingUsers.join(', ')} digitando...</span>
@@ -358,7 +358,7 @@ export default function TicketDetailsPage() {
               <div ref={messagesEndRef} />
             </div>
 
-            <form onSubmit={handleCommentSubmit} className="p-4 border-t border-border-subtle bg-white flex gap-2">
+            <form onSubmit={handleCommentSubmit} className="p-3 sm:p-4 border-t border-border-subtle bg-white flex gap-2">
               <input
                 type="text"
                 value={commentText}
@@ -375,12 +375,12 @@ export default function TicketDetailsPage() {
         </div>
 
         <div className="space-y-6">
-          <div className="bg-surface-card border border-border-subtle rounded-lg p-5 shadow-sm space-y-4">
+          <div className="bg-surface-card border border-border-subtle rounded-lg p-4 sm:p-5 shadow-sm space-y-4">
             <div>
               <p className="text-xs text-text-muted uppercase font-semibold">Solicitante</p>
               <p className="text-sm font-medium text-text-primary">{ticket.createdBy?.name}</p>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <p className="text-xs text-text-muted uppercase font-semibold">Categoria</p>
                 <p className="text-sm font-medium text-text-primary">{getCategoryLabel(ticket.category)}</p>
@@ -396,7 +396,7 @@ export default function TicketDetailsPage() {
             </div>
           </div>
 
-          <div className="bg-surface-card border border-border-subtle rounded-lg p-5 shadow-sm">
+          <div className="bg-surface-card border border-border-subtle rounded-lg p-4 sm:p-5 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <Clock size={18} className="text-text-muted" />
               <h3 className="font-semibold text-text-primary">Timeline</h3>
