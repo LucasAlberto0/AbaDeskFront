@@ -44,11 +44,11 @@ export default function TicketCreatePage() {
   const dropdownRef = useRef(null);
 
   const companyUnits = [
-    { id: 'ABA Infra', label: 'ABA Infra', desc: 'Santos/SP e São Paulo', logo: '/logos/aba-infra.jpg' },
-    { id: 'FCA Log', label: 'FCA Log', desc: 'Santos/SP', logo: '/logos/fca-log.jpg' },
-    { id: 'Eudmarco', label: 'Eudmarco', desc: 'Santos/SP', logo: '/logos/eudmarco.png' },
-    { id: 'Adonai Quimica', label: 'Adonai Quimica', desc: 'Ilha Barnabé Santos/SP', logo: '/logos/adonai-quimica.png' },
-    { id: 'Concais', label: 'Concais', desc: 'Santos/SP', logo: '/logos/concais.png' }
+    { id: 'ABA Infra', label: 'ABA Infra', desc: 'Santos/SP e São Paulo', logo: '/img/companies/aba-infra.jpg' },
+    { id: 'FCA Log', label: 'FCA Log', desc: 'Santos/SP', logo: '/img/companies/fca-log.jpg' },
+    { id: 'Eudmarco', label: 'Eudmarco', desc: 'Santos/SP', logo: '/img/companies/eudmarco.png' },
+    { id: 'Adonai Quimica', label: 'Adonai Quimica', desc: 'Ilha Barnabé Santos/SP', logo: '/img/companies/adonai-quimica.png' },
+    { id: 'Concais', label: 'Concais', desc: 'Santos/SP', logo: '/img/companies/concais.png' }
   ];
 
   useEffect(() => {

@@ -19,7 +19,7 @@ export function AboutModal({ isOpen, onClose }) {
               <div className="relative z-10 flex justify-between items-start">
                 <div>
                   <h2 className="flex items-center gap-2 text-2xl font-bold tracking-tight">
-                    Bem-vindo ao <img alt="ABA Desk" className="h-10 w-auto object-contain mix-blend-screen -ml-1" src="/assets/logo-white.png" />
+                    Bem-vindo ao <img alt="ABA Desk" className="h-10 w-auto object-contain mix-blend-screen -ml-1" src="/img/brand/logo-white.png" />
                   </h2>
                   <p className="text-white/80 mt-1 text-sm font-medium">Sua central inteligente de atendimento</p>
                 </div>

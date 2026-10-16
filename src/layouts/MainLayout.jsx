@@ -49,9 +49,9 @@ export default function MainLayout() {
           <div className={`pt-5 pb-3 ${isCollapsed ? 'px-2 flex justify-center' : 'px-5'}`}>
             <div className="flex items-center gap-2 mb-1 justify-center">
               {isCollapsed ? (
-                <img alt="ABA Logo" className="h-8 w-8 object-contain" src="/abalogo-fechada.png" />
+                <img alt="ABA Logo" className="h-8 w-8 object-contain" src="/img/brand/logo-icon.png" />
               ) : (
-                <img alt="ABA Desk" className="h-14 w-auto object-contain mix-blend-screen" src="/assets/logo-white.png" />
+                <img alt="ABA Desk" className="h-14 w-auto object-contain mix-blend-screen" src="/img/brand/logo-white.png" />
               )}
             </div>
             {!isCollapsed && <p className="text-xs text-white/70 leading-tight truncate pl-0.5">Central de Atendimento e Gestão</p>}

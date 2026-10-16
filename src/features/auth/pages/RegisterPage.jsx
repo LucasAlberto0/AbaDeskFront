@@ -16,11 +16,11 @@ export default function RegisterPage() {
   const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
 
   const companies = [
-    { id: 'ABA Infra', name: 'ABA Infra', logo: '/logos/aba-infra.jpg' },
-    { id: 'Adonai Química', name: 'Adonai Química', logo: '/logos/adonai-quimica.png' },
-    { id: 'Concais', name: 'Concais', logo: '/logos/concais.png' },
-    { id: 'Eudmarco', name: 'Eudmarco', logo: '/logos/eudmarco.png' },
-    { id: 'FCA Log', name: 'FCA Log', logo: '/logos/fca-log.jpg' },
+    { id: 'ABA Infra', name: 'ABA Infra', logo: '/img/companies/aba-infra.jpg' },
+    { id: 'Adonai Química', name: 'Adonai Química', logo: '/img/companies/adonai-quimica.png' },
+    { id: 'Concais', name: 'Concais', logo: '/img/companies/concais.png' },
+    { id: 'Eudmarco', name: 'Eudmarco', logo: '/img/companies/eudmarco.png' },
+    { id: 'FCA Log', name: 'FCA Log', logo: '/img/companies/fca-log.jpg' },
   ];
   
   const register = useAuthStore((state) => state.register);
@@ -52,7 +52,7 @@ export default function RegisterPage() {
 
         <div className="relative z-10 my-auto py-8 max-w-xl mx-auto flex flex-col items-center text-center">
           <div className="w-64 sm:w-80 md:w-96 mb-6 drop-shadow-md transition-transform duration-500 hover:scale-[1.02]">
-            <img alt="Ilustração de Gestão" className="w-full h-auto object-contain pointer-events-none select-none opacity-95" style={{ filter: 'brightness(0) invert(1)' }} src="/assets/illustration.png" />
+            <img alt="Ilustração de Gestão" className="w-full h-auto object-contain pointer-events-none select-none opacity-95" style={{ filter: 'brightness(0) invert(1)' }} src="/img/illustrations/illustration.png" />
           </div>
           <h1 className="text-2xl sm:text-3xl lg:text-[2.35rem] font-bold tracking-tight text-white leading-tight">GRUPO ABA INFRA</h1>
           <p className="mt-4 text-base sm:text-lg text-white/90 font-normal leading-relaxed max-w-lg">Crie sua conta e ganhe acesso à nossa plataforma unificada</p>
@@ -70,7 +70,7 @@ export default function RegisterPage() {
           
           <div className="flex flex-col items-center text-center mb-7">
             <div className="h-10 mb-4 flex items-center justify-center">
-              <img alt="Logo ABA Desk" className="h-9 w-auto object-contain" style={{ filter: 'invert(1) contrast(1.15) brightness(0.2)' }} src="/assets/logo-dark.png" />
+              <img alt="Logo ABA Desk" className="h-9 w-auto object-contain" style={{ filter: 'invert(1) contrast(1.15) brightness(0.2)' }} src="/img/brand/logo-dark.png" />
             </div>
             <h2 className="text-2xl font-bold tracking-tight text-slate-900">
               Criar Conta

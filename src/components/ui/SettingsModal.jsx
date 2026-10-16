@@ -16,11 +16,11 @@ export function SettingsModal({ isOpen, onClose }) {
   const dropdownRef = useRef(null);
 
   const companies = [
-    { id: 'ABA Infra', name: 'ABA Infra', logo: '/logos/aba-infra.jpg' },
-    { id: 'Adonai Química', name: 'Adonai Química', logo: '/logos/adonai-quimica.png' },
-    { id: 'Concais', name: 'Concais', logo: '/logos/concais.png' },
-    { id: 'Eudmarco', name: 'Eudmarco', logo: '/logos/eudmarco.png' },
-    { id: 'FCA Log', name: 'FCA Log', logo: '/logos/fca-log.jpg' },
+    { id: 'ABA Infra', name: 'ABA Infra', logo: '/img/companies/aba-infra.jpg' },
+    { id: 'Adonai Química', name: 'Adonai Química', logo: '/img/companies/adonai-quimica.png' },
+    { id: 'Concais', name: 'Concais', logo: '/img/companies/concais.png' },
+    { id: 'Eudmarco', name: 'Eudmarco', logo: '/img/companies/eudmarco.png' },
+    { id: 'FCA Log', name: 'FCA Log', logo: '/img/companies/fca-log.jpg' },
   ];
 
   useEffect(() => {
