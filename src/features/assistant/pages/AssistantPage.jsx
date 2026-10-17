@@ -15,12 +15,14 @@ import {
 } from 'lucide-react';
 import useAuthStore from '../../auth/hooks/useAuthStore';
 import toast from 'react-hot-toast';
+import { sendChatMessage } from '../api/assistantService';
 
 export default function AssistantPage() {
   const { user } = useAuthStore();
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -69,85 +71,8 @@ export default function AssistantPage() {
     return parts[0][0];
   };
 
-  const getMockResponse = (query) => {
-    const q = query.toLowerCase();
 
-    if (q.includes('abrir') || q.includes('novo chamado') || q.includes('criar chamado')) {
-      return `Para abrir um novo chamado no **AbaDesk**, siga estes passos simples:
-
-1. Acesse o menu lateral e clique em **Novo chamado**.
-2. Escolha um **Título claro e objetivo** que resuma o que está acontecendo.
-3. Selecione a **Unidade da Empresa** relacionada à sua solicitação.
-4. Na **Descrição**, explique detalhadamente o incidente, o comportamento esperado e as etapas para reproduzir a situação.
-5. Indique a **Prioridade** (Baixa, Média, Alta ou Urgente) de acordo com o impacto operacional.
-6. Clique em **Abrir Chamado**.
-
-Após a criação, um número de protocolo exclusivo será gerado e a equipe técnica receberá a notificação para iniciar o atendimento!`;
-    }
-
-    if (q.includes('etapa') || q.includes('status') || q.includes('fluxo') || q.includes('fases')) {
-      return `O fluxo de chamados no **AbaDesk** é estruturado em etapas sequenciais e transparentes:
-
-• **Novo**: O chamado foi registrado pelo usuário e aguarda triagem da equipe técnica.
-• **Em Análise**: O suporte está diagnosticando a causa-raiz e dimensionando o esforço necessário.
-• **Em Progresso**: A equipe técnica está atuando ativamente na correção, desenvolvimento ou configuração solicitada.
-• **Resolvido**: A solução foi aplicada, homologada e o atendimento concluído com sucesso.
-
-Você pode acompanhar as movimentações em tempo real tanto na tela de **Chamados** quanto no painel **Kanban** (disponível para Suporte e Admin).`;
-    }
-
-    if (q.includes('empresa') || q.includes('unidade') || q.includes('perfil') || q.includes('nome')) {
-      return `Para atualizar seus dados cadastrais ou a unidade da empresa vinculada:
-
-1. Clique no botão de **Configurações** (ícone de engrenagem) localizado no cabeçalho ou no rodapé do menu lateral.
-2. Edite seu **Nome Completo** caso necessário.
-3. No seletor de **Unidade da Empresa**, escolha entre as empresas do grupo (*ABA Infra, Adonai Química, Concais, Eudmarco ou FCA Log*).
-4. Clique em **Salvar Alterações**.
-
-Os novos dados serão sincronizados de imediato em toda a sua sessão.`;
-    }
-
-    if (q.includes('erro') || q.includes('bug') || q.includes('falha') || q.includes('relatar') || q.includes('dica')) {
-      return `Boas práticas para relatar incidentes técnicos com máxima agilidade:
-
-• **Título descritivo**: Prefira títulos contextuais (ex: *"Erro 500 ao tentar anexar comprovante na tela de chamados"*) em vez de apenas *"Sistema travou"*.
-• **Passo a passo**: Informe exatamente o que foi feito até o erro ocorrer.
-• **Mensagens de erro**: Se houver código ou texto de aviso na tela, inclua-o na descrição.
-• **Impacto**: Destaque se o problema bloqueia toda uma operação ou se é pontual.
-
-Chamados detalhados têm um tempo de diagnóstico até **40% mais rápido** pela equipe de suporte!`;
-    }
-
-    if (q.includes('kanban')) {
-      return `O painel **Kanban** do AbaDesk foi desenvolvido para visualização ágil e gestão de demandas:
-
-• Exibe cartões organizados em colunas correspondentes aos estágios do atendimento.
-• Permite arrastar e soltar (drag and drop) os cartões para atualizar o status do chamado em tempo real.
-• Conta com identificadores visuais de prioridade, protocolo e data de abertura.
-
-*Nota:* O Kanban está disponível para usuários com perfil de **Suporte** e **Administrador**.`;
-    }
-
-    if (q.includes('olá') || q.includes('ola') || q.includes('bom dia') || q.includes('boa tarde') || q.includes('boa noite') || q.includes('oi')) {
-      const firstName = user?.name ? user.name.split(' ')[0] : 'usuário';
-      return `Olá, ${firstName}! 👋 
-
-Sou a **Assistente IA do AbaDesk**. Estou aqui para esclarecer dúvidas operacionais, orientar sobre o fluxo de chamados e auxiliar no atendimento da sua demanda.
-
-Como posso ajudar você agora?`;
-    }
-
-    return `Recebi sua mensagem: **"${query}"**!
-
-Como assistente do **AbaDesk**, posso orientar você sobre:
-• Procedimentos para abertura, acompanhamento e fechamento de chamados técnicos.
-• Regras de negócio, prazos e políticas de prioridade da central de atendimento.
-• Informações sobre permissões de usuários e configuração de perfil.
-
-*(Nota: No momento estou operando no modo de demonstração com respostas simuladas. Assim que a integração completa com a API de IA for conectada, responderei a perguntas técnicas em tempo real com ainda mais profundidade!)*`;
-  };
-
-  const handleSend = (textToSend) => {
+  const handleSend = async (textToSend) => {
     const text = typeof textToSend === 'string' ? textToSend.trim() : inputMessage.trim();
     if (!text || isTyping) return;
 
@@ -162,18 +87,32 @@ Como assistente do **AbaDesk**, posso orientar você sobre:
     setInputMessage('');
     setIsTyping(true);
 
-    const delay = Math.floor(Math.random() * 400) + 700;
+    try {
+      const data = await sendChatMessage({ message: text, sessionId });
+      if (data?.sessionId) {
+        setSessionId(data.sessionId);
+      }
 
-    setTimeout(() => {
       const aiResponse = {
         id: Date.now() + 1,
         sender: 'assistant',
-        text: getMockResponse(text),
+        text: data?.response || 'Não foi possível obter uma resposta textual da assistente.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       setMessages((prev) => [...prev, aiResponse]);
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Falha ao comunicar com a ABA IA. Tente novamente em instantes.';
+      toast.error(errorMessage);
+      const fallbackResponse = {
+        id: Date.now() + 1,
+        sender: 'assistant',
+        text: `⚠️ **Aviso:** ${errorMessage}`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setMessages((prev) => [...prev, fallbackResponse]);
+    } finally {
       setIsTyping(false);
-    }, delay);
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -194,6 +133,7 @@ Como assistente do **AbaDesk**, posso orientar você sobre:
     if (messages.length === 0) return;
     setMessages([]);
     setInputMessage('');
+    setSessionId(null);
     toast.success('Conversa reiniciada com sucesso!');
   };
 
