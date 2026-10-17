@@ -7,6 +7,7 @@ import TicketDetailsPage from './features/tickets/pages/TicketDetailsPage';
 import TicketCreatePage from './features/tickets/pages/TicketCreatePage';
 import KanbanBoardPage from './features/tickets/pages/KanbanBoardPage';
 import UserManagementPage from './features/admin/pages/UserManagementPage';
+import AssistantPage from './features/assistant/pages/AssistantPage';
 import RegisterPage from './features/auth/pages/RegisterPage';
 import useAuthStore from './features/auth/hooks/useAuthStore';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -31,6 +32,7 @@ function App() {
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="assistant" element={<AssistantPage />} />
             <Route path="tickets" element={<TicketListPage />} />
             <Route path="tickets/kanban" element={<KanbanBoardPage />} />
             <Route path="tickets/new" element={<TicketCreatePage />} />

@@ -26,6 +26,7 @@ export default function MainLayout() {
 
   const getPageTitle = () => {
     if (location.pathname.startsWith('/dashboard')) return 'Dashboard';
+    if (location.pathname.startsWith('/assistant')) return 'Assistente IA';
     if (location.pathname.startsWith('/admin/users')) return 'Gestão de Usuários';
     if (location.pathname === '/tickets/kanban') return 'Kanban de Chamados';
     if (location.pathname === '/tickets/new') return 'Novo Chamado';
@@ -40,6 +41,7 @@ export default function MainLayout() {
     { name: 'Kanban', path: '/tickets/kanban', icon: 'view_kanban', roles: ['Admin', 'Attendant'] },
     { name: 'Chamados (Lista)', path: '/tickets', icon: 'list', roles: ['Admin', 'Attendant'] },
     { name: 'Novo chamado', path: '/tickets/new', icon: 'add_circle', roles: ['Admin', 'User'] },
+    { name: 'Assistente IA', path: '/assistant', icon: 'smart_toy' },
     { name: 'Usuários', path: '/admin/users', icon: 'group', roles: ['Admin'] },
   ];
 
@@ -117,7 +119,11 @@ export default function MainLayout() {
                     title={isCollapsed ? item.name : undefined}
                   >
                     <div className={`flex items-center ${isCollapsed ? 'lg:justify-center gap-3' : 'gap-3'}`}>
-                      <span className="material-symbols-outlined text-[20px] shrink-0">{item.icon}</span>
+                      {item.customIcon ? (
+                        <img src={item.customIcon} alt="" className="w-5 h-5 object-contain shrink-0 rounded" />
+                      ) : (
+                        <span className="material-symbols-outlined text-[20px] shrink-0">{item.icon}</span>
+                      )}
                       <span className={isCollapsed ? 'lg:hidden' : ''}>{item.name}</span>
                     </div>
                     {item.badge && (
@@ -183,7 +189,7 @@ export default function MainLayout() {
         </div>
       </aside>
 
-      <div className={`${isCollapsed ? 'lg:pl-20' : 'lg:pl-72'} pl-0 flex flex-col min-h-screen min-w-0 w-full overflow-x-hidden transition-all duration-300`}>
+      <div className={`${isCollapsed ? 'lg:pl-20' : 'lg:pl-72'} pl-0 flex flex-col ${location.pathname.startsWith('/assistant') ? 'h-screen max-h-screen overflow-hidden' : 'min-h-screen overflow-x-hidden'} min-w-0 w-full transition-all duration-300`}>
         <header className={`fixed top-0 ${isCollapsed ? 'lg:left-20' : 'lg:left-72'} left-0 right-0 h-16 bg-[#c8101e] border-b border-[#a70d18] z-40 flex items-center justify-between px-3 sm:px-6 lg:px-8 gap-2 sm:gap-4 min-w-0 shadow-sm transition-all duration-300`}>
           <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 shrink">
             <button 
@@ -222,10 +228,16 @@ export default function MainLayout() {
           </div>
         </header>
 
-        <main className="relative pt-16 w-full flex-1 min-w-0">
-          <div className="p-3 sm:p-6 lg:p-8 max-w-[1440px] mx-auto w-full min-w-0">
-            <Outlet />
-          </div>
+        <main className={`relative pt-16 w-full flex-1 min-w-0 ${location.pathname.startsWith('/assistant') ? 'h-full max-h-full bg-white overflow-hidden flex flex-col' : ''}`}>
+          {location.pathname.startsWith('/assistant') ? (
+            <div className="w-full flex-1 min-w-0 flex flex-col h-full bg-white overflow-hidden">
+              <Outlet />
+            </div>
+          ) : (
+            <div className="p-3 sm:p-6 lg:p-8 max-w-[1440px] mx-auto w-full min-w-0">
+              <Outlet />
+            </div>
+          )}
         </main>
       </div>
       <AboutModal isOpen={isAboutModalOpen} onClose={() => setIsAboutModalOpen(false)} />
