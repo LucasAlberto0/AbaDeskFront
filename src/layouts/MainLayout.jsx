@@ -4,6 +4,7 @@ import useAuthStore from '../features/auth/hooks/useAuthStore';
 import { AboutModal } from '../components/ui/AboutModal';
 import { SettingsModal } from '../components/ui/SettingsModal';
 import { HeaderSearch } from './HeaderSearch';
+import { NotificationDropdown } from '../components/ui/NotificationDropdown';
 
 export default function MainLayout() {
   const { user, logout } = useAuthStore();
@@ -203,6 +204,7 @@ export default function MainLayout() {
           <div className="flex items-center gap-1.5 sm:gap-4 flex-1 justify-end min-w-0">
             <HeaderSearch />
             <div className="flex items-center gap-1 shrink-0">
+              <NotificationDropdown />
               <button
                 onClick={() => setIsAboutModalOpen(true)}
                 className="p-1.5 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition-colors"
