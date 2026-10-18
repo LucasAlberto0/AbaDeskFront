@@ -144,9 +144,9 @@ export default function MainLayout() {
             <div className={`flex flex-col min-w-0 flex-1 justify-center ${isCollapsed ? 'lg:hidden' : ''}`}>
               <span className="text-[12px] font-semibold text-white truncate leading-tight mb-0.5">{user?.name || 'Lucas Alberto'}</span>
               
-              {user?.role === 'Admin' ? (
+              {user?.role === 'Admin' || user?.role === 2 ? (
                 <span className="text-[11px] text-white/70 truncate leading-tight">Administrador</span>
-              ) : user?.role === 'Attendant' ? (
+              ) : user?.role === 'Attendant' || user?.role === 1 ? (
                 <span className="text-[11px] text-white/70 truncate leading-tight">Suporte Técnico</span>
               ) : (
                 <div className="flex flex-col leading-tight gap-0.5">

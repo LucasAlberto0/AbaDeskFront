@@ -27,6 +27,14 @@ export default function DashboardPage() {
   }, []);
 
 
+  const getUserJobTitle = (user) => {
+    if (!user) return 'Usuário';
+    const role = user.role;
+    if (role === 'Admin' || role === 2) return 'Administrador';
+    if (role === 'Attendant' || role === 1) return 'Suporte Técnico';
+    return user.jobTitle || 'Usuário';
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -44,7 +52,7 @@ export default function DashboardPage() {
           <span className="text-[11px] sm:text-[12px] font-medium tracking-wide uppercase text-slate-400 block mb-0.5 sm:mb-1">Visão Geral</span>
           <h1 className="text-[19px] xs:text-[22px] sm:text-[28px] font-semibold tracking-tight text-slate-900 flex flex-wrap items-baseline gap-1">
             <span>Olá, {user?.name?.split(' ')[0] || 'Usuário'}</span>
-            <span className="text-slate-400 font-normal text-[14px] xs:text-[16px] sm:text-[20px]">· {user?.jobTitle || 'Membro da Equipe'}</span>
+            <span className="text-slate-400 font-normal text-[14px] xs:text-[16px] sm:text-[20px]">· {getUserJobTitle(user)}</span>
           </h1>
         </div>
         <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0 w-full sm:w-auto">

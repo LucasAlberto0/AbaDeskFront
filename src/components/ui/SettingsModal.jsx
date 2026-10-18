@@ -33,10 +33,10 @@ export function SettingsModal({ isOpen, onClose }) {
   useEffect(() => {
     if (user) {
       setName(user.name || '');
-      setJobTitle(user.jobTitle || '');
+      setJobTitle(isAdmin ? 'Administrador' : isAttendant ? (user.jobTitle || 'Suporte Técnico') : (user.jobTitle || ''));
       setCompanyUnit(user.companyUnit || '');
     }
-  }, [user, isOpen]);
+  }, [user, isOpen, isAdmin, isAttendant]);
 
   useEffect(() => {
     function handleClickOutside(event) {
