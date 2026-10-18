@@ -9,15 +9,22 @@ import {
   Trash2, 
   Eye, 
   X,
-  FileImage
+  FileText,
+  Layers,
+  Flag,
+  Building2,
+  Building,
+  Monitor,
+  AlignLeft,
+  Image as ImageIcon,
+  FileCheck2,
+  Send
 } from 'lucide-react';
 import { createTicket } from '../api/ticketService';
 import toast from 'react-hot-toast';
-import useAuthStore from '../../auth/hooks/useAuthStore';
 
 export default function TicketCreatePage() {
   const navigate = useNavigate();
-  const { user } = useAuthStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [attachmentInfo, setAttachmentInfo] = useState(null);
@@ -29,11 +36,11 @@ export default function TicketCreatePage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    companyUnit: user?.companyUnit || '',
+    companyUnit: '',
     department: '',
     systemName: '',
-    category: 'Bug',
-    priority: 'Medium',
+    category: '',
+    priority: '',
     attachmentBase64: ''
   });
 
@@ -119,11 +126,38 @@ export default function TicketCreatePage() {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const completedFields = [
+    formData.title.trim(),
+    formData.category,
+    formData.priority,
+    formData.companyUnit,
+    formData.department.trim(),
+    formData.systemName.trim(),
+    formData.description.trim(),
+    formData.attachmentBase64
+  ].filter(Boolean).length;
+  const progressPercent = Math.round((completedFields / 8) * 100);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.category) {
+      toast.error('Por favor, selecione uma categoria.');
+      return;
+    }
+
+    if (!formData.priority) {
+      toast.error('Por favor, selecione uma prioridade.');
+      return;
+    }
+
+    if (!formData.companyUnit) {
+      toast.error('Por favor, selecione a unidade da empresa.');
+      return;
+    }
+
     if (!formData.attachmentBase64) {
-      toast.error('O anexo de imagem é obrigatório.');
+      toast.error('O anexo de imagem é obrigatório para registrar o chamado.');
       return;
     }
 
@@ -147,10 +181,10 @@ export default function TicketCreatePage() {
       transition={{ duration: 0.28, ease: 'easeOut' }}
       className="max-w-3xl mx-auto space-y-6 pb-12 select-none"
     >
-      <div className="flex items-center gap-3 sm:gap-4">
+      <div className="flex items-center gap-3.5">
         <Link 
           to="/tickets" 
-          className="w-9 h-9 rounded-lg bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer group shadow-2xs"
+          className="w-10 h-10 rounded-xl bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer group shadow-2xs shrink-0"
           title="Voltar aos chamados"
         >
           <ArrowLeft size={18} className="transition-transform group-hover:-translate-x-0.5" />
@@ -165,77 +199,127 @@ export default function TicketCreatePage() {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.32, delay: 0.05 }}
-        className="bg-white border border-slate-200/90 rounded-xl shadow-xs overflow-hidden"
+        className="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden"
       >
-        <div className="h-1 w-full bg-gradient-to-r from-[#9d0012] to-[#c8101e]" />
+        <div className="flex items-center justify-between px-6 py-3 bg-slate-50/70 border-b border-slate-100 text-xs text-slate-500">
+          <div className="flex items-center gap-2 font-medium text-slate-700">
+            <FileCheck2 size={15} className="text-[#c8101e]" />
+            <span>Preenchimento do chamado</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-slate-800">{completedFields} de 8 campos</span>
+            <span className="text-slate-300">•</span>
+            <span className={`font-mono font-bold ${progressPercent === 100 ? 'text-emerald-600' : 'text-[#c8101e]'}`}>
+              {progressPercent}%
+            </span>
+          </div>
+        </div>
 
-        <form onSubmit={handleSubmit} className="p-5 sm:p-7 space-y-5">
+        <div className="h-1.5 w-full bg-slate-100 relative overflow-hidden">
+          <motion.div 
+            className="h-full bg-gradient-to-r from-[#9d0012] via-[#c8101e] to-rose-500"
+            initial={{ width: 0 }}
+            animate={{ width: `${progressPercent}%` }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+          />
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 sm:p-7 space-y-5">
           <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-slate-700">
-              Título do Problema/Requisição
+            <label className="text-xs sm:text-sm font-semibold text-slate-700">
+              Título do Problema/Requisição <span className="text-[#c8101e]">*</span>
             </label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-              placeholder="Ex: Falha ao emitir nota fiscal"
-              className="w-full h-10 px-3 text-sm text-slate-800 placeholder:text-slate-400 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-[#c8101e] focus:ring-3 focus:ring-red-500/10 transition-all shadow-2xs"
-            />
+            <div className="relative flex items-center">
+              <div className="absolute left-3.5 text-slate-400 pointer-events-none flex items-center justify-center">
+                <FileText size={16} />
+              </div>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                required
+                placeholder="Ex: Falha ao emitir nota fiscal no faturamento"
+                className="w-full h-11 pl-10 pr-3.5 text-sm text-slate-900 placeholder:text-slate-400 bg-slate-50/40 hover:bg-white border border-slate-200 hover:border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:border-[#c8101e] focus:ring-4 focus:ring-red-500/10 transition-all shadow-2xs"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-slate-700">
-                Categoria
+              <label className="text-xs sm:text-sm font-semibold text-slate-700">
+                Categoria <span className="text-[#c8101e]">*</span>
               </label>
-              <div className="relative">
+              <div className="relative flex items-center">
+                <div className="absolute left-3.5 text-slate-400 pointer-events-none flex items-center justify-center">
+                  <Layers size={16} />
+                </div>
                 <select
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="w-full h-10 px-3 pr-8 text-sm text-slate-800 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-[#c8101e] focus:ring-3 focus:ring-red-500/10 transition-all cursor-pointer shadow-2xs appearance-none"
+                  required
+                  className={`w-full h-11 pl-10 pr-9 text-sm bg-slate-50/40 hover:bg-white border border-slate-200 hover:border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:border-[#c8101e] focus:ring-4 focus:ring-red-500/10 transition-all cursor-pointer shadow-2xs appearance-none ${
+                    !formData.category ? 'text-slate-400' : 'text-slate-900 font-medium'
+                  }`}
                 >
-                  <option value="Bug">Bug / Falha</option>
-                  <option value="Improvement">Melhoria</option>
+                  <option value="" disabled>Selecione uma categoria...</option>
+                  <option value="Bug">Bug / Falha no Sistema</option>
+                  <option value="Improvement">Melhoria Operacional</option>
                   <option value="NewFeature">Nova Funcionalidade</option>
-                  <option value="Question">Dúvida</option>
-                  <option value="Access">Acesso</option>
+                  <option value="Question">Dúvida / Esclarecimento</option>
+                  <option value="Access">Solicitação de Acesso</option>
                 </select>
-                <ChevronDown size={16} className="absolute right-3 top-3 text-slate-400 pointer-events-none" />
+                <ChevronDown size={16} className="absolute right-3.5 text-slate-400 pointer-events-none" />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-slate-700">
-                Prioridade
+              <label className="text-xs sm:text-sm font-semibold text-slate-700">
+                Prioridade <span className="text-[#c8101e]">*</span>
               </label>
-              <div className="relative">
+              <div className="relative flex items-center">
+                <div className="absolute left-3.5 text-slate-400 pointer-events-none flex items-center justify-center">
+                  <Flag size={16} />
+                </div>
                 <select
                   name="priority"
                   value={formData.priority}
                   onChange={handleChange}
-                  className="w-full h-10 px-3 pr-8 text-sm text-slate-800 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-[#c8101e] focus:ring-3 focus:ring-red-500/10 transition-all cursor-pointer shadow-2xs appearance-none"
+                  required
+                  className={`w-full h-11 pl-10 pr-9 text-sm bg-slate-50/40 hover:bg-white border border-slate-200 hover:border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:border-[#c8101e] focus:ring-4 focus:ring-red-500/10 transition-all cursor-pointer shadow-2xs appearance-none ${
+                    !formData.priority ? 'text-slate-400' : 'text-slate-900 font-medium'
+                  }`}
                 >
-                  <option value="Low">Baixa</option>
-                  <option value="Medium">Média</option>
-                  <option value="High">Alta</option>
+                  <option value="" disabled>Selecione a prioridade...</option>
+                  <option value="Low">Baixa (impacto reduzido)</option>
+                  <option value="Medium">Média (impacto moderado)</option>
+                  <option value="High">Alta (impacto crítico/urgente)</option>
                 </select>
-                <ChevronDown size={16} className="absolute right-3 top-3 text-slate-400 pointer-events-none" />
+                <ChevronDown size={16} className="absolute right-3.5 text-slate-400 pointer-events-none" />
               </div>
             </div>
 
             <div className="space-y-1.5 relative" ref={dropdownRef}>
-              <label className="text-sm font-semibold text-slate-700">
-                Unidade da Empresa
+              <label className="text-xs sm:text-sm font-semibold text-slate-700">
+                Unidade da Empresa <span className="text-[#c8101e]">*</span>
               </label>
               <div
                 onClick={() => setIsCompanyDropdownOpen(!isCompanyDropdownOpen)}
-                className="flex items-center justify-between h-10 w-full px-3 text-sm text-slate-800 bg-white border border-slate-300 rounded-md focus:outline-none hover:border-slate-400 cursor-pointer transition-all shadow-2xs"
+                className="relative flex items-center h-11 w-full pl-10 pr-9 text-sm bg-slate-50/40 hover:bg-white border border-slate-200 hover:border-slate-300 rounded-xl focus:bg-white focus:outline-none hover:border-slate-300 cursor-pointer transition-all shadow-2xs"
               >
+                <div className="absolute left-3.5 text-slate-400 pointer-events-none flex items-center justify-center">
+                  <Building2 size={16} />
+                </div>
                 {formData.companyUnit ? (
                   <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-5 h-5 rounded bg-white border border-slate-200 p-0.5 flex items-center justify-center shrink-0">
+                      <img 
+                        src={companyUnits.find(u => u.id === formData.companyUnit)?.logo} 
+                        alt="" 
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
                     <span className="font-medium text-slate-900 truncate">
                       {companyUnits.find(u => u.id === formData.companyUnit)?.label}
                     </span>
@@ -244,9 +328,9 @@ export default function TicketCreatePage() {
                     </span>
                   </div>
                 ) : (
-                  <span className="text-slate-400">Selecione uma empresa</span>
+                  <span className="text-slate-400">Selecione uma empresa do grupo...</span>
                 )}
-                <ChevronDown size={16} className={`text-slate-400 transition-transform duration-200 ${isCompanyDropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown size={16} className={`absolute right-3.5 text-slate-400 transition-transform duration-200 ${isCompanyDropdownOpen ? 'rotate-180' : ''}`} />
               </div>
 
               <AnimatePresence>
@@ -256,7 +340,7 @@ export default function TicketCreatePage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
                     transition={{ duration: 0.16 }}
-                    className="absolute z-50 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-slate-200 rounded-lg shadow-lg py-1"
+                    className="absolute z-50 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl py-1 divide-y divide-slate-50"
                   >
                     {companyUnits.map((unit) => (
                       <div
@@ -265,11 +349,11 @@ export default function TicketCreatePage() {
                           setFormData(prev => ({ ...prev, companyUnit: unit.id }));
                           setIsCompanyDropdownOpen(false);
                         }}
-                        className={`flex items-center gap-3 px-3 py-2 hover:bg-slate-50 cursor-pointer transition-colors ${
+                        className={`flex items-center gap-3 px-3.5 py-2.5 hover:bg-slate-50 cursor-pointer transition-colors ${
                           formData.companyUnit === unit.id ? 'bg-red-50/60' : ''
                         }`}
                       >
-                        <div className="w-7 h-7 rounded bg-white border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden p-0.5">
+                        <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden p-0.5">
                           <img 
                             src={unit.logo} 
                             alt={unit.label} 
@@ -291,53 +375,72 @@ export default function TicketCreatePage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-slate-700">
-                Departamento
+              <label className="text-xs sm:text-sm font-semibold text-slate-700">
+                Departamento <span className="text-[#c8101e]">*</span>
               </label>
-              <input
-                type="text"
-                name="department"
-                value={formData.department}
-                onChange={handleChange}
-                required
-                placeholder="Ex: Financeiro"
-                className="w-full h-10 px-3 text-sm text-slate-800 placeholder:text-slate-400 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-[#c8101e] focus:ring-3 focus:ring-red-500/10 transition-all shadow-2xs"
-              />
+              <div className="relative flex items-center">
+                <div className="absolute left-3.5 text-slate-400 pointer-events-none flex items-center justify-center">
+                  <Building size={16} />
+                </div>
+                <input
+                  type="text"
+                  name="department"
+                  value={formData.department}
+                  onChange={handleChange}
+                  required
+                  placeholder="Ex: Financeiro, Logística, Operações..."
+                  className="w-full h-11 pl-10 pr-3.5 text-sm text-slate-900 placeholder:text-slate-400 bg-slate-50/40 hover:bg-white border border-slate-200 hover:border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:border-[#c8101e] focus:ring-4 focus:ring-red-500/10 transition-all shadow-2xs"
+                />
+              </div>
             </div>
 
             <div className="sm:col-span-2 space-y-1.5">
-              <label className="text-sm font-semibold text-slate-700">
-                Nome do Sistema
+              <label className="text-xs sm:text-sm font-semibold text-slate-700">
+                Nome do Sistema <span className="text-[#c8101e]">*</span>
               </label>
-              <input
-                type="text"
-                name="systemName"
-                value={formData.systemName}
-                onChange={handleChange}
-                required
-                placeholder="Ex: ERP Protheus"
-                className="w-full h-10 px-3 text-sm text-slate-800 placeholder:text-slate-400 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-[#c8101e] focus:ring-3 focus:ring-red-500/10 transition-all shadow-2xs"
-              />
+              <div className="relative flex items-center">
+                <div className="absolute left-3.5 text-slate-400 pointer-events-none flex items-center justify-center">
+                  <Monitor size={16} />
+                </div>
+                <input
+                  type="text"
+                  name="systemName"
+                  value={formData.systemName}
+                  onChange={handleChange}
+                  required
+                  placeholder="Ex: ERP Protheus, WMS, VPN, Portal RH..."
+                  className="w-full h-11 pl-10 pr-3.5 text-sm text-slate-900 placeholder:text-slate-400 bg-slate-50/40 hover:bg-white border border-slate-200 hover:border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:border-[#c8101e] focus:ring-4 focus:ring-red-500/10 transition-all shadow-2xs"
+                />
+              </div>
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-slate-700">
-              Descrição Detalhada
+            <label className="text-xs sm:text-sm font-semibold text-slate-700">
+              Descrição Detalhada <span className="text-[#c8101e]">*</span>
             </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-              rows={5}
-              placeholder="Descreva o passo a passo para reproduzir o problema ou o detalhamento da sua necessidade..."
-              className="w-full p-3 text-sm text-slate-800 placeholder:text-slate-400 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-[#c8101e] focus:ring-3 focus:ring-red-500/10 transition-all shadow-2xs resize-none leading-relaxed"
-            />
+            <div className="relative rounded-xl border border-slate-200 hover:border-slate-300 bg-slate-50/40 focus-within:bg-white focus-within:border-[#c8101e] focus-within:ring-4 focus-within:ring-red-500/10 transition-all shadow-2xs">
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                required
+                rows={5}
+                placeholder="Descreva o passo a passo para reproduzir o problema, mensagens exibidas na tela e o impacto na sua rotina..."
+                className="w-full p-3.5 text-sm text-slate-900 placeholder:text-slate-400 bg-transparent focus:outline-none resize-none leading-relaxed"
+              />
+              <div className="flex items-center justify-between px-3.5 py-2 border-t border-slate-100 text-[11px] text-slate-400 bg-white/60 rounded-b-xl">
+                <span className="flex items-center gap-1.5">
+                  <AlignLeft size={13} className="text-slate-400" />
+                  Forneça detalhes para agilizar o diagnóstico
+                </span>
+                <span>{formData.description.length} caracteres</span>
+              </div>
+            </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-slate-700 flex items-center gap-1">
+            <label className="text-xs sm:text-sm font-semibold text-slate-700 flex items-center gap-1">
               Anexo de Imagem (Obrigatório) <span className="text-[#c8101e]">*</span>
             </label>
 
@@ -360,28 +463,28 @@ export default function TicketCreatePage() {
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                   onClick={() => fileInputRef.current?.click()}
-                  className={`border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${
+                  className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2.5 ${
                     isDragging
-                      ? 'border-[#c8101e] bg-red-50/40'
-                      : 'border-slate-300 hover:border-slate-400 bg-slate-50/50 hover:bg-slate-50'
+                      ? 'border-[#c8101e] bg-red-50/40 scale-[1.01]'
+                      : 'border-slate-200 hover:border-[#c8101e] bg-slate-50/50 hover:bg-red-50/15'
                   }`}
                 >
                   <motion.div 
-                    animate={isDragging ? { y: -2, scale: 1.05 } : { y: 0, scale: 1 }}
+                    animate={isDragging ? { y: -3, scale: 1.08 } : { y: 0, scale: 1 }}
                     transition={{ duration: 0.2 }}
-                    className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-2xs"
+                    className="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-[#c8101e] shadow-xs"
                   >
-                    <UploadCloud size={20} />
+                    <UploadCloud size={24} />
                   </motion.div>
-                  <div className="text-xs">
-                    <span className="font-semibold text-[#9d0012] hover:underline">
-                      Clique para selecionar uma imagem
-                    </span>
-                    <span className="text-slate-500"> ou arraste o arquivo até aqui</span>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">
+                      Arraste e solte uma captura de tela aqui ou{' '}
+                      <span className="text-[#9d0012] underline decoration-red-300 underline-offset-2">procure no dispositivo</span>
+                    </p>
+                    <p className="text-xs text-slate-400 mt-1">
+                      Formatos aceitos: PNG, JPG ou WEBP (tamanho máximo de 5MB)
+                    </p>
                   </div>
-                  <span className="text-[11px] text-slate-400">
-                    PNG, JPG ou WEBP até 5MB
-                  </span>
                 </motion.div>
               ) : (
                 <motion.div
@@ -390,45 +493,48 @@ export default function TicketCreatePage() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.98 }}
                   transition={{ duration: 0.2 }}
-                  className="p-3 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-between gap-3 shadow-2xs"
+                  className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/80 flex items-center justify-between gap-3 shadow-2xs"
                 >
-                  <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex items-center gap-3.5 min-w-0">
                     <div 
                       onClick={() => setIsPreviewModalOpen(true)}
-                      className="relative w-12 h-12 rounded-md bg-white border border-slate-200 overflow-hidden shrink-0 cursor-pointer group"
+                      className="relative w-14 h-14 rounded-lg bg-white border border-slate-200 overflow-hidden shrink-0 cursor-pointer group shadow-2xs"
                     >
                       <img
                         src={formData.attachmentBase64}
                         alt="Anexo"
                         className="w-full h-full object-cover transition-transform group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
-                        <Eye size={14} />
+                      <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                        <Eye size={16} />
                       </div>
                     </div>
                     <div className="flex flex-col min-w-0">
-                      <span className="text-xs font-semibold text-slate-800 truncate">
-                        {attachmentInfo?.name || 'Imagem anexada'}
-                      </span>
-                      <span className="text-[11px] text-slate-500">
-                        {attachmentInfo?.size || 'Pronto para envio'}
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-xs bg-emerald-500 shrink-0" />
+                        <span className="text-xs font-bold text-slate-800 truncate">
+                          {attachmentInfo?.name || 'Evidência anexada'}
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-slate-500 mt-0.5">
+                        {attachmentInfo?.size || 'Pronto para envio'} • Imagem pronta para o chamado
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1.5 shrink-0">
+                  <div className="flex items-center gap-2 shrink-0">
                     <button
                       type="button"
                       onClick={() => setIsPreviewModalOpen(true)}
-                      className="p-1.5 rounded-md bg-white border border-slate-200 hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer"
-                      title="Visualizar anexo"
+                      className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-slate-300 text-xs font-medium text-slate-700 hover:text-slate-900 transition-colors shadow-2xs cursor-pointer flex items-center gap-1.5"
                     >
-                      <Eye size={15} />
+                      <Eye size={14} />
+                      <span className="hidden xs:inline">Visualizar</span>
                     </button>
                     <button
                       type="button"
                       onClick={handleRemoveAttachment}
-                      className="p-1.5 rounded-md bg-white border border-rose-200 hover:bg-rose-50 text-rose-600 transition-colors cursor-pointer"
+                      className="p-1.5 rounded-lg bg-white border border-rose-200 hover:bg-rose-50 text-rose-600 transition-colors shadow-2xs cursor-pointer"
                       title="Remover anexo"
                     >
                       <Trash2 size={15} />
@@ -439,21 +545,31 @@ export default function TicketCreatePage() {
             </AnimatePresence>
           </div>
 
-          <div className="flex justify-end pt-4 border-t border-slate-200">
+          <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-5 border-t border-slate-100">
+            <Link 
+              to="/tickets"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm text-center transition-colors cursor-pointer"
+            >
+              Cancelar
+            </Link>
+
             <motion.button
               type="submit"
               disabled={isSubmitting}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full sm:w-auto px-6 py-2.5 rounded-md bg-[#9d0012] hover:bg-[#c8101e] text-white font-semibold text-sm transition-colors cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-[#9d0012] to-[#c8101e] hover:from-[#880010] hover:to-[#b00d19] text-white font-semibold text-sm shadow-md shadow-red-950/15 flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
                   <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                  <span>Registrando...</span>
+                  <span>Registrando Chamado...</span>
                 </>
               ) : (
-                <span>Registrar Chamado</span>
+                <>
+                  <Send size={15} />
+                  <span>Registrar Chamado</span>
+                </>
               )}
             </motion.button>
           </div>
@@ -474,16 +590,16 @@ export default function TicketCreatePage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative max-w-3xl max-h-[85vh] bg-white rounded-xl overflow-hidden shadow-2xl flex flex-col"
+              className="relative max-w-3xl max-h-[85vh] bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col"
             >
-              <div className="p-3 bg-slate-900 text-white flex items-center justify-between">
+              <div className="p-3.5 bg-slate-900 text-white flex items-center justify-between">
                 <span className="text-xs font-medium truncate max-w-md">
                   {attachmentInfo?.name || 'Pré-visualização do Anexo'}
                 </span>
                 <button
                   type="button"
                   onClick={() => setIsPreviewModalOpen(false)}
-                  className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors cursor-pointer"
                 >
                   <X size={15} />
                 </button>
@@ -492,7 +608,7 @@ export default function TicketCreatePage() {
                 <img 
                   src={formData.attachmentBase64} 
                   alt="Anexo ampliado" 
-                  className="max-w-full max-h-[70vh] object-contain rounded"
+                  className="max-w-full max-h-[70vh] object-contain rounded-lg"
                 />
               </div>
             </motion.div>

@@ -81,7 +81,7 @@ export default function UserManagementPage() {
       email: u.email,
       role: u.role,
       isActive: u.isActive,
-      password: '' // Password left blank
+      password: ''
     });
     setShowModal(true);
   };
@@ -91,10 +91,8 @@ export default function UserManagementPage() {
     setIsDeleting(true);
     try {
       const response = await deleteUser(deleteUserId);
-      // Remove instantly from local state to trigger smooth exit animation
       setUsers(prev => prev.filter(u => u.id !== deleteUserId));
       toast.success(response.message || 'Usuário inativado/excluído com sucesso.');
-      // Update from server in background just in case
       getUsers().then(data => setUsers((data.items || data).filter(u => u.isActive)));
     } catch (error) {
       console.error(error);

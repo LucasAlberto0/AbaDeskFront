@@ -51,7 +51,6 @@ export default function MainLayout() {
   return (
     <div className="bg-[#FAFAFA] font-sans text-slate-800 antialiased selection:bg-red-500/10 selection:text-[#9d0012] min-h-screen">
       
-      {/* Backdrop mobile */}
       {isMobileMenuOpen && (
         <div 
           onClick={() => setIsMobileMenuOpen(false)} 
@@ -60,7 +59,6 @@ export default function MainLayout() {
         />
       )}
 
-      {/* Sidebar (Drawer on mobile, fixed on desktop) */}
       <aside className={`fixed left-0 top-0 h-full ${isCollapsed ? 'lg:w-20' : 'lg:w-72'} w-72 max-w-[85vw] bg-[#9d0012] shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between select-none text-white transition-all duration-300 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         <div className="flex flex-col">
           <div className={`pt-5 pb-3 ${isCollapsed ? 'lg:px-2 px-5 flex lg:justify-center justify-between items-center' : 'px-5 flex justify-between items-center'}`}>

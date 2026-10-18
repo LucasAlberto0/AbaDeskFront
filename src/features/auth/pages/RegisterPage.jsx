@@ -8,7 +8,7 @@ export default function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState(0); // 0 = User, 1 = Attendant
+  const [role, setRole] = useState(0);
   const [jobTitle, setJobTitle] = useState('');
   const [companyUnit, setCompanyUnit] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -32,7 +32,7 @@ export default function RegisterPage() {
     setIsSubmitting(true);
     try {
       await register(name, email, password, role, jobTitle, companyUnit);
-      useAuthStore.getState().logout(); // ensure state is clear
+      useAuthStore.getState().logout();
       toast.success('Conta criada com sucesso! Redirecionando para o login...', { duration: 3000 });
       setTimeout(() => {
         navigate('/login');

@@ -19,13 +19,63 @@ import { sendChatMessage } from '../api/assistantService';
 
 export default function AssistantPage() {
   const { user } = useAuthStore();
-  const [messages, setMessages] = useState([]);
+  const storageKey = user?.id ? `abadesk_ai_messages_${user.id}` : 'abadesk_ai_messages';
+  const sessionKey = user?.id ? `abadesk_ai_session_${user.id}` : 'abadesk_ai_session';
+
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [sessionId, setSessionId] = useState(null);
+  const [sessionId, setSessionId] = useState(() => {
+    try {
+      return localStorage.getItem(sessionKey) || null;
+    } catch {
+      return null;
+    }
+  });
   const [copiedId, setCopiedId] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      setMessages(saved ? JSON.parse(saved) : []);
+      const savedSession = localStorage.getItem(sessionKey);
+      setSessionId(savedSession || null);
+    } catch {
+      setMessages([]);
+      setSessionId(null);
+    }
+  }, [storageKey, sessionKey]);
+
+  useEffect(() => {
+    try {
+      if (messages.length > 0) {
+        localStorage.setItem(storageKey, JSON.stringify(messages));
+      } else {
+        localStorage.removeItem(storageKey);
+      }
+    } catch {
+    }
+  }, [messages, storageKey]);
+
+  useEffect(() => {
+    try {
+      if (sessionId) {
+        localStorage.setItem(sessionKey, sessionId);
+      } else {
+        localStorage.removeItem(sessionKey);
+      }
+    } catch {
+    }
+  }, [sessionId, sessionKey]);
 
   const promptSuggestions = [
     {
@@ -134,6 +184,11 @@ export default function AssistantPage() {
     setMessages([]);
     setInputMessage('');
     setSessionId(null);
+    try {
+      localStorage.removeItem(storageKey);
+      localStorage.removeItem(sessionKey);
+    } catch {
+    }
     toast.success('Conversa reiniciada com sucesso!');
   };
 
