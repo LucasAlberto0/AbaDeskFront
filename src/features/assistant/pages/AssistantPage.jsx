@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ArrowUp, 
-  Sparkles, 
-  RotateCcw, 
-  Copy, 
-  Check, 
-  User, 
+import {
+  ArrowUp,
+  Sparkles,
+  RotateCcw,
+  Copy,
+  Check,
+  User,
   Info,
   HelpCircle,
   Workflow,
@@ -210,7 +210,7 @@ export default function AssistantPage() {
 
   return (
     <div className="relative flex flex-col h-full w-full bg-white overflow-hidden select-none">
-      
+
       <AnimatePresence>
         {isChatActive && (
           <motion.header
@@ -223,15 +223,15 @@ export default function AssistantPage() {
           >
             <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
               <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#c8101e] p-1.5 flex items-center justify-center shadow-sm shrink-0">
-                <img 
-                  src="/img/brand/logo-da-ia-aba.png" 
-                  alt="AbaDesk IA" 
+                <img
+                  src="/img/brand/logo-da-ia-aba.png"
+                  alt="AbaDesk IA"
                   className="w-full h-full object-contain"
                 />
               </div>
               <div className="min-w-0">
                 <h2 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight truncate">
-                  AbaDesk IA
+                  Aba Assist
                 </h2>
                 <p className="text-[10px] sm:text-[11px] text-slate-500 truncate hidden xs:block">
                   Central inteligente de suporte e atendimento
@@ -271,16 +271,16 @@ export default function AssistantPage() {
                 className="relative mb-4 sm:mb-5"
               >
                 <div className="relative w-16 h-16 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-[#c8101e] p-2.5 sm:p-3 flex items-center justify-center shadow-xl shadow-red-900/15">
-                  <img 
-                    src="/img/brand/logo-da-ia-aba.png" 
-                    alt="AbaDesk IA" 
+                  <img
+                    src="/img/brand/logo-da-ia-aba.png"
+                    alt="AbaDesk IA"
                     className="w-full h-full object-contain"
                   />
                 </div>
               </motion.div>
 
               <div className="mb-5 sm:mb-8">
-                <h1 className="text-xl xs:text-2xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-slate-900 leading-tight">
+                <h1 className="text-xl xs:text-2xl sm:text-4xl md:text-4xl font-semibold tracking-tight text-slate-900 leading-tight">
                   Qual desafio vamos <br className="hidden xs:inline" />
                   <span className="text-[#9d0012]">solucionar juntos hoje?</span>
                 </h1>
@@ -291,7 +291,7 @@ export default function AssistantPage() {
 
               <div className="w-full max-w-2xl px-1">
                 <div className="relative flex items-center rounded-full bg-slate-50/90 hover:bg-slate-100/90 border border-slate-300 focus-within:border-[#c8101e] focus-within:bg-white focus-within:ring-4 focus-within:ring-red-500/10 shadow-lg shadow-slate-200/50 transition-all px-3.5 sm:px-5 py-1.5 sm:py-2.5">
-                  
+
                   <input
                     ref={inputRef}
                     type="text"
@@ -308,11 +308,10 @@ export default function AssistantPage() {
                       type="button"
                       onClick={() => handleSend()}
                       disabled={!inputMessage.trim() || isTyping}
-                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shrink-0 ${
-                        inputMessage.trim() && !isTyping
-                          ? 'bg-[#c8101e] hover:bg-[#b00d19] text-white shadow-md shadow-red-900/20 cursor-pointer scale-100'
-                          : 'bg-slate-200 text-slate-400 cursor-not-allowed scale-95'
-                      }`}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shrink-0 ${inputMessage.trim() && !isTyping
+                        ? 'bg-[#c8101e] hover:bg-[#b00d19] text-white shadow-md shadow-red-900/20 cursor-pointer scale-100'
+                        : 'bg-slate-200 text-slate-400 cursor-not-allowed scale-95'
+                        }`}
                       title="Enviar mensagem"
                     >
                       <ArrowUp size={16} />
@@ -357,26 +356,24 @@ export default function AssistantPage() {
                       transition={{ duration: 0.25 }}
                       className={`flex items-start gap-2.5 sm:gap-3.5 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
                     >
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-semibold shadow-xs overflow-hidden ${
-                        isUser 
-                          ? 'bg-[#c8101e] text-white ring-2 ring-red-100' 
-                          : 'bg-[#c8101e] p-1'
-                      }`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-semibold shadow-xs overflow-hidden ${isUser
+                        ? 'bg-[#c8101e] text-white ring-2 ring-red-100'
+                        : 'bg-[#c8101e] p-1'
+                        }`}>
                         {isUser ? getInitials(user?.name) : (
-                          <img 
-                            src="/img/brand/logo-da-ia-aba.png" 
-                            alt="AbaDesk IA" 
-                            className="w-full h-full object-contain" 
+                          <img
+                            src="/img/brand/logo-da-ia-aba.png"
+                            alt="AbaDesk IA"
+                            className="w-full h-full object-contain"
                           />
                         )}
                       </div>
 
                       <div className={`flex flex-col min-w-0 max-w-[88%] sm:max-w-[82%] ${isUser ? 'items-end' : 'items-start'}`}>
-                        <div className={`rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 shadow-xs break-words ${
-                          isUser 
-                            ? 'bg-[#9d0012] text-white rounded-tr-xs' 
-                            : 'bg-slate-50 border border-slate-200 text-slate-800 rounded-tl-xs'
-                        }`}>
+                        <div className={`rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 shadow-xs break-words ${isUser
+                          ? 'bg-[#9d0012] text-white rounded-tr-xs'
+                          : 'bg-slate-50 border border-slate-200 text-slate-800 rounded-tl-xs'
+                          }`}>
                           {isUser ? (
                             <p className="text-[13px] sm:text-[14px] leading-relaxed whitespace-pre-wrap break-words">{message.text}</p>
                           ) : (
@@ -419,17 +416,17 @@ export default function AssistantPage() {
                   className="flex items-start gap-2.5 sm:gap-3"
                 >
                   <div className="w-8 h-8 rounded-full bg-[#c8101e] p-1 flex items-center justify-center shrink-0 shadow-xs overflow-hidden">
-                    <img 
-                      src="/img/brand/logo-da-ia-aba.png" 
-                      alt="AbaDesk IA" 
-                      className="w-full h-full object-contain" 
+                    <img
+                      src="/img/brand/logo-da-ia-aba.png"
+                      alt="AbaDesk IA"
+                      className="w-full h-full object-contain"
                     />
                   </div>
                   <div className="bg-slate-50 border border-slate-200 rounded-2xl rounded-tl-xs px-4 py-3 shadow-xs flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-[#c8101e] animate-bounce" style={{ animationDelay: '0ms' }} />
                     <span className="w-2 h-2 rounded-full bg-[#c8101e] animate-bounce" style={{ animationDelay: '150ms' }} />
                     <span className="w-2 h-2 rounded-full bg-[#c8101e] animate-bounce" style={{ animationDelay: '300ms' }} />
-                    <span className="text-xs text-slate-500 ml-1.5 font-medium">AbaDesk IA pensando...</span>
+                    <span className="text-xs text-slate-500 ml-1.5 font-medium">Aba Assist pensando...</span>
                   </div>
                 </motion.div>
               )}
@@ -442,7 +439,7 @@ export default function AssistantPage() {
 
       <AnimatePresence>
         {isChatActive && (
-          <motion.div 
+          <motion.div
             key="bottom-input-bar"
             initial={{ y: 80, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -467,7 +464,7 @@ export default function AssistantPage() {
               </div>
 
               <div className="relative flex items-center rounded-full bg-slate-50 hover:bg-slate-100/90 border border-slate-300 focus-within:border-[#c8101e] focus-within:bg-white focus-within:ring-4 focus-within:ring-red-500/10 shadow-sm transition-all px-3.5 sm:px-5 py-1.5 sm:py-2.5">
-                
+
                 <input
                   type="text"
                   value={inputMessage}
@@ -483,11 +480,10 @@ export default function AssistantPage() {
                     type="button"
                     onClick={() => handleSend()}
                     disabled={!inputMessage.trim() || isTyping}
-                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shrink-0 ${
-                      inputMessage.trim() && !isTyping
-                        ? 'bg-[#c8101e] hover:bg-[#b00d19] text-white shadow-md shadow-red-900/20 cursor-pointer scale-100'
-                        : 'bg-slate-200 text-slate-400 cursor-not-allowed scale-95'
-                    }`}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shrink-0 ${inputMessage.trim() && !isTyping
+                      ? 'bg-[#c8101e] hover:bg-[#b00d19] text-white shadow-md shadow-red-900/20 cursor-pointer scale-100'
+                      : 'bg-slate-200 text-slate-400 cursor-not-allowed scale-95'
+                      }`}
                     title="Enviar mensagem"
                   >
                     <ArrowUp size={16} />
@@ -497,7 +493,7 @@ export default function AssistantPage() {
 
               <p className="text-[10px] sm:text-[11px] text-slate-400 text-center mt-2 flex items-center justify-center gap-1">
                 <Info size={12} className="shrink-0" />
-                O AbaDesk IA pode cometer erros. Verifique informações operacionais importantes com a equipe técnica.
+                O Aba Assist pode cometer erros. Verifique informações operacionais importantes com a equipe técnica.
               </p>
             </div>
           </motion.div>

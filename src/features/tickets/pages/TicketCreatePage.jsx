@@ -1,47 +1,41 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ArrowLeft, 
+  ChevronDown, 
+  UploadCloud, 
+  Check, 
+  Trash2, 
+  Eye, 
+  X,
+  FileImage
+} from 'lucide-react';
 import { createTicket } from '../api/ticketService';
 import toast from 'react-hot-toast';
-import { Button } from '../../../components/ui/Button';
-import { Input } from '../../../components/ui/Input';
+import useAuthStore from '../../auth/hooks/useAuthStore';
 
 export default function TicketCreatePage() {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [attachmentInfo, setAttachmentInfo] = useState(null);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
+  const fileInputRef = useRef(null);
+  const dropdownRef = useRef(null);
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    companyUnit: '',
+    companyUnit: user?.companyUnit || '',
     department: '',
     systemName: '',
     category: 'Bug',
     priority: 'Medium',
     attachmentBase64: ''
   });
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('A imagem deve ter no máximo 5MB');
-        e.target.value = '';
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({ ...formData, attachmentBase64: reader.result });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
 
   const companyUnits = [
     { id: 'ABA Infra', label: 'ABA Infra', desc: 'Santos/SP e São Paulo', logo: '/img/companies/aba-infra.jpg' },
@@ -57,163 +51,454 @@ export default function TicketCreatePage() {
         setIsCompanyDropdownOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const processFile = (file) => {
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Selecione um arquivo de imagem válido (PNG, JPG, WEBP).');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('A imagem deve ter no máximo 5MB.');
+      return;
+    }
+
+    const sizeFormatted = file.size > 1024 * 1024 
+      ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
+      : `${Math.round(file.size / 1024)} KB`;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData(prev => ({ ...prev, attachmentBase64: reader.result }));
+      setAttachmentInfo({
+        name: file.name,
+        size: sizeFormatted
+      });
+      toast.success('Imagem anexada com sucesso.');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    processFile(file);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    processFile(file);
+  };
+
+  const handleRemoveAttachment = () => {
+    setFormData(prev => ({ ...prev, attachmentBase64: '' }));
+    setAttachmentInfo(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    toast.success('Anexo removido.');
+  };
+
+  const handleChange = (e) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.attachmentBase64) {
+      toast.error('O anexo de imagem é obrigatório.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const result = await createTicket(formData);
-      toast.success('Chamado criado com sucesso!');
+      toast.success('Chamado criado com sucesso.');
       navigate(`/tickets/${result.id}`);
     } catch (error) {
-      console.error(error);
-      toast.error('Erro ao criar chamado. Verifique os campos ou suas permissões.');
+      const errorMsg = error.response?.data?.message || 'Erro ao criar chamado. Verifique os campos.';
+      toast.error(errorMsg);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <motion.div 
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.28, ease: 'easeOut' }}
+      className="max-w-3xl mx-auto space-y-6 pb-12 select-none"
+    >
       <div className="flex items-center gap-3 sm:gap-4">
-        <Link to="/tickets" className="text-text-muted hover:text-primary transition-colors shrink-0">
-          <ArrowLeft size={22} />
+        <Link 
+          to="/tickets" 
+          className="w-9 h-9 rounded-lg bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer group shadow-2xs"
+          title="Voltar aos chamados"
+        >
+          <ArrowLeft size={18} className="transition-transform group-hover:-translate-x-0.5" />
         </Link>
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-text-primary tracking-tight">Novo Chamado</h1>
-          <p className="text-xs sm:text-sm text-text-secondary mt-0.5 sm:mt-1">Preencha os dados abaixo para abrir uma solicitação.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Novo Chamado</h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Preencha os dados abaixo para abrir uma solicitação.</p>
         </div>
       </div>
 
-      <div className="bg-surface-card border border-border-subtle rounded-lg p-4 sm:p-6 shadow-sm">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-text-secondary">Título do Problema/Requisição</label>
-            <Input name="title" value={formData.title} onChange={handleChange} required placeholder="Ex: Falha ao emitir nota fiscal" />
+      <motion.div 
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.32, delay: 0.05 }}
+        className="bg-white border border-slate-200/90 rounded-xl shadow-xs overflow-hidden"
+      >
+        <div className="h-1 w-full bg-gradient-to-r from-[#9d0012] to-[#c8101e]" />
+
+        <form onSubmit={handleSubmit} className="p-5 sm:p-7 space-y-5">
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-slate-700">
+              Título do Problema/Requisição
+            </label>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              required
+              placeholder="Ex: Falha ao emitir nota fiscal"
+              className="w-full h-10 px-3 text-sm text-slate-800 placeholder:text-slate-400 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-[#c8101e] focus:ring-3 focus:ring-red-500/10 transition-all shadow-2xs"
+            />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-text-secondary">Categoria</label>
-              <select name="category" value={formData.category} onChange={handleChange} className="flex h-10 w-full rounded-[4px] border border-border-subtle bg-white px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-primary">
-                <option value="Bug">Bug / Falha</option>
-                <option value="Improvement">Melhoria</option>
-                <option value="NewFeature">Nova Funcionalidade</option>
-                <option value="Question">Dúvida</option>
-                <option value="Access">Acesso</option>
-              </select>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-slate-700">
+                Categoria
+              </label>
+              <div className="relative">
+                <select
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 pr-8 text-sm text-slate-800 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-[#c8101e] focus:ring-3 focus:ring-red-500/10 transition-all cursor-pointer shadow-2xs appearance-none"
+                >
+                  <option value="Bug">Bug / Falha</option>
+                  <option value="Improvement">Melhoria</option>
+                  <option value="NewFeature">Nova Funcionalidade</option>
+                  <option value="Question">Dúvida</option>
+                  <option value="Access">Acesso</option>
+                </select>
+                <ChevronDown size={16} className="absolute right-3 top-3 text-slate-400 pointer-events-none" />
+              </div>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-text-secondary">Prioridade</label>
-              <select name="priority" value={formData.priority} onChange={handleChange} className="flex h-10 w-full rounded-[4px] border border-border-subtle bg-white px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-primary">
-                <option value="Low">Baixa</option>
-                <option value="Medium">Média</option>
-                <option value="High">Alta</option>
-              </select>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-slate-700">
+                Prioridade
+              </label>
+              <div className="relative">
+                <select
+                  name="priority"
+                  value={formData.priority}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 pr-8 text-sm text-slate-800 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-[#c8101e] focus:ring-3 focus:ring-red-500/10 transition-all cursor-pointer shadow-2xs appearance-none"
+                >
+                  <option value="Low">Baixa</option>
+                  <option value="Medium">Média</option>
+                  <option value="High">Alta</option>
+                </select>
+                <ChevronDown size={16} className="absolute right-3 top-3 text-slate-400 pointer-events-none" />
+              </div>
             </div>
-            <div className="space-y-2 relative" ref={dropdownRef}>
-              <label className="text-sm font-semibold text-text-secondary">Unidade da Empresa</label>
-              
-              <div 
+
+            <div className="space-y-1.5 relative" ref={dropdownRef}>
+              <label className="text-sm font-semibold text-slate-700">
+                Unidade da Empresa
+              </label>
+              <div
                 onClick={() => setIsCompanyDropdownOpen(!isCompanyDropdownOpen)}
-                className="flex items-center justify-between h-10 w-full rounded-[4px] border border-border-subtle bg-white px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-primary cursor-pointer hover:bg-slate-50 transition-colors"
+                className="flex items-center justify-between h-10 w-full px-3 text-sm text-slate-800 bg-white border border-slate-300 rounded-md focus:outline-none hover:border-slate-400 cursor-pointer transition-all shadow-2xs"
               >
                 {formData.companyUnit ? (
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="font-semibold truncate">{companyUnits.find(u => u.id === formData.companyUnit)?.label}</span>
-                    <span className="text-slate-500 text-xs truncate max-w-[120px] hidden xs:inline">{companyUnits.find(u => u.id === formData.companyUnit)?.desc}</span>
+                    <span className="font-medium text-slate-900 truncate">
+                      {companyUnits.find(u => u.id === formData.companyUnit)?.label}
+                    </span>
+                    <span className="text-slate-400 text-xs truncate hidden xs:inline">
+                      • {companyUnits.find(u => u.id === formData.companyUnit)?.desc}
+                    </span>
                   </div>
                 ) : (
                   <span className="text-slate-400">Selecione uma empresa</span>
                 )}
-                <ChevronDown size={16} className={`text-slate-400 transition-transform ${isCompanyDropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown size={16} className={`text-slate-400 transition-transform duration-200 ${isCompanyDropdownOpen ? 'rotate-180' : ''}`} />
               </div>
 
-              {isCompanyDropdownOpen && (
-                <div className="absolute z-50 mt-1 w-full max-h-64 overflow-y-auto bg-white border border-border-subtle rounded-lg shadow-lg py-1">
-                  {companyUnits.map((unit) => (
-                    <div
-                      key={unit.id}
-                      onClick={() => {
-                        setFormData({ ...formData, companyUnit: unit.id });
-                        setIsCompanyDropdownOpen(false);
-                      }}
-                      className="flex items-center gap-3 px-3 py-2 hover:bg-red-50 cursor-pointer transition-colors"
-                    >
-                      <div className="w-8 h-8 rounded bg-white border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden">
-                        <img 
-                          src={unit.logo} 
-                          alt={unit.label} 
-                          className="w-full h-full object-contain p-1"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                            e.target.nextSibling.style.display = 'flex';
-                          }}
-                        />
-                        <div className="hidden w-full h-full items-center justify-center text-slate-400 text-[10px] font-bold">
-                          {unit.label.substring(0, 2).toUpperCase()}
+              <AnimatePresence>
+                {isCompanyDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.16 }}
+                    className="absolute z-50 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-slate-200 rounded-lg shadow-lg py-1"
+                  >
+                    {companyUnits.map((unit) => (
+                      <div
+                        key={unit.id}
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, companyUnit: unit.id }));
+                          setIsCompanyDropdownOpen(false);
+                        }}
+                        className={`flex items-center gap-3 px-3 py-2 hover:bg-slate-50 cursor-pointer transition-colors ${
+                          formData.companyUnit === unit.id ? 'bg-red-50/60' : ''
+                        }`}
+                      >
+                        <div className="w-7 h-7 rounded bg-white border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden p-0.5">
+                          <img 
+                            src={unit.logo} 
+                            alt={unit.label} 
+                            className="w-full h-full object-contain"
+                          />
                         </div>
+                        <div className="flex flex-col min-w-0 flex-1">
+                          <span className="text-xs font-semibold text-slate-900 truncate">{unit.label}</span>
+                          <span className="text-[10px] text-slate-500 truncate">{unit.desc}</span>
+                        </div>
+                        {formData.companyUnit === unit.id && (
+                          <Check size={14} className="text-[#c8101e] shrink-0" />
+                        )}
                       </div>
-                      <div className="flex flex-col min-w-0">
-                        <span className="text-sm font-semibold text-slate-900 truncate">{unit.label}</span>
-                        <span className="text-[11px] text-slate-500 truncate">{unit.desc}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-text-secondary">Departamento</label>
-              <Input name="department" value={formData.department} onChange={handleChange} required placeholder="Ex: Financeiro" />
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-slate-700">
+                Departamento
+              </label>
+              <input
+                type="text"
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+                required
+                placeholder="Ex: Financeiro"
+                className="w-full h-10 px-3 text-sm text-slate-800 placeholder:text-slate-400 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-[#c8101e] focus:ring-3 focus:ring-red-500/10 transition-all shadow-2xs"
+              />
             </div>
-            <div className="md:col-span-2 space-y-2">
-              <label className="text-sm font-semibold text-text-secondary">Nome do Sistema</label>
-              <Input name="systemName" value={formData.systemName} onChange={handleChange} required placeholder="Ex: ERP Protheus" />
+
+            <div className="sm:col-span-2 space-y-1.5">
+              <label className="text-sm font-semibold text-slate-700">
+                Nome do Sistema
+              </label>
+              <input
+                type="text"
+                name="systemName"
+                value={formData.systemName}
+                onChange={handleChange}
+                required
+                placeholder="Ex: ERP Protheus"
+                className="w-full h-10 px-3 text-sm text-slate-800 placeholder:text-slate-400 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-[#c8101e] focus:ring-3 focus:ring-red-500/10 transition-all shadow-2xs"
+              />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-text-secondary">Descrição Detalhada</label>
-            <textarea 
-              name="description" 
-              value={formData.description} 
-              onChange={handleChange} 
-              required 
-              rows={6}
-              className="flex w-full rounded-[4px] border border-border-subtle bg-white px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-primary resize-none"
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-slate-700">
+              Descrição Detalhada
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              required
+              rows={5}
               placeholder="Descreva o passo a passo para reproduzir o problema ou o detalhamento da sua necessidade..."
+              className="w-full p-3 text-sm text-slate-800 placeholder:text-slate-400 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-[#c8101e] focus:ring-3 focus:ring-red-500/10 transition-all shadow-2xs resize-none leading-relaxed"
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-text-secondary">Anexo de Imagem (Obrigatório) <span className="text-[#c8101e]">*</span></label>
-            <div className="flex flex-col gap-3">
-              <input 
-                type="file" 
-                accept="image/*"
-                onChange={handleFileChange}
-                required
-                className="flex w-full rounded-[4px] border border-border-subtle bg-white px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-primary file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-[#c8101e] hover:file:bg-red-100 transition-colors cursor-pointer"
-              />
-              {formData.attachmentBase64 && (
-                <div className="relative inline-block border border-slate-200 rounded-lg p-1 bg-slate-50 self-start">
-                  <img src={formData.attachmentBase64} alt="Preview" className="h-32 object-contain rounded" />
-                </div>
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-slate-700 flex items-center gap-1">
+              Anexo de Imagem (Obrigatório) <span className="text-[#c8101e]">*</span>
+            </label>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+
+            <AnimatePresence mode="wait">
+              {!formData.attachmentBase64 ? (
+                <motion.div
+                  key="dropzone"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${
+                    isDragging
+                      ? 'border-[#c8101e] bg-red-50/40'
+                      : 'border-slate-300 hover:border-slate-400 bg-slate-50/50 hover:bg-slate-50'
+                  }`}
+                >
+                  <motion.div 
+                    animate={isDragging ? { y: -2, scale: 1.05 } : { y: 0, scale: 1 }}
+                    transition={{ duration: 0.2 }}
+                    className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-2xs"
+                  >
+                    <UploadCloud size={20} />
+                  </motion.div>
+                  <div className="text-xs">
+                    <span className="font-semibold text-[#9d0012] hover:underline">
+                      Clique para selecionar uma imagem
+                    </span>
+                    <span className="text-slate-500"> ou arraste o arquivo até aqui</span>
+                  </div>
+                  <span className="text-[11px] text-slate-400">
+                    PNG, JPG ou WEBP até 5MB
+                  </span>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="attachment-preview"
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.2 }}
+                  className="p-3 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-between gap-3 shadow-2xs"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div 
+                      onClick={() => setIsPreviewModalOpen(true)}
+                      className="relative w-12 h-12 rounded-md bg-white border border-slate-200 overflow-hidden shrink-0 cursor-pointer group"
+                    >
+                      <img
+                        src={formData.attachmentBase64}
+                        alt="Anexo"
+                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                        <Eye size={14} />
+                      </div>
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-semibold text-slate-800 truncate">
+                        {attachmentInfo?.name || 'Imagem anexada'}
+                      </span>
+                      <span className="text-[11px] text-slate-500">
+                        {attachmentInfo?.size || 'Pronto para envio'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setIsPreviewModalOpen(true)}
+                      className="p-1.5 rounded-md bg-white border border-slate-200 hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer"
+                      title="Visualizar anexo"
+                    >
+                      <Eye size={15} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleRemoveAttachment}
+                      className="p-1.5 rounded-md bg-white border border-rose-200 hover:bg-rose-50 text-rose-600 transition-colors cursor-pointer"
+                      title="Remover anexo"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
+                </motion.div>
               )}
-            </div>
+            </AnimatePresence>
           </div>
 
-          <div className="flex justify-end pt-4 border-t border-border-subtle">
-            <Button type="submit" isLoading={isSubmitting} className="w-full sm:w-auto">
-              Registrar Chamado
-            </Button>
+          <div className="flex justify-end pt-4 border-t border-slate-200">
+            <motion.button
+              type="submit"
+              disabled={isSubmitting}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full sm:w-auto px-6 py-2.5 rounded-md bg-[#9d0012] hover:bg-[#c8101e] text-white font-semibold text-sm transition-colors cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isSubmitting ? (
+                <>
+                  <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                  <span>Registrando...</span>
+                </>
+              ) : (
+                <span>Registrar Chamado</span>
+              )}
+            </motion.button>
           </div>
         </form>
-      </div>
-    </div>
+      </motion.div>
+
+      <AnimatePresence>
+        {isPreviewModalOpen && formData.attachmentBase64 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsPreviewModalOpen(false)}
+            className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-3xl max-h-[85vh] bg-white rounded-xl overflow-hidden shadow-2xl flex flex-col"
+            >
+              <div className="p-3 bg-slate-900 text-white flex items-center justify-between">
+                <span className="text-xs font-medium truncate max-w-md">
+                  {attachmentInfo?.name || 'Pré-visualização do Anexo'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsPreviewModalOpen(false)}
+                  className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors cursor-pointer"
+                >
+                  <X size={15} />
+                </button>
+              </div>
+              <div className="p-2 bg-slate-950 flex items-center justify-center overflow-auto max-h-[75vh]">
+                <img 
+                  src={formData.attachmentBase64} 
+                  alt="Anexo ampliado" 
+                  className="max-w-full max-h-[70vh] object-contain rounded"
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
