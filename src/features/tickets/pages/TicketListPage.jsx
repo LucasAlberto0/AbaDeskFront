@@ -2,7 +2,10 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Plus, Search } from 'lucide-react';
-import { getTickets } from '../api/ticketService';
+import toast from 'react-hot-toast';
+import { getTickets, deleteTicket } from '../api/ticketService';
+import useAuthStore from '../../auth/hooks/useAuthStore';
+import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { formatDate, getCategoryLabel, translateStatus } from '../../../lib/utils';
@@ -11,6 +14,11 @@ export default function TicketListPage({ title = "Chamados", description = "Gere
   const [tickets, setTickets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [deleteTicketData, setDeleteTicketData] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { user } = useAuthStore();
+
+  const isTechnicianOrAdmin = user?.role === 'Admin' || user?.role === 'Attendant' || user?.role === 1 || user?.role === 2;
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -39,6 +47,23 @@ export default function TicketListPage({ title = "Chamados", description = "Gere
       return matchTitle || matchProtocol;
     });
   }, [tickets, searchTerm]);
+
+  const handleDelete = async () => {
+    if (!deleteTicketData) return;
+    setIsDeleting(true);
+    try {
+      await deleteTicket(deleteTicketData.id);
+      toast.success(`Chamado #${deleteTicketData.protocolNumber} excluído com sucesso.`);
+      setTickets((prev) => prev.filter((t) => t.id !== deleteTicketData.id));
+      setDeleteTicketData(null);
+    } catch (error) {
+      console.error(error);
+      const errorMsg = error?.response?.data?.message || 'Erro ao excluir chamado.';
+      toast.error(errorMsg);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -84,6 +109,9 @@ export default function TicketListPage({ title = "Chamados", description = "Gere
                   <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold">Solicitante</th>
                   <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold">Status</th>
                   <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold">Abertura</th>
+                  {isTechnicianOrAdmin && (
+                    <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold text-right">Ações</th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-border-subtle">
@@ -116,12 +144,29 @@ export default function TicketListPage({ title = "Chamados", description = "Gere
                         </span>
                       </td>
                       <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">{formatDate(ticket.createdAt)}</td>
+                      {isTechnicianOrAdmin && (
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 text-right whitespace-nowrap">
+                          {ticket.status === 'Resolved' && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteTicketData(ticket);
+                              }}
+                              title="Excluir Chamado Resolvido"
+                              className="text-slate-400 hover:text-red-600 transition-colors p-1.5 rounded-lg hover:bg-red-50 inline-flex items-center justify-center cursor-pointer"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                          )}
+                        </td>
+                      )}
                     </motion.tr>
                   );
                 })}
                 {filteredTickets.length === 0 && (
                   <tr>
-                    <td colSpan="6" className="px-3 sm:px-6 py-8 text-center text-text-muted">
+                    <td colSpan={isTechnicianOrAdmin ? 7 : 6} className="px-3 sm:px-6 py-8 text-center text-text-muted">
                       Nenhum chamado encontrado.
                     </td>
                   </tr>
@@ -131,6 +176,16 @@ export default function TicketListPage({ title = "Chamados", description = "Gere
           )}
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={!!deleteTicketData}
+        onClose={() => setDeleteTicketData(null)}
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+        title="Excluir Chamado Resolvido"
+        message={`Tem certeza que deseja excluir permanentemente o chamado #${deleteTicketData?.protocolNumber} - "${deleteTicketData?.title}"? Esta ação não pode ser desfeita.`}
+        confirmText="Sim, excluir"
+      />
     </div>
   );
 }

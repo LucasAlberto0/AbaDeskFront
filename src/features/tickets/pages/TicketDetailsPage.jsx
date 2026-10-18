@@ -1,14 +1,16 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, MessageSquare, Clock, Send, PlayCircle, CheckCircle, Check } from 'lucide-react';
-import { getTicketDetails, addTicketComment, deleteTicket, startAnalysis, startProgress, waitForUser, resolveTicket } from '../api/ticketService';
+import { ArrowLeft, MessageSquare, Clock, Send, PlayCircle, CheckCircle, Check, RotateCcw } from 'lucide-react';
+import { getTicketDetails, addTicketComment, deleteTicket, startAnalysis, startProgress, waitForUser, resolveTicket, reopenTicket } from '../api/ticketService';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { formatDate, getStatusLabel, getCategoryLabel } from '../../../lib/utils';
 import useAuthStore from '../../auth/hooks/useAuthStore';
 import toast from 'react-hot-toast';
 import { ConfirmModal } from '../../../components/ui/ConfirmModal';
+import { SolutionModal } from '../../../components/ui/SolutionModal';
+import { ReopenModal } from '../../../components/ui/ReopenModal';
 import * as signalR from '@microsoft/signalr';
 export default function TicketDetailsPage() {
   const { id } = useParams();
@@ -21,6 +23,9 @@ export default function TicketDetailsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState(null);
+  const [isResolveModalOpen, setIsResolveModalOpen] = useState(false);
+  const [isReopenModalOpen, setIsReopenModalOpen] = useState(false);
+  const [reopenTargetStatus, setReopenTargetStatus] = useState('Open');
   const { user } = useAuthStore();
   const [hubConnection, setHubConnection] = useState(null);
   const [typingUsers, setTypingUsers] = useState([]);
@@ -92,6 +97,15 @@ export default function TicketDetailsPage() {
   };
 
   const confirmStatusChange = (newStatus) => {
+    if (newStatus === 'Resolved') {
+      setIsResolveModalOpen(true);
+      return;
+    }
+    if (ticket?.status === 'Resolved' && (newStatus === 'Open' || newStatus === 'InProgress')) {
+      setReopenTargetStatus(newStatus);
+      setIsReopenModalOpen(true);
+      return;
+    }
     setPendingStatus(newStatus);
     setIsStatusModalOpen(true);
   };
@@ -103,17 +117,49 @@ export default function TicketDetailsPage() {
       if (pendingStatus === 'InAnalysis') await startAnalysis(id);
       else if (pendingStatus === 'InProgress') await startProgress(id);
       else if (pendingStatus === 'WaitingUser') await waitForUser(id);
-      else if (pendingStatus === 'Resolved') await resolveTicket(id);
 
       await fetchDetails();
       toast.success(`Status alterado para ${getStatusLabel(pendingStatus)}.`);
     } catch (error) {
       console.error(error);
-      toast.error('Erro ao alterar status.');
+      const errorMsg = error?.response?.data?.message || 'Erro ao alterar status.';
+      toast.error(errorMsg);
     } finally {
       setIsSubmitting(false);
       setIsStatusModalOpen(false);
       setPendingStatus(null);
+    }
+  };
+
+  const handleConfirmResolve = async (solution) => {
+    setIsSubmitting(true);
+    try {
+      await resolveTicket(id, solution);
+      await fetchDetails();
+      toast.success('Chamado resolvido com sucesso!');
+      setIsResolveModalOpen(false);
+    } catch (error) {
+      console.error(error);
+      const errorMsg = error?.response?.data?.message || 'Erro ao resolver chamado.';
+      toast.error(errorMsg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleConfirmReopen = async (justification, targetStatus) => {
+    setIsSubmitting(true);
+    try {
+      await reopenTicket(id, justification, targetStatus);
+      await fetchDetails();
+      toast.success('Chamado reaberto com sucesso!');
+      setIsReopenModalOpen(false);
+    } catch (error) {
+      console.error(error);
+      const errorMsg = error?.response?.data?.message || 'Erro ao reabrir chamado.';
+      toast.error(errorMsg);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -259,7 +305,9 @@ export default function TicketDetailsPage() {
         </div>
 
         <div className="flex flex-wrap gap-2 items-center w-full sm:w-auto">
-          {(user?.role === 'Admin' || (user?.role === 'User' && ticket.createdBy?.id === user?.id)) && (
+          {((user?.role === 'Admin' || user?.role === 2) || 
+            ((user?.role === 'Attendant' || user?.role === 1) && ticket.status === 'Resolved') || 
+            ((user?.role === 'User' || user?.role === 0) && ticket.createdBy?.id === user?.id)) && (
             <Button onClick={() => setIsDeleteModalOpen(true)} isLoading={isSubmitting} size="sm" className="bg-red-600 hover:bg-red-700 border-none text-white flex-1 sm:flex-initial">
               Excluir
             </Button>
@@ -282,10 +330,15 @@ export default function TicketDetailsPage() {
                   <Button onClick={() => confirmStatusChange('WaitingUser')} isLoading={isSubmitting && pendingStatus === 'WaitingUser'} size="sm" className="gap-2 bg-orange-500 hover:bg-orange-600 border-none text-white flex-1 sm:flex-initial">
                     <Clock size={16} /> Aguardar Usuário
                   </Button>
-                  <Button onClick={() => confirmStatusChange('Resolved')} isLoading={isSubmitting && pendingStatus === 'Resolved'} size="sm" className="gap-2 bg-green-600 hover:bg-green-700 border-none text-white flex-1 sm:flex-initial">
+                  <Button onClick={() => confirmStatusChange('Resolved')} isLoading={isSubmitting && isResolveModalOpen} size="sm" className="gap-2 bg-green-600 hover:bg-green-700 border-none text-white flex-1 sm:flex-initial">
                     <CheckCircle size={16} /> Resolver
                   </Button>
                 </>
+              )}
+              {ticket.status === 'Resolved' && (
+                <Button onClick={() => confirmStatusChange('Open')} isLoading={isSubmitting && isReopenModalOpen} size="sm" className="gap-2 bg-amber-600 hover:bg-amber-700 border-none text-white flex-1 sm:flex-initial">
+                  <RotateCcw size={16} /> Reabrir Chamado
+                </Button>
               )}
             </div>
           )}
@@ -299,6 +352,37 @@ export default function TicketDetailsPage() {
             <div className="text-text-primary text-sm whitespace-pre-wrap leading-relaxed">
               {ticket.description}
             </div>
+            {ticket.solution && (
+              ticket.status === 'Resolved' ? (
+                <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50/80 p-4">
+                  <div className="flex items-center gap-2 text-emerald-800 font-semibold text-xs sm:text-sm mb-1.5">
+                    <CheckCircle size={17} className="text-emerald-600 shrink-0" />
+                    <span>Solução Técnica Registrada</span>
+                    {ticket.resolvedAt && (
+                      <span className="text-[11px] font-normal text-emerald-700/80 ml-auto hidden sm:inline">
+                        Finalizado em {formatDate(ticket.resolvedAt)}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs sm:text-sm text-emerald-950 whitespace-pre-wrap leading-relaxed">
+                    {ticket.solution}
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-5 rounded-xl border border-amber-300 bg-amber-50/80 p-4">
+                  <div className="flex items-center gap-2 text-amber-900 font-semibold text-xs sm:text-sm mb-1.5">
+                    <RotateCcw size={17} className="text-amber-600 shrink-0" />
+                    <span>Solução Passada</span>
+                    <span className="text-[11px] font-medium text-amber-800 ml-auto bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-200">
+                      Chamado Reaberto
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-amber-950 whitespace-pre-wrap leading-relaxed">
+                    {ticket.solution}
+                  </p>
+                </div>
+              )
+            )}
             {ticket.attachmentUrl && (
               <div className="mt-6 border-t border-border-subtle pt-4">
                 <h4 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3">Anexo</h4>
@@ -380,6 +464,19 @@ export default function TicketDetailsPage() {
               <p className="text-xs text-text-muted uppercase font-semibold">Solicitante</p>
               <p className="text-sm font-medium text-text-primary">{ticket.createdBy?.name}</p>
             </div>
+            <div>
+              <p className="text-xs text-text-muted uppercase font-semibold">Responsável Técnico</p>
+              <p className="text-sm font-medium text-text-primary flex items-center gap-1.5 mt-0.5">
+                {ticket.assignedTo ? (
+                  <>
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                    <span className="truncate">{ticket.assignedTo.name}</span>
+                  </>
+                ) : (
+                  <span className="text-text-muted font-normal italic text-xs">Ainda não atribuído</span>
+                )}
+              </p>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <p className="text-xs text-text-muted uppercase font-semibold">Categoria</p>
@@ -436,6 +533,23 @@ export default function TicketDetailsPage() {
         title="Alterar Status"
         message={`Tem certeza que deseja alterar o status do chamado para "${pendingStatus ? getStatusLabel(pendingStatus) : ''}"?`}
         confirmText="Confirmar alteração"
+      />
+
+      <SolutionModal
+        isOpen={isResolveModalOpen}
+        onClose={() => setIsResolveModalOpen(false)}
+        onConfirm={handleConfirmResolve}
+        isLoading={isSubmitting}
+        ticket={ticket}
+      />
+
+      <ReopenModal
+        isOpen={isReopenModalOpen}
+        onClose={() => setIsReopenModalOpen(false)}
+        onConfirm={handleConfirmReopen}
+        isLoading={isSubmitting}
+        ticket={ticket}
+        targetStatus={reopenTargetStatus}
       />
     </div>
   );

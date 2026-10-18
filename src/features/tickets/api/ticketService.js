@@ -20,8 +20,8 @@ export const startAnalysis = async (id) => {
   return response.data;
 };
 
-export const startProgress = async (id) => {
-  const response = await api.post(`/tickets/${id}/start-progress`);
+export const startProgress = async (id, assignedToUserId = null) => {
+  const response = await api.post(`/tickets/${id}/start-progress`, assignedToUserId ? { assignedToUserId } : {});
   return response.data;
 };
 
@@ -30,8 +30,13 @@ export const waitForUser = async (id) => {
   return response.data;
 };
 
-export const resolveTicket = async (id) => {
-  const response = await api.post(`/tickets/${id}/resolve`);
+export const resolveTicket = async (id, solution) => {
+  const response = await api.post(`/tickets/${id}/resolve`, { solution });
+  return response.data;
+};
+
+export const reopenTicket = async (id, justification, targetStatus = 'Open') => {
+  const response = await api.post(`/tickets/${id}/reopen`, { justification, targetStatus });
   return response.data;
 };
 
