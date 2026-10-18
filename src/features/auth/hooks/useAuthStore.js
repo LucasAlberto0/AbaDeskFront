@@ -45,10 +45,10 @@ const useAuthStore = create((set) => ({
     }
   },
 
-  updateProfile: async (name, companyUnit) => {
+  updateProfile: async (name, companyUnit, jobTitle) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await api.patch('/auth/profile', { name, companyUnit });
+      const response = await api.patch('/auth/profile', { name, companyUnit, jobTitle });
       const { accessToken, user } = response.data;
 
       if (user && user.role === 0) user.role = 'User';

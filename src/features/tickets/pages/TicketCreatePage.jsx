@@ -208,10 +208,6 @@ export default function TicketCreatePage() {
           </div>
           <div className="flex items-center gap-2">
             <span className="font-semibold text-slate-800">{completedFields} de 8 campos</span>
-            <span className="text-slate-300">•</span>
-            <span className={`font-mono font-bold ${progressPercent === 100 ? 'text-emerald-600' : 'text-[#c8101e]'}`}>
-              {progressPercent}%
-            </span>
           </div>
         </div>
 
