@@ -286,7 +286,7 @@ export default function AssistantPage() {
               </div>
               <div className="min-w-0">
                 <h2 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight truncate">
-                  Aba Assist
+                  ABA Assist
                 </h2>
                 <p className="text-[10px] sm:text-[11px] text-slate-500 truncate hidden xs:block">
                   Central inteligente de suporte e atendimento
@@ -353,7 +353,7 @@ export default function AssistantPage() {
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Peça à AbaDesk IA..."
+                    placeholder="Peça à ABA Assist ..."
                     disabled={isTyping}
                     className="flex-1 bg-transparent pr-2 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none min-w-0"
                   />
@@ -409,7 +409,7 @@ export default function AssistantPage() {
                       initial={{ opacity: 0, y: 14, scale: 0.98 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{ duration: 0.25 }}
-                      className={`flex items-start gap-2.5 sm:gap-3.5 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
+                      className={`group flex items-start gap-2.5 sm:gap-3.5 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
                     >
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-semibold shadow-xs overflow-hidden ${isUser
                         ? 'bg-[#c8101e] text-white ring-2 ring-red-100'
@@ -441,7 +441,9 @@ export default function AssistantPage() {
                           {!isUser && (
                             <button
                               onClick={() => handleCopy(message.id, message.text)}
-                              className="text-slate-400 hover:text-slate-600 transition-colors p-0.5 rounded flex items-center gap-1 text-[11px] cursor-pointer"
+                              className={`text-slate-400 hover:text-slate-600 transition-opacity duration-200 p-0.5 rounded flex items-center gap-1 text-[11px] cursor-pointer ${
+                                copiedId === message.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 focus:opacity-100'
+                              }`}
                               title="Copiar resposta"
                             >
                               {copiedId === message.id ? (
@@ -525,7 +527,7 @@ export default function AssistantPage() {
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Peça à AbaDesk IA..."
+                  placeholder="Peça à ABA Assist..."
                   disabled={isTyping}
                   className="flex-1 bg-transparent pr-2 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none min-w-0"
                 />
@@ -548,7 +550,7 @@ export default function AssistantPage() {
 
               <p className="text-[10px] sm:text-[11px] text-slate-400 text-center mt-2 flex items-center justify-center gap-1">
                 <Info size={12} className="shrink-0" />
-                O Aba Assist pode cometer erros. Verifique informações operacionais importantes com a equipe técnica.
+                O ABA Assist pode cometer erros. Verifique informações operacionais importantes com a equipe técnica.
               </p>
             </div>
           </motion.div>

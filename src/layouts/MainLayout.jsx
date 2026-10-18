@@ -26,7 +26,7 @@ export default function MainLayout() {
 
   const getPageTitle = () => {
     if (location.pathname.startsWith('/dashboard')) return 'Dashboard';
-    if (location.pathname.startsWith('/assistant')) return 'Assistente IA';
+    if (location.pathname.startsWith('/assistant')) return 'ABA Assist';
     if (location.pathname.startsWith('/admin/users')) return 'Gestão de Usuários';
     if (location.pathname === '/tickets/kanban') return 'Kanban de Chamados';
     if (location.pathname === '/tickets/new') return 'Novo Chamado';
@@ -41,7 +41,7 @@ export default function MainLayout() {
     { name: 'Kanban', path: '/tickets/kanban', icon: 'view_kanban', roles: ['Admin', 'Attendant'] },
     { name: 'Chamados (Lista)', path: '/tickets', icon: 'list', roles: ['Admin', 'Attendant'] },
     { name: 'Novo chamado', path: '/tickets/new', icon: 'add_circle', roles: ['Admin', 'User'] },
-    { name: 'Assistente IA', path: '/assistant', icon: 'smart_toy' },
+    { name: 'ABA Assist', path: '/assistant', icon: 'smart_toy' },
     { name: 'Usuários', path: '/admin/users', icon: 'group', roles: ['Admin'] },
   ];
 
@@ -50,10 +50,10 @@ export default function MainLayout() {
 
   return (
     <div className="bg-[#FAFAFA] font-sans text-slate-800 antialiased selection:bg-red-500/10 selection:text-[#9d0012] min-h-screen">
-      
+
       {isMobileMenuOpen && (
-        <div 
-          onClick={() => setIsMobileMenuOpen(false)} 
+        <div
+          onClick={() => setIsMobileMenuOpen(false)}
           className="fixed inset-0 bg-black/60 z-50 lg:hidden backdrop-blur-xs transition-opacity duration-300"
           aria-hidden="true"
         />
@@ -72,7 +72,7 @@ export default function MainLayout() {
                 <img alt="ABA Desk" className="h-12 sm:h-14 w-auto object-contain mix-blend-screen" src="/img/brand/logo-white.png" />
               )}
             </div>
-            <button 
+            <button
               onClick={() => setIsMobileMenuOpen(false)}
               className="lg:hidden p-1.5 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors"
               title="Fechar menu"
@@ -83,7 +83,7 @@ export default function MainLayout() {
           {(!isCollapsed || isMobileMenuOpen) && (
             <p className="text-xs text-white/70 leading-tight truncate px-5 -mt-1 mb-2 hidden sm:block">Central de Atendimento e Gestão</p>
           )}
-          
+
           <div className="px-3 pt-1">
             {(!isCollapsed || isMobileMenuOpen) && (
               <span className="px-2 text-[11px] font-semibold text-white/60 uppercase tracking-wider block mb-1">
@@ -95,25 +95,24 @@ export default function MainLayout() {
                 let isActive = location.pathname === item.path;
                 if (!isActive && item.path !== '/') {
                   if (item.path === '/tickets') {
-                    isActive = location.pathname.startsWith('/tickets/') && 
-                               !location.pathname.startsWith('/tickets/kanban') && 
-                               !location.pathname.startsWith('/tickets/new') &&
-                               !location.pathname.startsWith('/admin');
+                    isActive = location.pathname.startsWith('/tickets/') &&
+                      !location.pathname.startsWith('/tickets/kanban') &&
+                      !location.pathname.startsWith('/tickets/new') &&
+                      !location.pathname.startsWith('/admin');
                   } else {
                     isActive = location.pathname.startsWith(item.path);
                   }
                 }
 
                 return (
-                  <Link 
+                  <Link
                     key={item.name}
-                    to={item.path} 
+                    to={item.path}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center ${isCollapsed ? 'lg:justify-center justify-between' : 'justify-between'} px-3 py-2.5 rounded-xl transition-colors text-[13px] font-medium ${
-                      isActive 
-                      ? 'bg-white text-[#9d0012] shadow-sm' 
+                    className={`flex items-center ${isCollapsed ? 'lg:justify-center justify-between' : 'justify-between'} px-3 py-2.5 rounded-xl transition-colors text-[13px] font-medium ${isActive
+                      ? 'bg-white text-[#9d0012] shadow-sm'
                       : 'text-white/80 hover:bg-white/10 hover:text-white'
-                    }`}
+                      }`}
                     title={isCollapsed ? item.name : undefined}
                   >
                     <div className={`flex items-center ${isCollapsed ? 'lg:justify-center gap-3' : 'gap-3'}`}>
@@ -143,7 +142,7 @@ export default function MainLayout() {
             </div>
             <div className={`flex flex-col min-w-0 flex-1 justify-center ${isCollapsed ? 'lg:hidden' : ''}`}>
               <span className="text-[12px] font-semibold text-white truncate leading-tight mb-0.5">{user?.name || 'Lucas Alberto'}</span>
-              
+
               {user?.role === 'Admin' || user?.role === 2 ? (
                 <span className="text-[11px] text-white/70 truncate leading-tight">Administrador</span>
               ) : user?.role === 'Attendant' || user?.role === 1 ? (
@@ -162,12 +161,12 @@ export default function MainLayout() {
               )}
             </div>
           </div>
-          
+
           <div className={`flex items-center ${isCollapsed ? 'lg:flex-col lg:gap-2 justify-between pt-1' : 'justify-between pt-1'}`}>
             <div className={`flex items-center gap-1 ${isCollapsed ? 'lg:flex-col' : ''}`}>
-              <button 
+              <button
                 onClick={() => { setIsSettingsModalOpen(true); setIsMobileMenuOpen(false); }}
-                className={`p-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center ${isCollapsed ? 'lg:hidden' : ''}`} 
+                className={`p-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center ${isCollapsed ? 'lg:hidden' : ''}`}
                 title="Configurações"
               >
                 <span className="material-symbols-outlined text-[18px]">settings</span>
@@ -176,9 +175,9 @@ export default function MainLayout() {
                 <span className="material-symbols-outlined text-[18px]">logout</span>
               </button>
             </div>
-            <button 
-              onClick={() => setIsCollapsed(!isCollapsed)} 
-              className="hidden lg:flex p-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors items-center justify-center" 
+            <button
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className="hidden lg:flex p-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors items-center justify-center"
               title={isCollapsed ? "Expandir Menu" : "Recolher Menu"}
             >
               <span className="material-symbols-outlined text-[18px]">{isCollapsed ? 'dock_to_right' : 'dock_to_left'}</span>
@@ -190,7 +189,7 @@ export default function MainLayout() {
       <div className={`${isCollapsed ? 'lg:pl-20' : 'lg:pl-72'} pl-0 flex flex-col ${location.pathname.startsWith('/assistant') ? 'h-screen max-h-screen overflow-hidden' : 'min-h-screen overflow-x-hidden'} min-w-0 w-full transition-all duration-300`}>
         <header className={`fixed top-0 ${isCollapsed ? 'lg:left-20' : 'lg:left-72'} left-0 right-0 h-16 bg-[#c8101e] border-b border-[#a70d18] z-40 flex items-center justify-between px-3 sm:px-6 lg:px-8 gap-2 sm:gap-4 min-w-0 shadow-sm transition-all duration-300`}>
           <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 shrink">
-            <button 
+            <button
               onClick={() => setIsMobileMenuOpen(true)}
               className="lg:hidden p-1.5 -ml-1 text-white hover:bg-white/10 rounded-lg flex items-center justify-center shrink-0"
               title="Abrir menu"
@@ -204,16 +203,16 @@ export default function MainLayout() {
           <div className="flex items-center gap-1.5 sm:gap-4 flex-1 justify-end min-w-0">
             <HeaderSearch />
             <div className="flex items-center gap-1 shrink-0">
-              <button 
+              <button
                 onClick={() => setIsAboutModalOpen(true)}
-                className="p-1.5 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition-colors" 
+                className="p-1.5 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition-colors"
                 title="Ajuda e Sobre"
               >
                 <span className="material-symbols-outlined text-[20px]">help_outline</span>
               </button>
-              <button 
+              <button
                 onClick={() => setIsSettingsModalOpen(true)}
-                className="lg:hidden p-1.5 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition-colors" 
+                className="lg:hidden p-1.5 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition-colors"
                 title="Configurações"
               >
                 <span className="material-symbols-outlined text-[20px]">settings</span>

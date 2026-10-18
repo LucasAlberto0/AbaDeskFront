@@ -8,10 +8,12 @@ export default function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState(0);
   const [jobTitle, setJobTitle] = useState('');
   const [companyUnit, setCompanyUnit] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
 
@@ -29,6 +31,14 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      toast.error('As senhas não coincidem. Verifique e tente novamente.');
+      return;
+    }
+    if (password.length < 6) {
+      toast.error('A senha deve possuir no mínimo 6 caracteres.');
+      return;
+    }
     setIsSubmitting(true);
     try {
       await register(name, email, password, role, jobTitle, companyUnit);
@@ -65,24 +75,24 @@ export default function RegisterPage() {
         </div>
       </section>
 
-      <section className="w-full lg:w-[46%] xl:w-[44%] flex-1 flex items-center justify-center p-3.5 sm:p-8 lg:p-14 bg-[#f8fafc] py-8 lg:py-14">
-        <div className="w-full max-w-md bg-white rounded-2xl p-5 sm:p-8 md:p-10 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.08)] border border-slate-100">
+      <section className="w-full lg:w-[46%] xl:w-[44%] flex-1 flex items-center justify-center p-3.5 sm:p-6 lg:p-8 xl:p-12 bg-[#f8fafc] py-6 lg:py-8 overflow-y-auto lg:h-screen">
+        <div className="w-full max-w-md bg-white rounded-2xl p-5 sm:p-7 md:p-8 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.08)] border border-slate-100 my-auto">
           
-          <div className="flex flex-col items-center text-center mb-5 sm:mb-7">
-            <div className="h-10 mb-4 flex items-center justify-center">
-              <img alt="Logo ABA Desk" className="h-8 sm:h-9 w-auto object-contain" style={{ filter: 'invert(1) contrast(1.15) brightness(0.2)' }} src="/img/brand/logo-dark.png" />
+          <div className="flex flex-col items-center text-center mb-4 sm:mb-6">
+            <div className="h-9 mb-3 flex items-center justify-center">
+              <img alt="Logo ABA Desk" className="h-7 sm:h-8 w-auto object-contain" style={{ filter: 'invert(1) contrast(1.15) brightness(0.2)' }} src="/img/brand/logo-dark.png" />
             </div>
             <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
               Criar Conta
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
               Preencha os dados para obter seu acesso
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+          <form onSubmit={handleSubmit} className="space-y-3.5 sm:space-y-4" autoComplete="off">
             
-            <div className="mb-6">
+            <div className="mb-4">
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
                 Perfil de Acesso Solicitado <span className="text-[#c8101e]">*</span>
               </label>
@@ -90,11 +100,11 @@ export default function RegisterPage() {
                 
                 <div 
                   onClick={() => setRole(0)}
-                  className={`relative flex flex-col p-3 sm:p-4 cursor-pointer rounded-xl border-2 transition-all ${
+                  className={`relative flex flex-col p-3 sm:p-3.5 cursor-pointer rounded-xl border-2 transition-all ${
                     role === 0 ? 'border-[#c8101e] bg-red-50/30 shadow-sm' : 'border-slate-200 hover:border-slate-300'
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="flex items-start justify-between gap-3 mb-1.5">
                     <div className="flex items-center gap-2">
                       <User size={18} className={role === 0 ? 'text-[#c8101e]' : 'text-slate-400'} />
                       <span className={`font-semibold text-[14px] leading-none mt-0.5 ${role === 0 ? 'text-slate-900' : 'text-slate-700'}`}>Usuário</span>
@@ -110,11 +120,11 @@ export default function RegisterPage() {
 
                 <div 
                   onClick={() => setRole(1)}
-                  className={`relative flex flex-col p-3 sm:p-4 cursor-pointer rounded-xl border-2 transition-all ${
+                  className={`relative flex flex-col p-3 sm:p-3.5 cursor-pointer rounded-xl border-2 transition-all ${
                     role === 1 ? 'border-[#c8101e] bg-red-50/30 shadow-sm' : 'border-slate-200 hover:border-slate-300'
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="flex items-start justify-between gap-3 mb-1.5">
                     <div className="flex items-center gap-2">
                       <svg className={`w-4.5 h-4.5 ${role === 1 ? 'text-[#c8101e]' : 'text-slate-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                       <span className={`font-semibold text-[14px] leading-none mt-0.5 ${role === 1 ? 'text-slate-900' : 'text-slate-700'}`}>Suporte Técnico</span>
@@ -202,7 +212,7 @@ export default function RegisterPage() {
                   id="name" 
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2.5 sm:text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
+                  className="block w-full pl-10 pr-3 py-2 sm:text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
                   placeholder="Seu nome completo" 
                   required 
                 />
@@ -222,7 +232,7 @@ export default function RegisterPage() {
                   id="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2.5 sm:text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
+                  className="block w-full pl-10 pr-3 py-2 sm:text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
                   placeholder="nome@grupoaba.com.br" 
                   autoComplete="off"
                   data-lpignore="true"
@@ -246,7 +256,7 @@ export default function RegisterPage() {
                   id="password" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full pl-10 pr-10 py-2.5 sm:text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
+                  className="block w-full pl-10 pr-10 py-2 sm:text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
                   placeholder="••••••••••••" 
                   autoComplete="new-password"
                   data-lpignore="true"
@@ -262,11 +272,49 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <div className="pt-2">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5" htmlFor="confirmPassword">
+                Confirmar Senha <span className="text-[#c8101e]">*</span>
+              </label>
+              <div className="relative rounded-lg shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <input 
+                  type={showConfirmPassword ? 'text' : 'password'} 
+                  id="confirmPassword" 
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onBlur={() => {
+                    if (confirmPassword && password !== confirmPassword) {
+                      toast.error('As senhas não coincidem.');
+                    }
+                  }}
+                  className={`block w-full pl-10 pr-10 py-2 sm:text-sm border rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 outline-none transition-colors ${
+                    confirmPassword && password !== confirmPassword 
+                      ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20' 
+                      : 'border-slate-300 focus:border-[#c8101e] focus:ring-[#c8101e]/30'
+                  }`}
+                  placeholder="••••••••••••" 
+                  autoComplete="new-password"
+                  data-lpignore="true"
+                  required 
+                />
+                <button 
+                  type="button" 
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none" 
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+
+            <div className="pt-1 sm:pt-2">
               <button 
                 type="submit" 
                 disabled={isSubmitting}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-transparent rounded-lg text-sm font-semibold text-white bg-[#c8101e] hover:bg-[#a70d18] active:bg-[#8b0c15] shadow-sm hover:shadow-md transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8101e] disabled:opacity-70"
+                className="w-full flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 border border-transparent rounded-lg text-sm font-semibold text-white bg-[#c8101e] hover:bg-[#a70d18] active:bg-[#8b0c15] shadow-sm hover:shadow-md transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8101e] disabled:opacity-70 cursor-pointer"
               >
                 {isSubmitting ? 'Cadastrando...' : 'Criar Conta ABA Desk'}
               </button>
