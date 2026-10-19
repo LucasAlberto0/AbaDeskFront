@@ -18,6 +18,35 @@ export default function MainLayout() {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
+  const isAssistant = location.pathname.startsWith('/assistant');
+
+  useEffect(() => {
+    if (isAssistant) {
+      window.scrollTo(0, 0);
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+      const originalBodyOverflow = document.body.style.overflow;
+      const originalBodyHeight = document.body.style.height;
+
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      document.body.style.height = '100%';
+
+      const handleScroll = () => {
+        if (window.scrollY !== 0) {
+          window.scrollTo(0, 0);
+        }
+      };
+      window.addEventListener('scroll', handleScroll);
+
+      return () => {
+        document.documentElement.style.overflow = originalHtmlOverflow;
+        document.body.style.overflow = originalBodyOverflow;
+        document.body.style.height = originalBodyHeight;
+        window.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, [isAssistant]);
+
   const getInitials = (name) => {
     if (!name) return 'U';
     const parts = name.split(' ');
@@ -50,7 +79,7 @@ export default function MainLayout() {
   const menuItems = baseMenuItems.filter(item => !item.roles || item.roles.includes(userRoleStr));
 
   return (
-    <div className="bg-[#FAFAFA] font-sans text-slate-800 antialiased selection:bg-red-500/10 selection:text-[#9d0012] min-h-screen">
+    <div className={`bg-[#FAFAFA] font-sans text-slate-800 antialiased selection:bg-red-500/10 selection:text-[#9d0012] ${isAssistant ? 'fixed inset-0 h-[100dvh] max-h-[100dvh] overflow-hidden' : 'min-h-screen'}`}>
 
       {isMobileMenuOpen && (
         <div
@@ -187,8 +216,8 @@ export default function MainLayout() {
         </div>
       </aside>
 
-      <div className={`${isCollapsed ? 'lg:pl-20' : 'lg:pl-72'} pl-0 flex flex-col ${location.pathname.startsWith('/assistant') ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : 'min-h-screen overflow-x-hidden'} min-w-0 w-full transition-all duration-300`}>
-        <header className={`fixed top-0 ${isCollapsed ? 'lg:left-20' : 'lg:left-72'} left-0 right-0 h-16 bg-[#c8101e] border-b border-[#a70d18] z-40 flex items-center justify-between px-3 sm:px-6 lg:px-8 gap-2 sm:gap-4 min-w-0 shadow-sm transition-all duration-300`}>
+      <div className={`${isCollapsed ? 'lg:pl-20' : 'lg:pl-72'} pl-0 flex flex-col ${isAssistant ? 'h-full max-h-[100dvh] overflow-hidden' : 'min-h-screen overflow-x-hidden'} min-w-0 w-full transition-all duration-300`}>
+        <header className={`${isAssistant ? 'relative w-full shrink-0' : `fixed top-0 ${isCollapsed ? 'lg:left-20' : 'lg:left-72'} left-0 right-0`} h-16 bg-[#c8101e] border-b border-[#a70d18] z-40 flex items-center justify-between px-3 sm:px-6 lg:px-8 gap-2 sm:gap-4 min-w-0 shadow-sm transition-all duration-300`}>
           <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
@@ -227,8 +256,8 @@ export default function MainLayout() {
           </div>
         </header>
 
-        <main className={`relative w-full flex-1 min-w-0 ${location.pathname.startsWith('/assistant') ? 'h-[calc(100dvh-4rem)] max-h-[calc(100dvh-4rem)] mt-16 bg-white overflow-hidden flex flex-col' : 'pt-16'}`}>
-          {location.pathname.startsWith('/assistant') ? (
+        <main className={`relative w-full flex-1 min-w-0 ${isAssistant ? 'min-h-0 bg-white overflow-hidden flex flex-col' : 'pt-16'}`}>
+          {isAssistant ? (
             <div className="w-full flex-1 min-h-0 min-w-0 flex flex-col h-full bg-white overflow-hidden">
               <Outlet />
             </div>
