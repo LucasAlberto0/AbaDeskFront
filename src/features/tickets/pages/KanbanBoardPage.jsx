@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { getTickets, startAnalysis, startProgress, waitForUser, resolveTicket, reopenTicket } from '../api/ticketService';
 import { getStatusLabel, getCategoryLabel } from '../../../lib/utils';
@@ -32,6 +32,67 @@ export default function KanbanBoardPage() {
 
   const [isReopenModalOpen, setIsReopenModalOpen] = useState(false);
   const [reopenModalData, setReopenModalData] = useState(null);
+
+  const kanbanContainerRef = useRef(null);
+  const scrollTimerRef = useRef(null);
+
+  const stopAutoScroll = () => {
+    if (scrollTimerRef.current) {
+      clearInterval(scrollTimerRef.current.id || scrollTimerRef.current);
+      scrollTimerRef.current = null;
+    }
+  };
+
+  const handlePointerMove = (e) => {
+    const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
+    if (clientX === undefined || clientX === null) return;
+
+    const edgeZone = 80;
+    const windowWidth = window.innerWidth;
+    const container = kanbanContainerRef.current;
+    if (!container) return;
+
+    if (clientX > windowWidth - edgeZone) {
+      const intensity = Math.min(1, Math.max(0.1, (clientX - (windowWidth - edgeZone)) / edgeZone));
+      const speed = Math.round(12 + 18 * intensity);
+      if (!scrollTimerRef.current || scrollTimerRef.current.direction !== 1) {
+        stopAutoScroll();
+        const intervalId = setInterval(() => {
+          if (container) {
+            container.scrollLeft += speed;
+          }
+        }, 16);
+        scrollTimerRef.current = { id: intervalId, direction: 1 };
+      }
+    } else if (clientX < edgeZone) {
+      const intensity = Math.min(1, Math.max(0.1, (edgeZone - clientX) / edgeZone));
+      const speed = Math.round(12 + 18 * intensity);
+      if (!scrollTimerRef.current || scrollTimerRef.current.direction !== -1) {
+        stopAutoScroll();
+        const intervalId = setInterval(() => {
+          if (container) {
+            container.scrollLeft -= speed;
+          }
+        }, 16);
+        scrollTimerRef.current = { id: intervalId, direction: -1 };
+      }
+    } else {
+      stopAutoScroll();
+    }
+  };
+
+  const handleDragStart = () => {
+    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    window.addEventListener('touchmove', handlePointerMove, { passive: true });
+    window.addEventListener('mousemove', handlePointerMove, { passive: true });
+  };
+
+  const cleanUpDragListeners = () => {
+    stopAutoScroll();
+    window.removeEventListener('pointermove', handlePointerMove);
+    window.removeEventListener('touchmove', handlePointerMove);
+    window.removeEventListener('mousemove', handlePointerMove);
+  };
 
   const navigate = useNavigate();
   const { user } = useAuthStore();
@@ -67,7 +128,10 @@ export default function KanbanBoardPage() {
   useEffect(() => {
     fetchTickets();
     const interval = setInterval(fetchTickets, 30000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      cleanUpDragListeners();
+    };
   }, []);
 
   const isValidTransition = (sourceStatus, destStatus) => {
@@ -80,6 +144,7 @@ export default function KanbanBoardPage() {
   };
 
   const onDragEnd = async (result) => {
+    cleanUpDragListeners();
     const { source, destination, draggableId } = result;
 
     if (!destination) return;
@@ -262,8 +327,8 @@ export default function KanbanBoardPage() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-x-auto pb-4">
-        <DragDropContext onDragEnd={onDragEnd}>
+      <div ref={kanbanContainerRef} className="flex-1 overflow-x-auto pb-4">
+        <DragDropContext onDragStart={handleDragStart} onDragEnd={onDragEnd}>
           <div className="flex gap-4 min-w-max h-full">
             {KANBAN_COLUMNS.map(column => (
               <div key={column.id} className="w-[280px] sm:w-[320px] flex flex-col bg-slate-100/50 rounded-xl border border-slate-200/60 overflow-hidden">

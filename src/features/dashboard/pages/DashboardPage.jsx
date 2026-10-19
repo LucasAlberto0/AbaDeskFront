@@ -79,7 +79,7 @@ export default function DashboardPage() {
                     className="fill-[#c8101e] transition-all duration-300 group-hover:fill-[#e51a28]" 
                   />
                   <foreignObject x="85" y="140" width="160" height="160">
-                    <div className="w-full h-full flex flex-col items-center justify-center text-white p-1">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white p-1">
                       <span className="material-symbols-outlined text-[26px] mb-1 opacity-90 transition-all duration-300 group-hover:scale-125 group-hover:-rotate-12">fiber_new</span>
                       <span className="text-[10px] font-bold tracking-wider uppercase opacity-90 text-center leading-tight transition-opacity duration-300 group-hover:opacity-100">Abertos</span>
                       <span className="text-[48px] font-black mt-1 leading-none transition-transform duration-300 group-hover:scale-110">{stats?.openTickets || 0}</span>
@@ -93,7 +93,7 @@ export default function DashboardPage() {
                     className="fill-[#9c0c16] transition-all duration-300 group-hover:fill-[#b8101b]" 
                   />
                   <foreignObject x="255" y="140" width="160" height="160">
-                    <div className="w-full h-full flex flex-col items-center justify-center text-white p-1">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white p-1">
                       <span className="material-symbols-outlined text-[26px] mb-1 opacity-90 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12">terminal</span>
                       <span className="text-[10px] font-bold tracking-wider uppercase opacity-90 text-center leading-tight transition-opacity duration-300 group-hover:opacity-100">Andamento</span>
                       <span className="text-[48px] font-black mt-1 leading-none transition-transform duration-300 group-hover:scale-110">{stats?.inProgressTickets || 0}</span>
@@ -107,7 +107,7 @@ export default function DashboardPage() {
                     className="fill-[#7a0810] transition-all duration-300 group-hover:fill-[#9c0c16]" 
                   />
                   <foreignObject x="150" y="315" width="200" height="100">
-                    <div className="w-full h-full flex flex-col items-center justify-center text-white p-1">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white p-1">
                       <span className="text-[48px] font-black leading-none transition-transform duration-300 group-hover:scale-110">{stats?.resolvedTickets || 0}</span>
                       <span className="text-[10px] font-bold tracking-wider uppercase opacity-90 text-center flex items-center gap-1 mt-1 transition-opacity duration-300 group-hover:opacity-100">
                         <span className="material-symbols-outlined text-[14px] transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">check_circle</span> Resolvidos
@@ -125,7 +125,7 @@ export default function DashboardPage() {
                 <g onClick={() => navigate('/tickets?status=Open')} className="group cursor-pointer transition-transform duration-300 hover:-translate-x-1.5 hover:-translate-y-1.5">
                   <path d="M 240 279 L 240 60 A 400 400 0 0 0 60 383 Z" className="fill-[#c8101e] transition-all duration-300 group-hover:fill-[#e51a28]" />
                   <foreignObject x="85" y="130" width="160" height="180">
-                    <div className="w-full h-full flex flex-col items-center justify-center text-white p-1">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white p-1">
                       <span className="material-symbols-outlined text-[20px] mb-1 opacity-90 transition-all duration-300 group-hover:scale-125 group-hover:-rotate-12">fiber_new</span>
                       <span className="text-[8px] font-bold tracking-wider uppercase opacity-90 text-center leading-tight transition-opacity duration-300 group-hover:opacity-100">Abertos</span>
                       <span className="text-[36px] font-black leading-none mt-1 transition-transform duration-300 group-hover:scale-110">{stats?.openTickets || 0}</span>
@@ -147,7 +147,7 @@ export default function DashboardPage() {
                 <g onClick={() => navigate('/tickets?status=InProgress')} className="group cursor-pointer transition-transform duration-300 hover:translate-x-1.5 hover:-translate-y-1.5">
                   <path d="M 260 279 L 260 60 A 400 400 0 0 1 440 383 Z" className="fill-[#9c0c16] transition-all duration-300 group-hover:fill-[#b8101b]" />
                   <foreignObject x="255" y="130" width="160" height="180">
-                    <div className="w-full h-full flex flex-col items-center justify-center text-white p-1">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white p-1">
                       <span className="material-symbols-outlined text-[20px] mb-1 opacity-90 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12">terminal</span>
                       <span className="text-[8px] font-bold tracking-wider uppercase opacity-90 text-center leading-tight transition-opacity duration-300 group-hover:opacity-100">Andamento</span>
                       <span className="text-[36px] font-black leading-none mt-1 transition-transform duration-300 group-hover:scale-110">{stats?.inProgressTickets || 0}</span>
@@ -167,7 +167,7 @@ export default function DashboardPage() {
                 <g onClick={() => navigate('/tickets?status=Resolved')} className="group cursor-pointer transition-transform duration-300 hover:translate-y-2">
                   <path d="M 250 296 L 75 397 A 400 400 0 0 0 425 397 Z" className="fill-[#7a0810] transition-all duration-300 group-hover:fill-[#9c0c16]" />
                   <foreignObject x="150" y="305" width="200" height="120">
-                    <div className="w-full h-full flex flex-col items-center justify-center text-white p-1">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white p-1">
                       <span className="text-[36px] font-black leading-none transition-transform duration-300 group-hover:scale-110">{stats?.resolvedTickets || 0}</span>
                       <span className="text-[8px] font-bold tracking-wider uppercase opacity-90 text-center flex items-center gap-1 mt-1 transition-opacity duration-300 group-hover:opacity-100">
                         <span className="material-symbols-outlined text-[10px] transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">check_circle</span> Resolvidos
