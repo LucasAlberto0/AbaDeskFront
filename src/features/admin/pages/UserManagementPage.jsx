@@ -125,11 +125,11 @@ export default function UserManagementPage() {
             <table className="w-full text-left text-sm text-text-secondary min-w-[580px]">
               <thead className="bg-gray-50/50 text-xs uppercase text-text-muted border-b border-border-subtle">
                 <tr>
-                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold">Nome</th>
-                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold">E-mail</th>
-                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold">Cargo</th>
-                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold">Criação</th>
-                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold text-right">Ações</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold whitespace-nowrap">Nome</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold whitespace-nowrap">E-mail</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold whitespace-nowrap">Cargo</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold whitespace-nowrap">Criação</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold text-right whitespace-nowrap">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border-subtle">
@@ -143,7 +143,7 @@ export default function UserManagementPage() {
                       key={u.id} 
                       className="hover:bg-gray-50/80 transition-colors group overflow-hidden"
                     >
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 font-medium text-text-primary">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 font-medium text-text-primary whitespace-nowrap">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
                           {(u?.name || 'U').charAt(0).toUpperCase()}
@@ -151,8 +151,8 @@ export default function UserManagementPage() {
                         <span className="truncate max-w-[150px] sm:max-w-none">{u?.name || 'Sem nome'}</span>
                       </div>
                     </td>
-                    <td className="px-3 sm:px-6 py-3 sm:py-4">{u.email}</td>
-                    <td className="px-3 sm:px-6 py-3 sm:py-4">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">{u.email}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                       {u.role === 'Admin' ? (
                         <Badge status="IN_DEVELOPMENT" label="Administrador" className="bg-purple-100 text-purple-700 border-purple-200" />
                       ) : u.role === 'Attendant' ? (

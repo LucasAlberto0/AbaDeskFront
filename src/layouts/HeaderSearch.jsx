@@ -94,8 +94,8 @@ export function HeaderSearch() {
   };
 
   return (
-    <div className="relative w-full max-w-md min-w-0 flex-1 hidden sm:block">
-      <span className={`material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[17px] transition-colors ${isOpen || query ? 'text-slate-400 z-50' : 'text-white/70'}`}>
+    <div className="relative w-full max-w-md min-w-0 flex-1 hidden sm:flex items-center">
+      <span className={`material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[17px] leading-none pointer-events-none transition-colors ${isOpen || query ? 'text-slate-400 z-50' : 'text-white/70'}`}>
         search
       </span>
       <input 
@@ -105,7 +105,7 @@ export function HeaderSearch() {
         onFocus={() => {
           if (query.trim().length >= 2 || results.length > 0) setIsOpen(true);
         }}
-        className={`w-full h-9 pl-9 pr-10 sm:pr-12 rounded-lg text-[13px] transition-all duration-300 focus:outline-none ${
+        className={`w-full h-9 pl-9 pr-10 sm:pr-12 rounded-lg text-[13px] leading-normal transition-all duration-300 focus:outline-none ${
           isOpen || query ? 'bg-white text-slate-900 border-white shadow-lg placeholder:text-slate-400 relative z-50' : 'bg-white/15 border border-white/20 text-white placeholder:text-white/70'
         }`} 
         placeholder="Buscar chamados, protocolos..." 
@@ -113,13 +113,13 @@ export function HeaderSearch() {
       />
       
       {!isOpen && !query && (
-        <kbd className="hidden md:inline-block absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-white/80 font-mono bg-white/10 border border-white/15 px-1.5 py-0.5 rounded pointer-events-none">
+        <kbd className="hidden md:inline-flex items-center justify-center absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] leading-none text-white/80 font-mono bg-white/10 border border-white/15 px-1.5 h-5 rounded pointer-events-none">
           ⌘K
         </kbd>
       )}
 
       {isLoading && (
-        <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[16px] animate-spin z-50">
+        <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[16px] animate-spin z-50 leading-none">
           progress_activity
         </span>
       )}

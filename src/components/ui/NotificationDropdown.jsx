@@ -180,15 +180,15 @@ export function NotificationDropdown() {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative flex items-center shrink-0" ref={dropdownRef}>
       <button
         onClick={handleOpenDropdown}
-        className="relative p-1.5 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center cursor-pointer"
+        className="relative w-9 h-9 rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center cursor-pointer shrink-0"
         title="Notificações"
       >
-        <span className="material-symbols-outlined text-[20px]">notifications</span>
+        <span className="material-symbols-outlined text-[20px] leading-none">notifications</span>
         {hasNewAlerts && (
-          <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-white rounded-full ring-2 ring-[#c8101e] animate-pulse" />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-white rounded-full ring-2 ring-[#c8101e] animate-pulse" />
         )}
       </button>
 

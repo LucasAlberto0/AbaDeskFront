@@ -189,17 +189,17 @@ export default function MainLayout() {
 
       <div className={`${isCollapsed ? 'lg:pl-20' : 'lg:pl-72'} pl-0 flex flex-col ${location.pathname.startsWith('/assistant') ? 'h-screen max-h-screen overflow-hidden' : 'min-h-screen overflow-x-hidden'} min-w-0 w-full transition-all duration-300`}>
         <header className={`fixed top-0 ${isCollapsed ? 'lg:left-20' : 'lg:left-72'} left-0 right-0 h-16 bg-[#c8101e] border-b border-[#a70d18] z-40 flex items-center justify-between px-3 sm:px-6 lg:px-8 gap-2 sm:gap-4 min-w-0 shadow-sm transition-all duration-300`}>
-          <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 shrink">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="lg:hidden p-1.5 -ml-1 text-white hover:bg-white/10 rounded-lg flex items-center justify-center shrink-0"
+              className="lg:hidden w-9 h-9 -ml-1 text-white hover:bg-white/10 rounded-lg flex items-center justify-center shrink-0 cursor-pointer"
               title="Abrir menu"
             >
-              <span className="material-symbols-outlined text-[24px]">menu</span>
+              <span className="material-symbols-outlined text-[24px] leading-none">menu</span>
             </button>
-            <span className="text-[13px] text-white/70 font-normal whitespace-nowrap hidden sm:inline">ABA Infra</span>
-            <span className="text-white/40 hidden sm:inline">/</span>
-            <span className="text-[13px] text-white font-medium truncate max-w-[140px] sm:max-w-none">{getPageTitle()}</span>
+            <span className="text-[13px] text-white/70 font-normal whitespace-nowrap hidden sm:inline-flex items-center leading-none">ABA Infra</span>
+            <span className="text-[13px] text-white/40 hidden sm:inline-flex items-center leading-none select-none">/</span>
+            <span className="text-[13px] text-white font-medium truncate max-w-[140px] sm:max-w-none inline-flex items-center leading-none">{getPageTitle()}</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-4 flex-1 justify-end min-w-0">
             <HeaderSearch />
@@ -207,20 +207,20 @@ export default function MainLayout() {
               <NotificationDropdown />
               <button
                 onClick={() => setIsAboutModalOpen(true)}
-                className="p-1.5 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition-colors"
+                className="w-9 h-9 rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center shrink-0 cursor-pointer"
                 title="Ajuda e Sobre"
               >
-                <span className="material-symbols-outlined text-[20px]">help_outline</span>
+                <span className="material-symbols-outlined text-[20px] leading-none">help_outline</span>
               </button>
               <button
                 onClick={() => setIsSettingsModalOpen(true)}
-                className="lg:hidden p-1.5 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition-colors"
+                className="lg:hidden w-9 h-9 rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center shrink-0 cursor-pointer"
                 title="Configurações"
               >
-                <span className="material-symbols-outlined text-[20px]">settings</span>
+                <span className="material-symbols-outlined text-[20px] leading-none">settings</span>
               </button>
-              <div className="h-4 w-px bg-white/20 mx-0.5 sm:mx-1"></div>
-              <div className="w-7 h-7 rounded-full bg-white text-[#c8101e] flex items-center justify-center text-[11px] font-bold shadow-sm shrink-0">
+              <div className="h-4 w-px bg-white/20 mx-1 shrink-0 self-center"></div>
+              <div className="w-8 h-8 rounded-full bg-white text-[#c8101e] flex items-center justify-center text-[12px] font-bold shadow-sm shrink-0 leading-none select-none">
                 {getInitials(user?.name)}
               </div>
             </div>

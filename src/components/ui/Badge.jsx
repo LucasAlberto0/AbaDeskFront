@@ -21,8 +21,8 @@ export function Badge({ status, label, className }) {
   const config = variantConfig[status] || variantConfig.DEFAULT;
   
   return (
-    <div className={cn("inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-[4px] border text-[11px] font-semibold uppercase tracking-wider", config.wrapper, className)}>
-      <span className={cn("h-1.5 w-1.5 rounded-full", config.dot)} />
+    <div className={cn("inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-[4px] border text-[11px] font-semibold uppercase tracking-wider whitespace-nowrap shrink-0", config.wrapper, className)}>
+      <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", config.dot)} />
       {label}
     </div>
   );
