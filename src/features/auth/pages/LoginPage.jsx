@@ -43,7 +43,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen font-sans antialiased text-slate-800 bg-[#f9fafb] flex flex-col lg:flex-row w-full lg:h-screen lg:overflow-hidden overflow-y-auto">
+    <div className="h-[100dvh] min-h-[100dvh] font-sans antialiased text-slate-800 bg-[#f9fafb] flex flex-col lg:flex-row w-full overflow-y-auto lg:overflow-hidden">
       
       <section className="hidden lg:flex lg:w-[54%] xl:w-[56%] bg-[#c8101e] relative flex-col justify-between p-8 sm:p-12 lg:p-16 text-white overflow-hidden shadow-2xl z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-[#c8101e] via-[#b80e1b] to-[#920914] opacity-95"></div>
@@ -64,22 +64,22 @@ export default function LoginPage() {
         </div>
       </section>
 
-      <section className="w-full lg:w-[46%] xl:w-[44%] flex-1 flex items-center justify-center p-3.5 sm:p-8 lg:p-14 bg-[#f8fafc]">
-        <div className="w-full max-w-md bg-white rounded-2xl p-5 sm:p-8 md:p-10 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.08)] border border-slate-100">
+      <section className="w-full lg:w-[46%] xl:w-[44%] min-h-full flex-1 flex items-center justify-center p-3 sm:p-8 lg:p-14 bg-[#f8fafc]">
+        <div className="w-full max-w-md bg-white rounded-2xl p-4 sm:p-8 md:p-10 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.08)] border border-slate-100 my-auto">
           
-          <div className="flex flex-col items-center text-center mb-5 sm:mb-7">
-            <div className="h-10 mb-4 flex items-center justify-center">
+          <div className="flex flex-col items-center text-center mb-4 sm:mb-7">
+            <div className="h-9 sm:h-10 mb-2.5 sm:mb-4 flex items-center justify-center">
               <img alt="Logo ABA Desk" className="h-8 sm:h-9 w-auto object-contain" style={{ filter: 'invert(1) contrast(1.15) brightness(0.2)' }} src="/img/brand/logo-dark.png" />
             </div>
             <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
               Acessar Plataforma
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5 sm:mt-1">
               Entre com suas credenciais de acesso corporativo
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3.5 sm:space-y-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5" htmlFor="email">
                 E-mail corporativo
@@ -111,10 +111,16 @@ export default function LoginPage() {
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                 </div>
                 <input 
-                  type={showPassword ? 'text' : 'password'} 
+                  type={showPassword ? 'text' : (typeof CSS !== 'undefined' && CSS.supports && CSS.supports('-webkit-text-security', 'disc') ? 'text' : 'password')} 
                   id="password" 
+                  name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  style={!showPassword && typeof CSS !== 'undefined' && CSS.supports && CSS.supports('-webkit-text-security', 'disc') ? { WebkitTextSecurity: 'disc' } : undefined}
+                  autoComplete="current-password"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
                   className="block w-full pl-10 pr-10 py-2.5 text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
                   placeholder="••••••••" 
                   required 
@@ -155,7 +161,7 @@ export default function LoginPage() {
             </div>
           </form>
 
-          <div className="mt-6 text-center text-xs text-slate-500">
+          <div className="mt-4 sm:mt-6 text-center text-xs text-slate-500">
             <span>Não tem uma conta corporativa? </span>
             <Link to="/register" className="font-semibold text-[#c8101e] hover:text-[#9c0c16] hover:underline">
               Cadastre-se

@@ -252,13 +252,18 @@ export default function RegisterPage() {
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                 </div>
                 <input 
-                  type={showPassword ? 'text' : 'password'} 
+                  type={showPassword ? 'text' : (typeof CSS !== 'undefined' && CSS.supports && CSS.supports('-webkit-text-security', 'disc') ? 'text' : 'password')} 
                   id="password" 
+                  name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  style={!showPassword && typeof CSS !== 'undefined' && CSS.supports && CSS.supports('-webkit-text-security', 'disc') ? { WebkitTextSecurity: 'disc' } : undefined}
                   className="block w-full pl-10 pr-10 py-2 sm:text-sm border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-[#c8101e]/30 focus:border-[#c8101e] outline-none transition-colors" 
                   placeholder="••••••••••••" 
                   autoComplete="new-password"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
                   data-lpignore="true"
                   required 
                 />
@@ -281,10 +286,12 @@ export default function RegisterPage() {
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                 </div>
                 <input 
-                  type={showConfirmPassword ? 'text' : 'password'} 
+                  type={showConfirmPassword ? 'text' : (typeof CSS !== 'undefined' && CSS.supports && CSS.supports('-webkit-text-security', 'disc') ? 'text' : 'password')} 
                   id="confirmPassword" 
+                  name="confirmPassword"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  style={!showConfirmPassword && typeof CSS !== 'undefined' && CSS.supports && CSS.supports('-webkit-text-security', 'disc') ? { WebkitTextSecurity: 'disc' } : undefined}
                   onBlur={() => {
                     if (confirmPassword && password !== confirmPassword) {
                       toast.error('As senhas não coincidem.');
@@ -297,6 +304,9 @@ export default function RegisterPage() {
                   }`}
                   placeholder="••••••••••••" 
                   autoComplete="new-password"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
                   data-lpignore="true"
                   required 
                 />
