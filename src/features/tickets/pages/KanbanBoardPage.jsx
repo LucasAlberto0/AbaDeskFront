@@ -195,7 +195,7 @@ export default function KanbanBoardPage() {
     const [movedTicket] = sourceList.splice(source.index, 1);
     movedTicket.status = destStatus;
 
-    if (destStatus === 'InProgress' && !movedTicket.assignedToName) {
+    if ((destStatus === 'InProgress' || destStatus === 'InAnalysis') && !movedTicket.assignedToName) {
       movedTicket.assignedToName = user?.name || 'Suporte Técnico';
     }
 
@@ -269,7 +269,7 @@ export default function KanbanBoardPage() {
       const [movedTicket] = sourceList.splice(source.index, 1);
       movedTicket.status = targetStatus;
 
-      if (targetStatus === 'InProgress' && !movedTicket.assignedToName) {
+      if ((targetStatus === 'InProgress' || targetStatus === 'InAnalysis') && !movedTicket.assignedToName) {
         movedTicket.assignedToName = user?.name || 'Suporte Técnico';
       }
 
