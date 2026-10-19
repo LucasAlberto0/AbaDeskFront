@@ -196,7 +196,7 @@ export default function KanbanBoardPage() {
     movedTicket.status = destStatus;
 
     if ((destStatus === 'InProgress' || destStatus === 'InAnalysis') && !movedTicket.assignedToName) {
-      movedTicket.assignedToName = user?.name || 'Suporte Técnico';
+      movedTicket.assignedToName = user?.name || (user?.role === 'Admin' || user?.role === 2 ? 'Administrador' : 'Suporte Técnico');
     }
 
     destList.splice(destination.index, 0, movedTicket);
@@ -270,7 +270,7 @@ export default function KanbanBoardPage() {
       movedTicket.status = targetStatus;
 
       if ((targetStatus === 'InProgress' || targetStatus === 'InAnalysis') && !movedTicket.assignedToName) {
-        movedTicket.assignedToName = user?.name || 'Suporte Técnico';
+        movedTicket.assignedToName = user?.name || (user?.role === 'Admin' || user?.role === 2 ? 'Administrador' : 'Suporte Técnico');
       }
 
       destList.splice(destination.index, 0, movedTicket);

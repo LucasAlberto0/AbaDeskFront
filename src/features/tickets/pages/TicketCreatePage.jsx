@@ -133,10 +133,9 @@ export default function TicketCreatePage() {
     formData.companyUnit,
     formData.department.trim(),
     formData.systemName.trim(),
-    formData.description.trim(),
-    formData.attachmentBase64
+    formData.description.trim()
   ].filter(Boolean).length;
-  const progressPercent = Math.round((completedFields / 8) * 100);
+  const progressPercent = Math.round((completedFields / 7) * 100);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -153,11 +152,6 @@ export default function TicketCreatePage() {
 
     if (!formData.companyUnit) {
       toast.error('Por favor, selecione a unidade da empresa.');
-      return;
-    }
-
-    if (!formData.attachmentBase64) {
-      toast.error('O anexo de imagem é obrigatório para registrar o chamado.');
       return;
     }
 
@@ -437,7 +431,7 @@ export default function TicketCreatePage() {
 
           <div className="space-y-1.5">
             <label className="text-xs sm:text-sm font-semibold text-slate-700 flex items-center gap-1">
-              Anexo de Imagem (Obrigatório) <span className="text-[#c8101e]">*</span>
+              Anexo de Imagem (Opcional)
             </label>
 
             <input

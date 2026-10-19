@@ -466,7 +466,7 @@ export default function TicketDetailsPage() {
               <p className="text-sm font-medium text-text-primary">{ticket.createdBy?.name}</p>
             </div>
             <div>
-              <p className="text-xs text-text-muted uppercase font-semibold">Responsável Técnico</p>
+              <p className="text-xs text-text-muted uppercase font-semibold">Responsável</p>
               <p className="text-sm font-medium text-text-primary flex items-center gap-1.5 mt-0.5">
                 {ticket.assignedTo ? (
                   <>
