@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import useAuthStore from '../hooks/useAuthStore';
 import { Eye, EyeOff, Mail } from 'lucide-react';
 import { api } from '../../../lib/axios';
@@ -50,11 +51,29 @@ export default function LoginPage() {
         <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)", backgroundSize: "28px 28px" }}></div>
 
         <div className="relative z-10 my-auto py-8 max-w-xl mx-auto flex flex-col items-center text-center">
-          <div className="w-64 sm:w-80 md:w-96 mb-6 drop-shadow-md transition-transform duration-500 hover:scale-[1.02]">
+          <motion.div 
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+            className="w-64 sm:w-80 md:w-96 mb-6 drop-shadow-md"
+          >
             <img alt="Ilustração de Gestão" className="w-full h-auto object-contain pointer-events-none select-none opacity-95" style={{ filter: 'brightness(0) invert(1)' }} src="/img/illustrations/illustration.png" />
-          </div>
-          <h1 className="text-2xl sm:text-3xl lg:text-[2.35rem] font-bold tracking-tight text-white leading-tight">GRUPO ABA INFRA</h1>
-          <p className="mt-4 text-base sm:text-lg text-white/90 font-normal leading-relaxed max-w-lg">Excelência e agilidade com atendimento personalizado</p>
+          </motion.div>
+          <motion.h1 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-2xl sm:text-3xl lg:text-[2.35rem] font-bold tracking-tight text-white leading-tight"
+          >
+            GRUPO ABA INFRA
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mt-4 text-base sm:text-lg text-white/90 font-normal leading-relaxed max-w-lg"
+          >
+            Excelência e agilidade com atendimento personalizado
+          </motion.p>
         </div>
 
         <div className="relative z-10 text-xs text-white/60 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-white/15 pt-4">
@@ -65,7 +84,12 @@ export default function LoginPage() {
       </section>
 
       <section className="w-full lg:w-[46%] xl:w-[44%] min-h-full flex-1 flex items-center justify-center p-3 sm:p-8 lg:p-14 bg-[#f8fafc]">
-        <div className="w-full max-w-md bg-white rounded-2xl p-4 sm:p-8 md:p-10 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.08)] border border-slate-100 my-auto">
+        <motion.div 
+          initial={{ opacity: 0, y: 28, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full max-w-md bg-white rounded-2xl p-4 sm:p-8 md:p-10 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.08)] border border-slate-100 my-auto"
+        >
           
           <div className="flex flex-col items-center text-center mb-4 sm:mb-7">
             <div className="h-9 sm:h-10 mb-2.5 sm:mb-4 flex items-center justify-center">
@@ -148,16 +172,19 @@ export default function LoginPage() {
             </div>
 
             <div className="pt-2">
-              <button 
+              <motion.button 
+                whileHover={{ scale: isSubmitting ? 1 : 1.01 }}
+                whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+                transition={{ duration: 0.15 }}
                 type="submit" 
                 disabled={isSubmitting}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-transparent rounded-lg text-sm font-semibold text-white bg-[#c8101e] hover:bg-[#a70d18] active:bg-[#8b0c15] shadow-sm hover:shadow-md transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8101e] disabled:opacity-70"
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-transparent rounded-lg text-sm font-semibold text-white bg-[#c8101e] hover:bg-[#a70d18] active:bg-[#8b0c15] shadow-sm hover:shadow-md transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c8101e] disabled:opacity-70 cursor-pointer"
               >
                 {isSubmitting ? 'Autenticando...' : 'Entrar no ABA Desk'}
                 {!isSubmitting && (
                   <svg className="w-4 h-4 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 )}
-              </button>
+              </motion.button>
             </div>
           </form>
 
@@ -168,7 +195,7 @@ export default function LoginPage() {
             </Link>
           </div>
           
-        </div>
+        </motion.div>
       </section>
 
     </div>
