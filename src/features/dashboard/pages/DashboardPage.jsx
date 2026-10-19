@@ -8,16 +8,38 @@ import { translateStatus, translateCategory } from '../../../lib/utils';
 
 function StatValue({ value, isLoading, size = "lg", suffix = "", isDarkBg = true }) {
   if (isLoading || value === undefined || value === null) {
+    const mobileFallback = <>0{suffix}</>;
+
     if (isDarkBg) {
       if (size === "sm") {
-        return <span className="inline-block w-5 h-3 bg-white/30 animate-pulse rounded-xs align-middle" />;
+        return (
+          <>
+            <span className="sm:hidden">{mobileFallback}</span>
+            <span className="hidden sm:inline-block w-5 h-3 bg-white/30 animate-pulse rounded-xs align-middle" />
+          </>
+        );
       }
-      return <span className="inline-block w-10 sm:w-14 h-7 sm:h-9 bg-white/30 animate-pulse rounded-md my-0.5 align-middle" />;
+      return (
+        <>
+          <span className="sm:hidden">{mobileFallback}</span>
+          <span className="hidden sm:inline-block w-10 sm:w-14 h-7 sm:h-9 bg-white/30 animate-pulse rounded-md my-0.5 align-middle" />
+        </>
+      );
     }
     if (size === "badge") {
-      return <span className="inline-block w-4 h-3 bg-white/40 animate-pulse rounded-xs align-middle" />;
+      return (
+        <>
+          <span className="sm:hidden">{mobileFallback}</span>
+          <span className="hidden sm:inline-block w-4 h-3 bg-white/40 animate-pulse rounded-xs align-middle" />
+        </>
+      );
     }
-    return <span className="inline-block w-4 h-2.5 bg-slate-300 animate-pulse rounded-xs align-middle" />;
+    return (
+      <>
+        <span className="sm:hidden">{mobileFallback}</span>
+        <span className="hidden sm:inline-block w-4 h-2.5 bg-slate-300 animate-pulse rounded-xs align-middle" />
+      </>
+    );
   }
   return <>{value}{suffix}</>;
 }

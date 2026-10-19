@@ -42,6 +42,7 @@ export default function AssistantPage() {
   const [copiedId, setCopiedId] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const chatInputRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
   useEffect(() => {
@@ -108,6 +109,9 @@ export default function AssistantPage() {
         behavior
       });
     }
+    if (window.scrollY !== 0) {
+      window.scrollTo(0, 0);
+    }
   };
 
   useEffect(() => {
@@ -117,8 +121,18 @@ export default function AssistantPage() {
   }, [messages, isTyping]);
 
   useEffect(() => {
-    inputRef.current?.focus();
+    if (window.innerWidth >= 768) {
+      if (messages.length > 0) {
+        chatInputRef.current?.focus();
+      } else {
+        inputRef.current?.focus();
+      }
+    }
   }, [messages.length]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [messages.length > 0]);
 
   const getInitials = (name) => {
     if (!name) return 'U';
@@ -131,6 +145,11 @@ export default function AssistantPage() {
   const handleSend = async (textToSend) => {
     const text = typeof textToSend === 'string' ? textToSend.trim() : inputMessage.trim();
     if (!text || isTyping) return;
+
+    if (window.innerWidth < 768 && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    window.scrollTo(0, 0);
 
     const userMessage = {
       id: Date.now(),
@@ -532,6 +551,7 @@ export default function AssistantPage() {
               <div className="relative flex items-center rounded-full bg-slate-50 hover:bg-slate-100/90 border border-slate-300 focus-within:border-[#c8101e] focus-within:bg-white focus-within:ring-4 focus-within:ring-red-500/10 shadow-sm transition-all px-3.5 sm:px-5 py-1.5 sm:py-2.5">
 
                 <input
+                  ref={chatInputRef}
                   type="text"
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
