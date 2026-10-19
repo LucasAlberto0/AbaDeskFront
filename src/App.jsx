@@ -9,6 +9,7 @@ import KanbanBoardPage from './features/tickets/pages/KanbanBoardPage';
 import UserManagementPage from './features/admin/pages/UserManagementPage';
 import AssistantPage from './features/assistant/pages/AssistantPage';
 import RegisterPage from './features/auth/pages/RegisterPage';
+import WelcomePage from './features/welcome/pages/WelcomePage';
 import useAuthStore from './features/auth/hooks/useAuthStore';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Toaster } from 'react-hot-toast';
@@ -19,6 +20,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/welcome" element={<WelcomePage />} />
+        <Route path="/bem-vindo" element={<WelcomePage />} />
+
         <Route 
           path="/login" 
           element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />} 
