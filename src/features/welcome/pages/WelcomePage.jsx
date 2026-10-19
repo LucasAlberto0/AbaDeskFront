@@ -7,29 +7,16 @@ import useAuthStore from '../../auth/hooks/useAuthStore';
 export default function WelcomePage() {
   const { isAuthenticated, user } = useAuthStore();
   const [greeting, setGreeting] = useState('Bem-vindo');
-  const [timeString, setTimeString] = useState('');
 
   useEffect(() => {
-    const updateTimeAndGreeting = () => {
-      const now = new Date();
-      const hour = now.getHours();
-      
-      if (hour >= 5 && hour < 12) {
-        setGreeting('Bom dia');
-      } else if (hour >= 12 && hour < 18) {
-        setGreeting('Boa tarde');
-      } else {
-        setGreeting('Boa noite');
-      }
-
-      setTimeString(
-        now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      );
-    };
-
-    updateTimeAndGreeting();
-    const timer = setInterval(updateTimeAndGreeting, 1000);
-    return () => clearInterval(timer);
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) {
+      setGreeting('Bom dia');
+    } else if (hour >= 12 && hour < 18) {
+      setGreeting('Boa tarde');
+    } else {
+      setGreeting('Boa noite');
+    }
   }, []);
 
   const companies = [
@@ -71,10 +58,7 @@ export default function WelcomePage() {
           transition={{ duration: 0.4 }}
           className="text-right"
         >
-          <p className="text-xs sm:text-sm font-semibold text-slate-900 tracking-tight">
-            {timeString}
-          </p>
-          <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium">
+          <p className="text-xs sm:text-sm font-medium text-slate-500">
             Santos • SP
           </p>
         </motion.div>
