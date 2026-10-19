@@ -12,6 +12,7 @@ import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 import { SolutionModal } from '../../../components/ui/SolutionModal';
 import { ReopenModal } from '../../../components/ui/ReopenModal';
 import * as signalR from '@microsoft/signalr';
+import { API_BASE_URL } from '../../../lib/axios';
 export default function TicketDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ export default function TicketDetailsPage() {
 
     const token = sessionStorage.getItem('abadesk_token');
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl("http://localhost:5017/hubs/ticket", {
+      .withUrl(`${API_BASE_URL}/hubs/ticket`, {
         accessTokenFactory: () => token
       })
       .withAutomaticReconnect()
@@ -386,8 +387,8 @@ export default function TicketDetailsPage() {
             {ticket.attachmentUrl && (
               <div className="mt-6 border-t border-border-subtle pt-4">
                 <h4 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3">Anexo</h4>
-                <a href={`http://localhost:5017${ticket.attachmentUrl}`} target="_blank" rel="noreferrer">
-                  <img src={`http://localhost:5017${ticket.attachmentUrl}`} alt="Anexo do Chamado" className="max-w-full max-h-[400px] object-contain rounded-lg border border-slate-200 shadow-sm cursor-pointer hover:opacity-90 transition-opacity" />
+                <a href={`${API_BASE_URL}${ticket.attachmentUrl}`} target="_blank" rel="noreferrer">
+                  <img src={`${API_BASE_URL}${ticket.attachmentUrl}`} alt="Anexo do Chamado" className="max-w-full max-h-[400px] object-contain rounded-lg border border-slate-200 shadow-sm cursor-pointer hover:opacity-90 transition-opacity" />
                 </a>
               </div>
             )}

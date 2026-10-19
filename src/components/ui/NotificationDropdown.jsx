@@ -10,6 +10,7 @@ import {
   deleteNotification, 
   clearAllNotifications 
 } from '../../features/notifications/api/notificationService';
+import { API_BASE_URL } from '../../lib/axios';
 
 export function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -41,7 +42,7 @@ export function NotificationDropdown() {
 
     const token = sessionStorage.getItem('abadesk_token');
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl("http://localhost:5017/hubs/ticket", {
+      .withUrl(`${API_BASE_URL}/hubs/ticket`, {
         accessTokenFactory: () => token || ''
       })
       .withAutomaticReconnect()
