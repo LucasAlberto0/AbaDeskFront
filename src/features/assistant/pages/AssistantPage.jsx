@@ -40,10 +40,56 @@ export default function AssistantPage() {
     }
   });
   const [copiedId, setCopiedId] = useState(null);
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const chatInputRef = useRef(null);
   const messagesContainerRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const updateKeyboardMetrics = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+
+      if (!mobile) {
+        setKeyboardOffset(0);
+        return;
+      }
+
+      if (window.visualViewport) {
+        const heightDiff = window.innerHeight - window.visualViewport.height;
+        if (heightDiff > 80) {
+          setKeyboardOffset(heightDiff);
+          return;
+        }
+      }
+
+      setKeyboardOffset(0);
+    };
+
+    updateKeyboardMetrics();
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateKeyboardMetrics);
+      window.visualViewport.addEventListener('scroll', updateKeyboardMetrics);
+    }
+    window.addEventListener('resize', updateKeyboardMetrics);
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', updateKeyboardMetrics);
+        window.visualViewport.removeEventListener('scroll', updateKeyboardMetrics);
+      }
+      window.removeEventListener('resize', updateKeyboardMetrics);
+    };
+  }, []);
+
+  const isKeyboardOpen = isMobile && (keyboardOffset > 80 || isInputFocused);
+  const effectiveBottomPadding = isKeyboardOpen ? Math.max(keyboardOffset, 280) : 0;
 
   useEffect(() => {
     try {
@@ -121,6 +167,14 @@ export default function AssistantPage() {
   }, [messages, isTyping]);
 
   useEffect(() => {
+    if (messages.length > 0 && effectiveBottomPadding > 0) {
+      setTimeout(() => {
+        scrollToBottom('smooth');
+      }, 50);
+    }
+  }, [effectiveBottomPadding, messages.length]);
+
+  useEffect(() => {
     if (window.innerWidth >= 768) {
       if (messages.length > 0) {
         chatInputRef.current?.focus();
@@ -141,7 +195,6 @@ export default function AssistantPage() {
     return parts[0][0];
   };
 
-
   const handleSend = async (textToSend) => {
     const text = typeof textToSend === 'string' ? textToSend.trim() : inputMessage.trim();
     if (!text || isTyping) return;
@@ -149,6 +202,8 @@ export default function AssistantPage() {
     if (window.innerWidth < 768 && document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
+    setIsInputFocused(false);
+    setKeyboardOffset(0);
     window.scrollTo(0, 0);
 
     const userMessage = {
@@ -209,6 +264,8 @@ export default function AssistantPage() {
     setMessages([]);
     setInputMessage('');
     setSessionId(null);
+    setIsInputFocused(false);
+    setKeyboardOffset(0);
     try {
       localStorage.removeItem(storageKey);
       localStorage.removeItem(sessionKey);
@@ -289,7 +346,10 @@ export default function AssistantPage() {
   const isChatActive = messages.length > 0;
 
   return (
-    <div className="relative flex flex-col h-full w-full bg-white overflow-hidden select-none">
+    <div 
+      className="relative flex flex-col h-full w-full bg-white overflow-hidden select-none transition-[padding-bottom] duration-200 ease-out"
+      style={{ paddingBottom: effectiveBottomPadding > 0 ? `${effectiveBottomPadding}px` : undefined }}
+    >
 
       <AnimatePresence>
         {isChatActive && (
@@ -345,13 +405,15 @@ export default function AssistantPage() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.96 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="flex-1 my-auto flex flex-col items-center justify-center text-center px-4 py-3 sm:py-8 max-w-3xl mx-auto w-full min-h-0"
+              className={`flex-1 my-auto flex flex-col items-center justify-center text-center px-4 py-3 sm:py-8 max-w-3xl mx-auto w-full min-h-0 transition-all duration-200 ${
+                isKeyboardOpen ? '-translate-y-4 sm:translate-y-0' : ''
+              }`}
             >
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.35, delay: 0.05 }}
-                className="relative mb-3 sm:mb-5"
+                className={`relative mb-3 sm:mb-5 ${isKeyboardOpen ? 'hidden sm:block' : 'block'}`}
               >
                 <div className="relative w-14 h-14 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-[#c8101e] p-2 sm:p-3 flex items-center justify-center shadow-xl shadow-red-900/15">
                   <img
@@ -367,7 +429,7 @@ export default function AssistantPage() {
                   Qual desafio vamos <br className="hidden xs:inline" />
                   <span className="text-[#9d0012]">solucionar juntos hoje?</span>
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-500 mt-1.5 sm:mt-2.5 max-w-sm sm:max-w-lg mx-auto leading-relaxed px-2">
+                <p className={`text-xs sm:text-sm text-slate-500 mt-1.5 sm:mt-2.5 max-w-sm sm:max-w-lg mx-auto leading-relaxed px-2 ${isKeyboardOpen ? 'hidden sm:block' : 'block'}`}>
                   Descreva qualquer problema ou incidente para receber diagnósticos ágeis, orientações técnicas e soluções precisas.
                 </p>
               </div>
@@ -381,6 +443,10 @@ export default function AssistantPage() {
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyDown={handleKeyDown}
+                    onFocus={() => setIsInputFocused(true)}
+                    onBlur={() => {
+                      setTimeout(() => setIsInputFocused(false), 120);
+                    }}
                     placeholder="Peça à ABA Assist..."
                     disabled={isTyping}
                     className="flex-1 bg-transparent pr-2 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none min-w-0"
@@ -389,6 +455,7 @@ export default function AssistantPage() {
                   <div className="flex items-center gap-2 shrink-0">
                     <button
                       type="button"
+                      onMouseDown={(e) => e.preventDefault()}
                       onClick={() => handleSend()}
                       disabled={!inputMessage.trim() || isTyping}
                       className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shrink-0 ${inputMessage.trim() && !isTyping
@@ -402,7 +469,7 @@ export default function AssistantPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-4 sm:mt-6 max-w-xl mx-auto">
+                <div className={`flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-4 sm:mt-6 max-w-xl mx-auto ${isKeyboardOpen ? 'hidden sm:flex' : 'flex'}`}>
                   {promptSuggestions.map((item, idx) => {
                     const IconComponent = item.icon;
                     return (
@@ -533,7 +600,7 @@ export default function AssistantPage() {
             className="p-2 sm:p-4 pb-[max(0.625rem,env(safe-area-inset-bottom))] bg-white border-t border-slate-200 shrink-0 z-10 shadow-lg"
           >
             <div className="max-w-3xl mx-auto w-full">
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none">
+              <div className={`flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none ${isKeyboardOpen ? 'hidden sm:flex' : 'flex'}`}>
                 <span className="text-[11px] text-slate-500 shrink-0 flex items-center gap-1 mr-1">
                   <Sparkles size={12} className="text-[#c8101e]" /> Sugestões:
                 </span>
@@ -556,6 +623,13 @@ export default function AssistantPage() {
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyDown={handleKeyDown}
+                  onFocus={() => {
+                    setIsInputFocused(true);
+                    if (window.scrollY !== 0) window.scrollTo(0, 0);
+                  }}
+                  onBlur={() => {
+                    setTimeout(() => setIsInputFocused(false), 120);
+                  }}
                   placeholder="Peça à ABA Assist..."
                   disabled={isTyping}
                   className="flex-1 bg-transparent pr-2 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none min-w-0"
@@ -564,6 +638,7 @@ export default function AssistantPage() {
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleSend()}
                     disabled={!inputMessage.trim() || isTyping}
                     className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shrink-0 ${inputMessage.trim() && !isTyping
@@ -577,7 +652,7 @@ export default function AssistantPage() {
                 </div>
               </div>
 
-              <p className="text-[10px] sm:text-[11px] text-slate-400 text-center mt-2 flex items-center justify-center gap-1">
+              <p className={`text-[10px] sm:text-[11px] text-slate-400 text-center mt-2 flex items-center justify-center gap-1 ${isKeyboardOpen ? 'hidden sm:flex' : 'flex'}`}>
                 <Info size={12} className="shrink-0" />
                 O ABA Assist pode cometer erros. Verifique informações operacionais importantes com a equipe técnica.
               </p>
