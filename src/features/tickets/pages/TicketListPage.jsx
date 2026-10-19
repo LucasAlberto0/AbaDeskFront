@@ -103,14 +103,14 @@ export default function TicketListPage({ title = "Chamados", description = "Gere
             <table className="w-full text-left text-sm text-text-secondary min-w-[580px]">
               <thead className="bg-gray-50/50 text-xs uppercase text-text-muted border-b border-border-subtle">
                 <tr>
-                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold">Protocolo</th>
-                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold">Título</th>
-                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold">Categoria</th>
-                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold">Solicitante</th>
-                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold">Status</th>
-                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold">Abertura</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold whitespace-nowrap">Protocolo</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold whitespace-nowrap">Título</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold whitespace-nowrap">Categoria</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold whitespace-nowrap">Solicitante</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold whitespace-nowrap">Status</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold whitespace-nowrap">Abertura</th>
                   {isTechnicianOrAdmin && (
-                    <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold text-right">Ações</th>
+                    <th className="px-3 sm:px-6 py-3 sm:py-4 font-semibold text-right whitespace-nowrap">Ações</th>
                   )}
                 </tr>
               </thead>
@@ -125,18 +125,22 @@ export default function TicketListPage({ title = "Chamados", description = "Gere
                       key={ticket.id} 
                       className="hover:bg-gray-50/80 transition-colors group"
                     >
-                      <td className="px-3 sm:px-6 py-3 sm:py-4 font-mono font-medium text-text-primary">
+                      <td className="px-3 sm:px-6 py-3 sm:py-4 font-mono font-medium text-text-primary whitespace-nowrap">
                         <Link to={`/tickets/${ticket.id}`} className="hover:underline hover:text-primary">
                           #{ticket.protocolNumber}
                         </Link>
                       </td>
-                      <td className="px-3 sm:px-6 py-3 sm:py-4">
-                        <Link to={`/tickets/${ticket.id}`} className="font-medium text-text-primary group-hover:text-primary transition-colors">
+                      <td className="px-3 sm:px-6 py-3 sm:py-4 max-w-[160px] sm:max-w-none whitespace-nowrap sm:whitespace-normal">
+                        <Link 
+                          to={`/tickets/${ticket.id}`} 
+                          title={ticket.title}
+                          className="font-medium text-text-primary group-hover:text-primary transition-colors block truncate sm:inline sm:whitespace-normal"
+                        >
                           {ticket.title}
                         </Link>
                       </td>
-                      <td className="px-3 sm:px-6 py-3 sm:py-4">{getCategoryLabel(ticket.category)}</td>
-                      <td className="px-3 sm:px-6 py-3 sm:py-4">{ticket.createdByName}</td>
+                      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">{getCategoryLabel(ticket.category)}</td>
+                      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">{ticket.createdByName}</td>
                       <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-0.5 rounded-full ${statusInfo.color}`}>
                           <span className="material-symbols-outlined text-[13px]">{statusInfo.icon}</span>

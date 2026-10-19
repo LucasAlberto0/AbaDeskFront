@@ -42,6 +42,7 @@ export default function AssistantPage() {
   const [copiedId, setCopiedId] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
   useEffect(() => {
     try {
@@ -100,13 +101,18 @@ export default function AssistantPage() {
     }
   ];
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToBottom = (behavior = 'smooth') => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior
+      });
+    }
   };
 
   useEffect(() => {
     if (messages.length > 0) {
-      scrollToBottom();
+      scrollToBottom('smooth');
     }
   }, [messages, isTyping]);
 
@@ -270,11 +276,11 @@ export default function AssistantPage() {
         {isChatActive && (
           <motion.header
             key="chat-header"
-            initial={{ y: -60, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -60, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 320, damping: 28 }}
-            className="px-3 sm:px-8 py-3 border-b border-slate-200 bg-white/95 backdrop-blur-md flex items-center justify-between gap-2 sm:gap-3 shrink-0 z-20"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="px-3 sm:px-8 py-2.5 sm:py-3 border-b border-slate-200 bg-white/95 backdrop-blur-md flex items-center justify-between gap-2 sm:gap-3 shrink-0 z-20"
           >
             <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
               <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#c8101e] p-1.5 flex items-center justify-center shadow-sm shrink-0">
@@ -308,24 +314,27 @@ export default function AssistantPage() {
         )}
       </AnimatePresence>
 
-      <div className="flex-1 overflow-y-auto w-full flex flex-col">
+      <div 
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto w-full flex flex-col min-h-0"
+      >
         <AnimatePresence mode="wait">
           {!isChatActive ? (
             <motion.div
               key="hero-state"
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, y: -40, scale: 0.96 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
-              className="flex-1 my-auto flex flex-col items-center justify-center text-center px-4 py-8 max-w-3xl mx-auto w-full"
+              exit={{ opacity: 0, y: -20, scale: 0.96 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="flex-1 my-auto flex flex-col items-center justify-center text-center px-4 py-3 sm:py-8 max-w-3xl mx-auto w-full min-h-0"
             >
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.05 }}
-                className="relative mb-4 sm:mb-5"
+                transition={{ duration: 0.35, delay: 0.05 }}
+                className="relative mb-3 sm:mb-5"
               >
-                <div className="relative w-16 h-16 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-[#c8101e] p-2.5 sm:p-3 flex items-center justify-center shadow-xl shadow-red-900/15">
+                <div className="relative w-14 h-14 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-[#c8101e] p-2 sm:p-3 flex items-center justify-center shadow-xl shadow-red-900/15">
                   <img
                     src="/img/brand/logo-da-ia-aba.png"
                     alt="AbaDesk IA"
@@ -334,12 +343,12 @@ export default function AssistantPage() {
                 </div>
               </motion.div>
 
-              <div className="mb-5 sm:mb-8">
-                <h1 className="text-xl xs:text-2xl sm:text-4xl md:text-4xl font-semibold tracking-tight text-slate-900 leading-tight">
+              <div className="mb-4 sm:mb-8">
+                <h1 className="text-xl sm:text-4xl font-semibold tracking-tight text-slate-900 leading-tight">
                   Qual desafio vamos <br className="hidden xs:inline" />
                   <span className="text-[#9d0012]">solucionar juntos hoje?</span>
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-500 mt-2 sm:mt-2.5 max-w-lg mx-auto leading-relaxed px-2">
+                <p className="text-xs sm:text-sm text-slate-500 mt-1.5 sm:mt-2.5 max-w-sm sm:max-w-lg mx-auto leading-relaxed px-2">
                   Descreva qualquer problema ou incidente para receber diagnósticos ágeis, orientações técnicas e soluções precisas.
                 </p>
               </div>
@@ -353,7 +362,7 @@ export default function AssistantPage() {
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Peça à ABA Assist ..."
+                    placeholder="Peça à ABA Assist..."
                     disabled={isTyping}
                     className="flex-1 bg-transparent pr-2 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none min-w-0"
                   />
@@ -374,16 +383,16 @@ export default function AssistantPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-6 max-w-xl mx-auto">
+                <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-4 sm:mt-6 max-w-xl mx-auto">
                   {promptSuggestions.map((item, idx) => {
                     const IconComponent = item.icon;
                     return (
                       <button
                         key={idx}
                         onClick={() => handleSend(item.prompt)}
-                        className="px-3 py-1.5 rounded-full bg-slate-50 hover:bg-red-50/50 border border-slate-200 hover:border-red-300 text-slate-700 hover:text-[#9d0012] text-[11px] sm:text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+                        className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-slate-50 hover:bg-red-50/50 border border-slate-200 hover:border-red-300 text-slate-700 hover:text-[#9d0012] text-[11px] sm:text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs"
                       >
-                        <IconComponent size={13} className="text-[#c8101e]" />
+                        <IconComponent size={12} className="text-[#c8101e]" />
                         <span>{item.title}</span>
                       </button>
                     );
@@ -498,11 +507,11 @@ export default function AssistantPage() {
         {isChatActive && (
           <motion.div
             key="bottom-input-bar"
-            initial={{ y: 80, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 80, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 320, damping: 28 }}
-            className="p-2.5 sm:p-4 bg-white border-t border-slate-200 shrink-0 z-10 shadow-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.2 }}
+            className="p-2 sm:p-4 pb-[max(0.625rem,env(safe-area-inset-bottom))] bg-white border-t border-slate-200 shrink-0 z-10 shadow-lg"
           >
             <div className="max-w-3xl mx-auto w-full">
               <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none">

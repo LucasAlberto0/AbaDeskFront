@@ -6,6 +6,22 @@ import { getDashboardSummary } from '../api/dashboardService';
 import { getTickets } from '../../tickets/api/ticketService';
 import { translateStatus, translateCategory } from '../../../lib/utils';
 
+function StatValue({ value, isLoading, size = "lg", suffix = "", isDarkBg = true }) {
+  if (isLoading || value === undefined || value === null) {
+    if (isDarkBg) {
+      if (size === "sm") {
+        return <span className="inline-block w-5 h-3 bg-white/30 animate-pulse rounded-xs align-middle" />;
+      }
+      return <span className="inline-block w-10 sm:w-14 h-7 sm:h-9 bg-white/30 animate-pulse rounded-md my-0.5 align-middle" />;
+    }
+    if (size === "badge") {
+      return <span className="inline-block w-4 h-3 bg-white/40 animate-pulse rounded-xs align-middle" />;
+    }
+    return <span className="inline-block w-4 h-2.5 bg-slate-300 animate-pulse rounded-xs align-middle" />;
+  }
+  return <>{value}{suffix}</>;
+}
+
 export default function DashboardPage() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
@@ -83,7 +99,7 @@ export default function DashboardPage() {
                       <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white p-1">
                         <span className="material-symbols-outlined text-[26px] mb-1 opacity-90 transition-all duration-300 group-hover:scale-125 group-hover:-rotate-12">fiber_new</span>
                         <span className="text-[10px] font-bold tracking-wider uppercase opacity-90 text-center leading-tight transition-opacity duration-300 group-hover:opacity-100">Abertos</span>
-                        <span className="text-[48px] font-black mt-1 leading-none transition-transform duration-300 group-hover:scale-110">{stats?.openTickets || 0}</span>
+                        <span className="text-[48px] font-black mt-1 leading-none transition-transform duration-300 group-hover:scale-110"><StatValue value={stats?.openTickets} isLoading={isLoading} /></span>
                       </div>
                     </foreignObject>
                   </g>
@@ -97,7 +113,7 @@ export default function DashboardPage() {
                       <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white p-1">
                         <span className="material-symbols-outlined text-[26px] mb-1 opacity-90 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12">terminal</span>
                         <span className="text-[10px] font-bold tracking-wider uppercase opacity-90 text-center leading-tight transition-opacity duration-300 group-hover:opacity-100">Andamento</span>
-                        <span className="text-[48px] font-black mt-1 leading-none transition-transform duration-300 group-hover:scale-110">{stats?.inProgressTickets || 0}</span>
+                        <span className="text-[48px] font-black mt-1 leading-none transition-transform duration-300 group-hover:scale-110"><StatValue value={stats?.inProgressTickets} isLoading={isLoading} /></span>
                       </div>
                     </foreignObject>
                   </g>
@@ -109,7 +125,7 @@ export default function DashboardPage() {
                     />
                     <foreignObject x="150" y="315" width="200" height="100">
                       <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white p-1">
-                        <span className="text-[48px] font-black leading-none transition-transform duration-300 group-hover:scale-110">{stats?.resolvedTickets || 0}</span>
+                        <span className="text-[48px] font-black leading-none transition-transform duration-300 group-hover:scale-110"><StatValue value={stats?.resolvedTickets} isLoading={isLoading} /></span>
                         <span className="text-[10px] font-bold tracking-wider uppercase opacity-90 text-center flex items-center gap-1 mt-1 transition-opacity duration-300 group-hover:opacity-100">
                           <span className="material-symbols-outlined text-[14px] transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">check_circle</span> Resolvidos
                         </span>
@@ -129,15 +145,15 @@ export default function DashboardPage() {
                       <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white p-1">
                         <span className="material-symbols-outlined text-[20px] mb-1 opacity-90 transition-all duration-300 group-hover:scale-125 group-hover:-rotate-12">fiber_new</span>
                         <span className="text-[8px] font-bold tracking-wider uppercase opacity-90 text-center leading-tight transition-opacity duration-300 group-hover:opacity-100">Abertos</span>
-                        <span className="text-[36px] font-black leading-none mt-1 transition-transform duration-300 group-hover:scale-110">{stats?.openTickets || 0}</span>
+                        <span className="text-[36px] font-black leading-none mt-1 transition-transform duration-300 group-hover:scale-110"><StatValue value={stats?.openTickets} isLoading={isLoading} /></span>
                         
                         <div className="flex gap-4 mt-2 pt-2 border-t border-white/20 w-4/5 justify-center">
                           <div className="flex flex-col items-center group-hover:-translate-y-0.5 transition-transform delay-75">
-                            <span className="text-[12px] font-bold leading-none">{stats?.inAnalysisTickets || 0}</span>
+                            <span className="text-[12px] font-bold leading-none"><StatValue value={stats?.inAnalysisTickets} isLoading={isLoading} size="sm" /></span>
                             <span className="text-[6px] font-medium tracking-widest uppercase opacity-80 mt-1">Análise</span>
                           </div>
                           <div className="flex flex-col items-center group-hover:-translate-y-0.5 transition-transform delay-100">
-                            <span className="text-[12px] font-bold leading-none">{stats?.waitingUserTickets || 0}</span>
+                            <span className="text-[12px] font-bold leading-none"><StatValue value={stats?.waitingUserTickets} isLoading={isLoading} size="sm" /></span>
                             <span className="text-[6px] font-medium tracking-widest uppercase opacity-80 mt-1">Ag. Usuário</span>
                           </div>
                         </div>
@@ -151,11 +167,11 @@ export default function DashboardPage() {
                       <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white p-1">
                         <span className="material-symbols-outlined text-[20px] mb-1 opacity-90 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12">terminal</span>
                         <span className="text-[8px] font-bold tracking-wider uppercase opacity-90 text-center leading-tight transition-opacity duration-300 group-hover:opacity-100">Andamento</span>
-                        <span className="text-[36px] font-black leading-none mt-1 transition-transform duration-300 group-hover:scale-110">{stats?.inProgressTickets || 0}</span>
+                        <span className="text-[36px] font-black leading-none mt-1 transition-transform duration-300 group-hover:scale-110"><StatValue value={stats?.inProgressTickets} isLoading={isLoading} /></span>
                         
                         <div className="flex gap-4 mt-2 pt-2 border-t border-white/20 w-4/5 justify-center">
                           <div className="flex flex-col items-center text-orange-200 group-hover:-translate-y-0.5 transition-transform delay-75">
-                            <span className="text-[12px] font-bold leading-none">{stats?.pendingMyAction || 0}</span>
+                            <span className="text-[12px] font-bold leading-none"><StatValue value={stats?.pendingMyAction} isLoading={isLoading} size="sm" /></span>
                             <span className="text-[6px] font-medium tracking-widest uppercase opacity-90 mt-1 flex items-center gap-0.5">
                               <span className="material-symbols-outlined text-[7px]">notification_important</span> Pendente
                             </span>
@@ -169,18 +185,18 @@ export default function DashboardPage() {
                     <path d="M 250 296 L 75 397 A 400 400 0 0 0 425 397 Z" className="fill-[#7a0810] transition-all duration-300 group-hover:fill-[#9c0c16]" />
                     <foreignObject x="150" y="305" width="200" height="120">
                       <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white p-1">
-                        <span className="text-[36px] font-black leading-none transition-transform duration-300 group-hover:scale-110">{stats?.resolvedTickets || 0}</span>
+                        <span className="text-[36px] font-black leading-none transition-transform duration-300 group-hover:scale-110"><StatValue value={stats?.resolvedTickets} isLoading={isLoading} /></span>
                         <span className="text-[8px] font-bold tracking-wider uppercase opacity-90 text-center flex items-center gap-1 mt-1 transition-opacity duration-300 group-hover:opacity-100">
                           <span className="material-symbols-outlined text-[10px] transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">check_circle</span> Resolvidos
                         </span>
 
                         <div className="flex gap-8 mt-2 pt-2 border-t border-white/20 w-3/5 justify-center">
                           <div className="flex flex-col items-center group-hover:-translate-y-0.5 transition-transform delay-75">
-                            <span className="text-[12px] font-bold leading-none">{stats?.totalTickets || 0}</span>
+                            <span className="text-[12px] font-bold leading-none"><StatValue value={stats?.totalTickets} isLoading={isLoading} size="sm" /></span>
                             <span className="text-[6px] font-medium tracking-widest uppercase opacity-80 mt-1">Total</span>
                           </div>
                           <div className="flex flex-col items-center text-emerald-300 group-hover:-translate-y-0.5 transition-transform delay-100">
-                            <span className="text-[12px] font-bold leading-none">{stats?.resolutionRate || 0}%</span>
+                            <span className="text-[12px] font-bold leading-none"><StatValue value={stats?.resolutionRate} isLoading={isLoading} size="sm" suffix="%" /></span>
                             <span className="text-[6px] font-medium tracking-widest uppercase opacity-90 mt-1 flex items-center gap-0.5">
                               <span className="material-symbols-outlined text-[7px]">trending_up</span> Taxa
                             </span>
@@ -204,7 +220,7 @@ export default function DashboardPage() {
                     <path d="M 240 279 L 240 60 A 400 400 0 0 0 60 383 Z" className="fill-[#c8101e]" />
                     <foreignObject x="85" y="155" width="160" height="120">
                       <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white">
-                        <span className="text-[44px] font-black leading-none">{stats?.openTickets || 0}</span>
+                        <span className="text-[44px] font-black leading-none"><StatValue value={stats?.openTickets} isLoading={isLoading} /></span>
                       </div>
                     </foreignObject>
                   </g>
@@ -213,7 +229,7 @@ export default function DashboardPage() {
                     <path d="M 260 279 L 260 60 A 400 400 0 0 1 440 383 Z" className="fill-[#9c0c16]" />
                     <foreignObject x="255" y="155" width="160" height="120">
                       <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white">
-                        <span className="text-[44px] font-black leading-none">{stats?.inProgressTickets || 0}</span>
+                        <span className="text-[44px] font-black leading-none"><StatValue value={stats?.inProgressTickets} isLoading={isLoading} /></span>
                       </div>
                     </foreignObject>
                   </g>
@@ -222,7 +238,7 @@ export default function DashboardPage() {
                     <path d="M 250 296 L 75 397 A 400 400 0 0 0 425 397 Z" className="fill-[#7a0810]" />
                     <foreignObject x="150" y="320" width="200" height="90">
                       <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white">
-                        <span className="text-[44px] font-black leading-none">{stats?.resolvedTickets || 0}</span>
+                        <span className="text-[44px] font-black leading-none"><StatValue value={stats?.resolvedTickets} isLoading={isLoading} /></span>
                       </div>
                     </foreignObject>
                   </g>
@@ -245,7 +261,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#c8101e] text-white">
-                      {stats?.openTickets || 0}
+                      <StatValue value={stats?.openTickets} isLoading={isLoading} size="badge" isDarkBg={false} />
                     </span>
                     <span className="material-symbols-outlined text-[18px] text-slate-400">chevron_right</span>
                   </div>
@@ -266,7 +282,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#9c0c16] text-white">
-                      {stats?.inProgressTickets || 0}
+                      <StatValue value={stats?.inProgressTickets} isLoading={isLoading} size="badge" isDarkBg={false} />
                     </span>
                     <span className="material-symbols-outlined text-[18px] text-slate-400">chevron_right</span>
                   </div>
@@ -287,7 +303,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#7a0810] text-white">
-                      {stats?.resolvedTickets || 0}
+                      <StatValue value={stats?.resolvedTickets} isLoading={isLoading} size="badge" isDarkBg={false} />
                     </span>
                     <span className="material-symbols-outlined text-[18px] text-slate-400">chevron_right</span>
                   </div>
@@ -302,10 +318,10 @@ export default function DashboardPage() {
                     <path d="M 240 279 L 240 60 A 400 400 0 0 0 60 383 Z" className="fill-[#c8101e]" />
                     <foreignObject x="85" y="145" width="160" height="150">
                       <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white">
-                        <span className="text-[38px] font-black leading-none">{stats?.openTickets || 0}</span>
+                        <span className="text-[38px] font-black leading-none"><StatValue value={stats?.openTickets} isLoading={isLoading} /></span>
                         <div className="flex gap-4 mt-2.5 pt-2 border-t border-white/20 w-4/5 justify-center">
-                          <span className="text-[13px] font-bold leading-none">{stats?.inAnalysisTickets || 0}</span>
-                          <span className="text-[13px] font-bold leading-none">{stats?.waitingUserTickets || 0}</span>
+                          <span className="text-[13px] font-bold leading-none"><StatValue value={stats?.inAnalysisTickets} isLoading={isLoading} size="sm" /></span>
+                          <span className="text-[13px] font-bold leading-none"><StatValue value={stats?.waitingUserTickets} isLoading={isLoading} size="sm" /></span>
                         </div>
                       </div>
                     </foreignObject>
@@ -315,9 +331,9 @@ export default function DashboardPage() {
                     <path d="M 260 279 L 260 60 A 400 400 0 0 1 440 383 Z" className="fill-[#9c0c16]" />
                     <foreignObject x="255" y="145" width="160" height="150">
                       <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white">
-                        <span className="text-[38px] font-black leading-none">{stats?.inProgressTickets || 0}</span>
+                        <span className="text-[38px] font-black leading-none"><StatValue value={stats?.inProgressTickets} isLoading={isLoading} /></span>
                         <div className="flex gap-4 mt-2.5 pt-2 border-t border-white/20 w-4/5 justify-center">
-                          <span className="text-[13px] font-bold leading-none text-orange-200">{stats?.pendingMyAction || 0}</span>
+                          <span className="text-[13px] font-bold leading-none text-orange-200"><StatValue value={stats?.pendingMyAction} isLoading={isLoading} size="sm" /></span>
                         </div>
                       </div>
                     </foreignObject>
@@ -327,10 +343,10 @@ export default function DashboardPage() {
                     <path d="M 250 296 L 75 397 A 400 400 0 0 0 425 397 Z" className="fill-[#7a0810]" />
                     <foreignObject x="150" y="315" width="200" height="110">
                       <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} className="w-full h-full flex flex-col items-center justify-center text-white">
-                        <span className="text-[38px] font-black leading-none">{stats?.resolvedTickets || 0}</span>
+                        <span className="text-[38px] font-black leading-none"><StatValue value={stats?.resolvedTickets} isLoading={isLoading} /></span>
                         <div className="flex gap-8 mt-2.5 pt-2 border-t border-white/20 w-3/5 justify-center">
-                          <span className="text-[13px] font-bold leading-none">{stats?.totalTickets || 0}</span>
-                          <span className="text-[13px] font-bold leading-none text-emerald-300">{stats?.resolutionRate || 0}%</span>
+                          <span className="text-[13px] font-bold leading-none"><StatValue value={stats?.totalTickets} isLoading={isLoading} size="sm" /></span>
+                          <span className="text-[13px] font-bold leading-none text-emerald-300"><StatValue value={stats?.resolutionRate} isLoading={isLoading} size="sm" suffix="%" /></span>
                         </div>
                       </div>
                     </foreignObject>
@@ -351,13 +367,13 @@ export default function DashboardPage() {
                       <div className="flex items-center gap-2">
                         <span className="text-[13px] font-bold text-slate-800">Abertos</span>
                         <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#c8101e] text-white">
-                          {stats?.openTickets || 0}
+                          <StatValue value={stats?.openTickets} isLoading={isLoading} size="badge" isDarkBg={false} />
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
-                        <span>Análise: <strong className="text-slate-700">{stats?.inAnalysisTickets || 0}</strong></span>
+                        <span>Análise: <strong className="text-slate-700"><StatValue value={stats?.inAnalysisTickets} isLoading={isLoading} isDarkBg={false} /></strong></span>
                         <span>•</span>
-                        <span>Ag. Usuário: <strong className="text-slate-700">{stats?.waitingUserTickets || 0}</strong></span>
+                        <span>Ag. Usuário: <strong className="text-slate-700"><StatValue value={stats?.waitingUserTickets} isLoading={isLoading} isDarkBg={false} /></strong></span>
                       </div>
                     </div>
                   </div>
@@ -376,12 +392,12 @@ export default function DashboardPage() {
                       <div className="flex items-center gap-2">
                         <span className="text-[13px] font-bold text-slate-800">Em Andamento</span>
                         <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#9c0c16] text-white">
-                          {stats?.inProgressTickets || 0}
+                          <StatValue value={stats?.inProgressTickets} isLoading={isLoading} size="badge" isDarkBg={false} />
                         </span>
                       </div>
                       <div className="flex items-center gap-1.5 text-[11px] text-orange-600 mt-0.5 font-medium">
                         <span className="material-symbols-outlined text-[13px]">notification_important</span>
-                        <span>Pendente minha ação: <strong>{stats?.pendingMyAction || 0}</strong></span>
+                        <span>Pendente minha ação: <strong><StatValue value={stats?.pendingMyAction} isLoading={isLoading} isDarkBg={false} /></strong></span>
                       </div>
                     </div>
                   </div>
@@ -400,15 +416,15 @@ export default function DashboardPage() {
                       <div className="flex items-center gap-2">
                         <span className="text-[13px] font-bold text-slate-800">Resolvidos</span>
                         <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#7a0810] text-white">
-                          {stats?.resolvedTickets || 0}
+                          <StatValue value={stats?.resolvedTickets} isLoading={isLoading} size="badge" isDarkBg={false} />
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
-                        <span>Total: <strong className="text-slate-700">{stats?.totalTickets || 0}</strong></span>
+                        <span>Total: <strong className="text-slate-700"><StatValue value={stats?.totalTickets} isLoading={isLoading} isDarkBg={false} /></strong></span>
                         <span>•</span>
                         <span className="text-emerald-600 font-semibold flex items-center gap-0.5">
                           <span className="material-symbols-outlined text-[13px]">trending_up</span>
-                          {stats?.resolutionRate || 0}% de taxa
+                          <StatValue value={stats?.resolutionRate} isLoading={isLoading} isDarkBg={false} suffix="%" /> de taxa
                         </span>
                       </div>
                     </div>

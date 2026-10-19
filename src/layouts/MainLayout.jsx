@@ -187,7 +187,7 @@ export default function MainLayout() {
         </div>
       </aside>
 
-      <div className={`${isCollapsed ? 'lg:pl-20' : 'lg:pl-72'} pl-0 flex flex-col ${location.pathname.startsWith('/assistant') ? 'h-screen max-h-screen overflow-hidden' : 'min-h-screen overflow-x-hidden'} min-w-0 w-full transition-all duration-300`}>
+      <div className={`${isCollapsed ? 'lg:pl-20' : 'lg:pl-72'} pl-0 flex flex-col ${location.pathname.startsWith('/assistant') ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : 'min-h-screen overflow-x-hidden'} min-w-0 w-full transition-all duration-300`}>
         <header className={`fixed top-0 ${isCollapsed ? 'lg:left-20' : 'lg:left-72'} left-0 right-0 h-16 bg-[#c8101e] border-b border-[#a70d18] z-40 flex items-center justify-between px-3 sm:px-6 lg:px-8 gap-2 sm:gap-4 min-w-0 shadow-sm transition-all duration-300`}>
           <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink">
             <button
@@ -227,9 +227,9 @@ export default function MainLayout() {
           </div>
         </header>
 
-        <main className={`relative pt-16 w-full flex-1 min-w-0 ${location.pathname.startsWith('/assistant') ? 'h-full max-h-full bg-white overflow-hidden flex flex-col' : ''}`}>
+        <main className={`relative w-full flex-1 min-w-0 ${location.pathname.startsWith('/assistant') ? 'h-[calc(100dvh-4rem)] max-h-[calc(100dvh-4rem)] mt-16 bg-white overflow-hidden flex flex-col' : 'pt-16'}`}>
           {location.pathname.startsWith('/assistant') ? (
-            <div className="w-full flex-1 min-w-0 flex flex-col h-full bg-white overflow-hidden">
+            <div className="w-full flex-1 min-h-0 min-w-0 flex flex-col h-full bg-white overflow-hidden">
               <Outlet />
             </div>
           ) : (
